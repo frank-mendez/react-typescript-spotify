@@ -1,7 +1,16 @@
 {
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    // Include other compiler options as needed
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
+  },
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
 }
