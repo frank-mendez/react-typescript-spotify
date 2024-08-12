@@ -10,13 +10,16 @@
     "preview": "vite preview",
     "prepare": "husky",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "commitlint": "commitlint --edit"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.4.0",
+    "@commitlint/config-conventional": "^19.2.2",
     "@eslint/js": "^9.8.0",
     "@tailwindcss/typography": "^0.5.14",
     "@testing-library/jest-dom": "^6.4.8",
