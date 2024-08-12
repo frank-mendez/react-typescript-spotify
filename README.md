@@ -1,50 +1,81 @@
-# React + TypeScript + Vite
+# React TypeScript Spotify Clone
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web based Spotify clone built with React, TypeScript, and the Spotify Web API.
 
-Currently, two official plugins are available:
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Authentication
+- Playlists
+- Search
+- Player
+- Profile
+- Tracks
+- Artists
+- Albums
 
-- Configure the top-level `parserOptions` property like this:
+## Run Locally
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+Clone the project
+
+```bash
+  git clone git@github.com:frank-mendez/react-typescript-spotify.git
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Go to the project directory
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+  cd react-typescript-spotify
 ```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run dev
+```
+
+## Testing
+
+To run tests, run the following command
+
+```bash
+  npm run test
+```
+
+## Coverage
+
+To see test coverage, run the following command
+
+```bash
+  npm run coverage
+```
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your `.env` file
+
+## Tech Stack
+
+**Client:** React, TailwindCSS, DaisyUI, TypeScript, Axios, React Router DOM
+
+**Server:** Spotify Web API, Node.js
+
+## Contributing
+
+Contributions are always welcome!
+
+See `contributing.md` for ways to get started.
+
+Please adhere to this project's `code of conduct`.
+
+## Feedback
+
+If you have any feedback, please reach out to us at Discussions or Issues tab.
