@@ -11,3 +11,11 @@ export interface TokenScopeResponse {
   refresh_token: string;
   scope: string;
 }
+
+export interface AuthContextType {
+  accessToken: string | null;
+  login: () => Promise<void>;
+  logout: () => void;
+  refreshToken: string | null;
+  getRefreshToken: () => Promise<void>;
+}

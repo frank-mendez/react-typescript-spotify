@@ -73,11 +73,27 @@ export async function getToken(code: string): Promise<TokenScopeResponse> {
   return response;
 }
 
-export async function getUserData(accessToken: string) {
-  const response = await fetch("https://api.spotify.com/v1/me", {
-    method: "GET",
-    headers: { Authorization: "Bearer " + accessToken },
-  });
+export const getRefreshToken = async () => {
+  // refresh token that has been previously stored
+  const refreshToken = localStorage.getItem("refresh_token");
+  const url = "https://accounts.spotify.com/api/token";
 
-  return await response.json();
-}
+  const payload = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken ?? "",
+      client_id: clientId,
+    }),
+  };
+  const body = await fetch(url, payload);
+  const response = await body.json();
+
+  localStorage.setItem("access_token", response.accessToken);
+  if (response.refreshToken) {
+    localStorage.setItem("refresh_token", response.refreshToken);
+  }
+};
