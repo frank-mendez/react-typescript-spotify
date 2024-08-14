@@ -1,14 +1,12 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouteObject } from "react-router-dom";
 import Dashboard from "../pages/Dashboard.tsx";
-import Callback from "../pages/Callback.tsx";
-
-export const router = createBrowserRouter([
+import Login from "../pages/Login.tsx";
+const routes: RouteObject[] = [
   {
     path: "/",
     element: <Dashboard />,
   },
-  {
-    path: "/callback",
-    element: <Callback />,
-  },
-]);
+  { path: "/login", element: <Login /> },
+];
+
+export const router = createBrowserRouter(routes);
