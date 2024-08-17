@@ -1,4 +1,7 @@
-import { TokenScopeResponse } from "../../../data-objects/interface";
+import {
+  TokenResponse,
+  TokenScopeResponse,
+} from "../../../data-objects/interface";
 
 const authorizationEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = import.meta.env.VITE_CLIENT_ID;
@@ -73,9 +76,10 @@ export async function getToken(code: string): Promise<TokenScopeResponse> {
   return response;
 }
 
-export const getRefreshToken = async () => {
+export const getRefreshToken = async (
+  refreshToken: string,
+): Promise<TokenResponse> => {
   // refresh token that has been previously stored
-  const refreshToken = localStorage.getItem("refresh_token");
   const url = "https://accounts.spotify.com/api/token";
 
   const payload = {
@@ -92,8 +96,5 @@ export const getRefreshToken = async () => {
   const body = await fetch(url, payload);
   const response = await body.json();
 
-  localStorage.setItem("access_token", response.accessToken);
-  if (response.refreshToken) {
-    localStorage.setItem("refresh_token", response.refreshToken);
-  }
+  return response;
 };

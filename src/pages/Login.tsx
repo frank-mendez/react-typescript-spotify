@@ -1,11 +1,7 @@
 import { useAuth } from "../context/AuthContext.tsx";
-import { Navigate } from "react-router-dom";
 
 const Login = () => {
-  const { accessToken, login } = useAuth();
-  if (accessToken) {
-    return <Navigate to="/" />;
-  }
+  const { login } = useAuth();
   return (
     <div
       data-testid="login-page-component"

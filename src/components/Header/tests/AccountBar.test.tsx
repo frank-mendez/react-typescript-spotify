@@ -2,11 +2,11 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { describe, it, expect } from "vitest";
 import { BrowserRouter } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-import Dashboard from "../Dashboard.tsx";
+import { AuthContext } from "../../../context/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AccountBar from "../AccountBar.tsx";
 
-describe("Dashboard Component", () => {
+describe("Accountbar Component", () => {
   const mockAuthContext = {
     accessToken: "mockAccessToken",
     login: async () => {},
@@ -16,6 +16,7 @@ describe("Dashboard Component", () => {
   };
   const dashboardComponent = () => {
     const queryClient = new QueryClient();
+
     render(
       <QueryClientProvider client={queryClient}>
         <AuthContext.Provider
@@ -28,40 +29,24 @@ describe("Dashboard Component", () => {
           }}
         >
           <BrowserRouter>
-            <Dashboard />
+            <AccountBar />
           </BrowserRouter>
         </AuthContext.Provider>
-        ,
       </QueryClientProvider>,
     );
   };
   it("renders without crashing", () => {
     dashboardComponent();
-    expect(screen.getByTestId("dashboard-element")).toBeInTheDocument();
+    expect(screen.getByTestId("accountbar-element")).toBeInTheDocument();
   });
 
-  it("contains a header", () => {
+  it("contains avatar", () => {
     dashboardComponent();
-    expect(screen.getByTestId("header-element")).toBeInTheDocument();
+    expect(screen.getByTestId("avatar-element")).toBeInTheDocument();
   });
 
-  it("contains a footer", () => {
+  it("contains dropdown", () => {
     dashboardComponent();
-    expect(screen.getByTestId("footer-element")).toBeInTheDocument();
-  });
-
-  it("contains a sidebar", () => {
-    dashboardComponent();
-    expect(screen.getByTestId("sidebar-element")).toBeInTheDocument();
-  });
-
-  it("contains a main content", () => {
-    dashboardComponent();
-    expect(screen.getByTestId("main-content-element")).toBeInTheDocument();
-  });
-
-  it("contains a expand content", () => {
-    dashboardComponent();
-    expect(screen.getByTestId("expand-content-element")).toBeInTheDocument();
+    expect(screen.getByTestId("dropdown-element")).toBeInTheDocument();
   });
 });

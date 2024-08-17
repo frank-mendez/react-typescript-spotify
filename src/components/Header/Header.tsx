@@ -5,7 +5,7 @@ import SearchBar from "./Searchbar.tsx";
 import AccountBar from "./AccountBar.tsx";
 const Header = () => {
   return (
-    <div className="navbar bg-base-300">
+    <div data-testid="header-element" className="navbar bg-base-300">
       <div className="flex flex-row justify-between w-full">
         <div className="flex-none flex flex-row gap-2">
           <button className="btn btn-circle btn-ghost bg-base-100">

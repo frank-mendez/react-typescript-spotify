@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   getRefreshToken,
   getToken,
@@ -9,8 +9,8 @@ import { AuthContext } from "./AuthContext";
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const accessToken = localStorage.getItem("access_token");
+  const refreshToken = localStorage.getItem("refresh_token");
   const args = new URLSearchParams(window.location.search);
   const code = args.get("code");
 
@@ -19,10 +19,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (code) {
         const token = await getToken(code);
 
-        console.log("token", token);
-
-        setAccessToken(token.access_token);
-        setRefreshToken(token.refresh_token);
         localStorage.setItem("access_token", token.access_token);
         localStorage.setItem("refresh_token", token.refresh_token);
         localStorage.setItem("expires_in", token.expires_in.toString());
@@ -34,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const url = new URL(window.location.href);
         url.searchParams.delete("code");
 
-        const updatedUrl = url.search ? url.href : url.href.replace("?", "");
+        const updatedUrl = url.search ? url.href : url.href.replace("?", "/");
         window.history.replaceState({}, document.title, updatedUrl);
       }
     };
@@ -42,13 +38,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchToken();
   }, [code]);
 
+  // TODO: Implement refresh token logic, automatically refresh the token when it expires
+
   const login = async () => {
     await redirectToSpotifyAuthorize();
   };
 
   const logout = () => {
-    setAccessToken(null);
-    setRefreshToken(null);
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("expires_in");
