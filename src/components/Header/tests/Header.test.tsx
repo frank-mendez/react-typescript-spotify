@@ -25,7 +25,6 @@ describe("Header Component", () => {
             login: mockAuthContext.login,
             logout: mockAuthContext.logout,
             refreshToken: mockAuthContext.refreshToken,
-            getRefreshToken: mockAuthContext.getRefreshToken,
           }}
         >
           <BrowserRouter>

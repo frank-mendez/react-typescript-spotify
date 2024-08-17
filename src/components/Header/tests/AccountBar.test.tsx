@@ -12,7 +12,6 @@ describe("Accountbar Component", () => {
     login: async () => {},
     logout: () => {},
     refreshToken: "mockRefresh",
-    getRefreshToken: async () => {},
   };
   const dashboardComponent = () => {
     const queryClient = new QueryClient();
@@ -25,7 +24,6 @@ describe("Accountbar Component", () => {
             login: mockAuthContext.login,
             logout: mockAuthContext.logout,
             refreshToken: mockAuthContext.refreshToken,
-            getRefreshToken: mockAuthContext.getRefreshToken,
           }}
         >
           <BrowserRouter>

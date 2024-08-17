@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import {
-  getRefreshToken,
   getToken,
   redirectToSpotifyAuthorize,
 } from "../api/auth/service/auth.service.ts";
@@ -53,9 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider
-      value={{ accessToken, login, logout, refreshToken, getRefreshToken }}
-    >
+    <AuthContext.Provider value={{ accessToken, login, logout, refreshToken }}>
       {children}
     </AuthContext.Provider>
   );
