@@ -4,7 +4,7 @@ import BrowseGalleryOutlinedIcon from "@mui/icons-material/BrowseGalleryOutlined
 
 const SearchBar = () => {
   return (
-    <div className="relative w-full max-w-md">
+    <div data-testid="searchbar-element" className="relative w-full max-w-md">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
         <SearchIcon className="text-gray-500" />
       </div>
