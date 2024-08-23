@@ -24,7 +24,7 @@ export interface Image {
 }
 
 export interface Followers {
-  href: any;
+  href: string;
   total: number;
 }
 
