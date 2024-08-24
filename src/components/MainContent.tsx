@@ -8,6 +8,7 @@ const MainContent = () => {
   const { currentContent } = useContentStore();
   const { accessToken } = useAuth();
   const { data, isPending } = useProfileQuery(accessToken ?? "");
+  const srcImage = "/assets/images/man.png";
   return (
     <div
       data-testid="main-content-element"
@@ -17,24 +18,19 @@ const MainContent = () => {
         <div className={`card-body ${isPending ? "skeleton" : ""}`}>
           {!isPending && data && (
             <div className="flex flex-row gap-4 items-center">
-              <img
-                className="mask mask-circle w-[300px]"
-                src={data.images[1].url}
-              />
+              <img className="mask mask-circle w-[300px]" src={srcImage} />
               <div className="flex flex-col justify-around align-middle gap-4">
                 <p className="text-sm">Profile</p>
-                <h1 className="font-bold text-6xl">{data.display_name}</h1>
-                <p className="text-sm">{data.followers.total} Followers</p>
+                <h1 className="font-bold text-6xl">
+                  {data?.display_name ?? "John Doe"}
+                </h1>
+                <p className="text-sm">
+                  {data?.followers?.total ?? 100} Followers
+                </p>
                 <ReactCountryFlag countryCode={data.country} />
               </div>
             </div>
           )}
-          <iframe
-            className="rounded-xl w-full"
-            src="https://open.spotify.com/embed/playlist/37i9dQZEVXbNBz9cRCSFkY?utm_source=generator&theme=0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-          ></iframe>
         </div>
       )}
     </div>

@@ -15,7 +15,7 @@ const AccountBar = () => {
   const { data, isPending } = useProfileQuery(accessToken ?? "");
 
   const { setCurrentContent } = useContentStore();
-
+  const srcImage = "/assets/images/man.png";
   return (
     <div
       data-testid="accountbar-element"
@@ -38,10 +38,7 @@ const AccountBar = () => {
             className={`w-10 rounded-full ${isPending ? "skeleton" : ""}`}
           >
             {!isPending && (
-              <img
-                alt="Tailwind CSS Navbar component"
-                src={data ? data?.images[0].url : ""}
-              />
+              <img alt="Tailwind CSS Navbar component" src={srcImage} />
             )}
           </div>
         </div>
@@ -53,7 +50,7 @@ const AccountBar = () => {
           <li>
             <Link
               target="_blank"
-              to={data?.external_urls.spotify ?? ""}
+              to={data?.external_urls?.spotify ?? ""}
               className="justify-between"
             >
               Account
