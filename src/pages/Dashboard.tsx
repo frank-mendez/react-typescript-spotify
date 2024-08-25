@@ -6,9 +6,9 @@ import ExpandContent from "../components/ExpandContent.tsx";
 
 const Dashboard = () => {
   return (
-    <div data-testid="dashboard-element">
+    <div className="outfit-font max-auto" data-testid="dashboard-element">
       <Header />
-      <div className="flex flex-row gap-2 px-2">
+      <div className="flex flex-row gap-2 px-2 h-[80vh] overflow-y-auto">
         <Sidebar />
         <MainContent />
         <ExpandContent />
