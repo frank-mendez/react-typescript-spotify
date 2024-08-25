@@ -8,7 +8,7 @@ const MainContent = () => {
   return (
     <div
       data-testid="main-content-element"
-      className="card bg-base-300 my-10 basis-1/2 shadow-xl"
+      className="card bg-base-300 my-10 basis-1/2 shadow-xl max-h-screen overflow-y-auto"
     >
       {currentContent === MC.PROFILE && <Profile />}
       {currentContent === MC.SETTINGS && <Settings />}
