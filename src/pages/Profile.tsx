@@ -6,6 +6,7 @@ const Profile = () => {
     <div data-testid="profile-card-element" className="card-body">
       <div className="flex flex-row gap-4 items-center">
         <img
+          alt="Profile"
           data-testid="profile-img-element"
           className="mask mask-circle w-[300px]"
           src={srcImage}
