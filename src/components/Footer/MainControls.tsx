@@ -25,7 +25,7 @@ const MainControls = () => {
         </button>
       </div>
       <div className="flex flex-row gap-2 items-center m-auto">
-        <p className="text-xs">0:00</p>
+        <p className="text-xs">1:50</p>
         <progress
           className="progress w-[400px]"
           value={50}

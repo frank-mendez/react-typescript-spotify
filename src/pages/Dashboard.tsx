@@ -8,7 +8,7 @@ const Dashboard = () => {
   return (
     <div className="outfit-font max-auto" data-testid="dashboard-element">
       <Header />
-      <div className="flex flex-row gap-2 px-2 h-[80vh] overflow-y-auto">
+      <div className="flex flex-row gap-2 px-2 h-[79vh] overflow-y-auto">
         <Sidebar />
         <MainContent />
         <ExpandContent />

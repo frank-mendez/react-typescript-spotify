@@ -15,7 +15,7 @@ const AccountBar = () => {
   const { data, isPending } = useProfileQuery(accessToken ?? "");
 
   const { setCurrentContent } = useContentStore();
-  const srcImage = "/assets/images/man.png";
+  const srcImage = "/assets/images/post_malone.jpg";
   return (
     <div
       data-testid="accountbar-element"
