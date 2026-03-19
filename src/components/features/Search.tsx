@@ -7,6 +7,8 @@ import { ErrorState } from '../ui/ErrorState';
 import { Search as SearchIcon } from 'lucide-react';
 import type { Track, Artist } from '../../types/spotify';
 import { useContentStore } from '../../stores/useContentStore';
+import { TrackRow } from './TrackRow';
+import { usePlaybackControls } from '../../hooks/useSpotifyMutations';
 
 function useDebounced(value: string, delay: number): string {
   const [debounced, setDebounced] = useState(value);
@@ -26,6 +28,9 @@ export function Search() {
     debouncedQuery,
     ['track', 'artist', 'album', 'playlist'],
   );
+
+  const { play } = usePlaybackControls();
+  const handlePlay = (uri: string) => play.mutate({ uris: [uri] });
 
   return (
     <div className="p-6 flex flex-col gap-6">
@@ -67,22 +72,11 @@ export function Search() {
               <h2 className="text-text-primary font-bold mb-3">Songs</h2>
               <div className="flex flex-col">
                 {data.tracks.items.slice(0, 5).map((track: Track) => (
-                  <div
+                  <TrackRow
                     key={track.id}
-                    className="flex items-center gap-3 p-2 rounded hover:bg-surface-hover transition-colors"
-                  >
-                    <img
-                      src={track.album?.images?.[2]?.url}
-                      alt={track.album?.name}
-                      className="w-10 h-10 rounded object-cover shrink-0"
-                    />
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-text-primary text-sm truncate">{track.name}</span>
-                      <span className="text-text-muted text-xs truncate">
-                        {track.artists.map((a) => a.name).join(', ')}
-                      </span>
-                    </div>
-                  </div>
+                    track={track}
+                    onPlay={handlePlay}
+                  />
                 ))}
               </div>
             </section>
