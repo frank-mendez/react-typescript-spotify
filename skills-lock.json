@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "spotify-player": {
+      "source": "steipete/clawdis",
+      "sourceType": "github",
+      "computedHash": "a40d4ba23f032f1931325cc80a220c0bdf07e6767b1c4103a88e3e9582109037"
+    }
+  }
+}
