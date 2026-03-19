@@ -160,6 +160,15 @@ describe('useSpotifyPlayer', () => {
     window.Spotify = savedSpotify;
   });
 
+  it('clears onSpotifyWebPlaybackSDKReady and disconnects player on unmount', () => {
+    const { unmount } = renderHook(() => useSpotifyPlayer());
+
+    unmount();
+
+    expect(window.onSpotifyWebPlaybackSDKReady).toBeNull();
+    expect(mockPlayer.disconnect).toHaveBeenCalled();
+  });
+
   it('does not inject SDK script if already present in DOM', () => {
     const savedSpotify = window.Spotify;
     window.Spotify = undefined as unknown as typeof window.Spotify;
