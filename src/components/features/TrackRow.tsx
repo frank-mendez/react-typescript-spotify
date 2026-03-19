@@ -7,6 +7,7 @@ interface TrackRowProps {
 }
 
 export function TrackRow({ track, onPlay }: TrackRowProps) {
+  // Spotify images are ordered largest→smallest; prefer index 2 (~64px thumbnail), fall back to index 0 (largest)
   const imageUrl =
     track.album?.images?.[2]?.url ?? track.album?.images?.[0]?.url;
 
@@ -20,11 +21,12 @@ export function TrackRow({ track, onPlay }: TrackRowProps) {
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt={track.album?.name}
+            alt=""
+            data-testid="track-art-img"
             className="w-10 h-10 rounded object-cover"
           />
         ) : (
-          <div className="w-10 h-10 rounded bg-border" />
+          <div data-testid="track-art-placeholder" className="w-10 h-10 rounded bg-border" />
         )}
         {/* Decorative overlay — pointer-events-none so clicks pass to the outer button */}
         <div

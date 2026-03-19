@@ -47,14 +47,15 @@ describe('TrackRow', () => {
 
   it('renders album art with small image preferred', () => {
     render(<TrackRow track={mockTrack} onPlay={vi.fn()} />);
-    const img = screen.getByRole('img', { name: 'Test Album' });
+    const img = screen.getByTestId('track-art-img');
     expect(img).toHaveAttribute('src', 'http://img.test/small.jpg');
   });
 
   it('renders placeholder when album is undefined', () => {
     const trackNoAlbum = { ...mockTrack, album: undefined };
     render(<TrackRow track={trackNoAlbum} onPlay={vi.fn()} />);
-    expect(screen.queryByRole('img')).toBeNull();
+    expect(screen.queryByTestId('track-art-img')).toBeNull();
+    expect(screen.getByTestId('track-art-placeholder')).toBeInTheDocument();
   });
 
   it('calls onPlay with track uri when row button is clicked', () => {
