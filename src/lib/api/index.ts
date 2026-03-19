@@ -6,6 +6,7 @@ import { PlaylistService } from './playlist.service';
 import { PlaybackService } from './playback.service';
 import { SearchService } from './search.service';
 import { BrowseService } from './browse.service';
+import { ProfileInterface } from '../../types/spotify';
 
 export class SpotifyApi {
   private readonly apiClient: SpotifyApiClient;
@@ -44,7 +45,7 @@ export class SpotifyApi {
    * Get the current user's profile information.
    */
   async getCurrentUserProfile() {
-    return this.apiClient.get('/me');
+    return this.apiClient.get<ProfileInterface>('/me');
   }
 
   /**

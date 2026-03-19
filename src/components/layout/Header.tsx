@@ -48,18 +48,16 @@ export function Header() {
 
       <div className="ml-auto" data-testid="accountbar-element">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-full hover:bg-surface-hover p-1 transition-colors" data-testid="avatar-element">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={avatarUrl} alt={displayName} />
-                <AvatarFallback className="bg-accent text-bg text-xs font-bold">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-text-primary text-sm font-medium hidden md:block pr-1">
-                {displayName}
-              </span>
-            </button>
+          <DropdownMenuTrigger className="flex items-center gap-2 rounded-full hover:bg-surface-hover p-1 transition-colors" data-testid="avatar-element">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={avatarUrl} alt={displayName} />
+              <AvatarFallback className="bg-accent text-bg text-xs font-bold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-text-primary text-sm font-medium hidden md:block pr-1">
+              {displayName}
+            </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44 bg-surface border-border" data-testid="dropdown-element">
             <DropdownMenuItem onClick={() => navigate('/profile')} className="text-text-primary hover:bg-surface-hover cursor-pointer">

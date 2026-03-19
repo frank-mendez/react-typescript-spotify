@@ -77,11 +77,11 @@ export const useCurrentUserProfile = () => {
   });
 };
 
-export const useSearchQuery = (query: string, types: string[] = ['track', 'artist', 'album'], limit = 20) => {
+export const useSearchQuery = (query: string, types: ('track' | 'artist' | 'album' | 'playlist' | 'show' | 'episode')[] = ['track', 'artist', 'album'], limit = 20) => {
   const api = useSpotifyApi();
   return useQuery({
     queryKey: ['spotify', 'search', query, types, limit],
-    queryFn: () => api!.search.search(query, types, limit),
+    queryFn: () => api!.search.search(query, types, { limit }),
     enabled: api !== null && query.length > 0,
     staleTime: 5 * 60 * 1000,
   });
