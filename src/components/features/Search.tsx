@@ -7,6 +7,7 @@ import { ErrorState } from '../ui/ErrorState';
 import { Search as SearchIcon } from 'lucide-react';
 import type { Track, Artist } from '../../types/spotify';
 import { useContentStore } from '../../stores/useContentStore';
+import { usePlayerStore } from '../../stores/usePlayerStore';
 import { TrackRow } from './TrackRow';
 import { usePlaybackControls } from '../../hooks/useSpotifyMutations';
 
@@ -31,7 +32,12 @@ export function Search() {
 
   const { play } = usePlaybackControls();
   const { mutate: playTrack } = play;
-  const handlePlay = useCallback((uri: string) => playTrack({ uris: [uri] }), [playTrack]);
+  const { deviceId } = usePlayerStore();
+
+  const handlePlay = useCallback(
+    (uri: string) => playTrack({ uris: [uri], device_id: deviceId ?? undefined }),
+    [playTrack, deviceId],
+  );
 
   return (
     <div className="p-6 flex flex-col gap-6">
