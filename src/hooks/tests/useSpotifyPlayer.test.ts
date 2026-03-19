@@ -143,4 +143,44 @@ describe('useSpotifyPlayer', () => {
     expect(result.current.playerState.device_id).toBeNull();
     expect(result.current.is_ready).toBe(false);
   });
+
+  it('injects SDK script tag when window.Spotify is not loaded', () => {
+    const savedSpotify = window.Spotify;
+    window.Spotify = undefined as unknown as typeof window.Spotify;
+
+    const appendSpy = vi.spyOn(document.body, 'appendChild');
+
+    renderHook(() => useSpotifyPlayer());
+
+    expect(appendSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'spotify-player-script' }),
+    );
+
+    // cleanup
+    appendSpy.mockRestore();
+    document.getElementById('spotify-player-script')?.remove();
+    window.Spotify = savedSpotify;
+  });
+
+  it('does not inject SDK script if already present in DOM', () => {
+    const savedSpotify = window.Spotify;
+    window.Spotify = undefined as unknown as typeof window.Spotify;
+
+    const existing = document.createElement('script');
+    existing.id = 'spotify-player-script';
+    document.body.appendChild(existing);
+
+    const appendSpy = vi.spyOn(document.body, 'appendChild');
+
+    renderHook(() => useSpotifyPlayer());
+
+    expect(appendSpy).not.toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'spotify-player-script' }),
+    );
+
+    // cleanup
+    appendSpy.mockRestore();
+    existing.remove();
+    window.Spotify = savedSpotify;
+  });
 });

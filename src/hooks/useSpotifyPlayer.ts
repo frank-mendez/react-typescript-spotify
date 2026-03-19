@@ -159,6 +159,14 @@ export const useSpotifyPlayer = () => {
       initializePlayer();
     } else {
       window.onSpotifyWebPlaybackSDKReady = initializePlayer;
+
+      if (!document.getElementById('spotify-player-script')) {
+        const script = document.createElement('script');
+        script.id = 'spotify-player-script';
+        script.src = 'https://sdk.scdn.co/spotify-player.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
     }
 
     return () => {
