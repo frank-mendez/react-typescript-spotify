@@ -111,6 +111,9 @@ export const getRefreshToken = async (
     }),
   };
   const body = await fetch(url, payload);
+  if (!body.ok) {
+    throw new Error(`Token refresh failed: ${body.status}`);
+  }
   const response = await body.json();
 
   return response;

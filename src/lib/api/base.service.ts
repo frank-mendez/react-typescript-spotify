@@ -31,8 +31,11 @@ export class SpotifyApiClient {
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
             return this.api(originalRequest);
           } else {
-            // Redirect to login or emit an event for the app to handle
-            window.location.href = '/login';
+            // Clear tokens so ProtectedRoute redirects to /login naturally
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('expires_in');
+            localStorage.removeItem('expires');
           }
         }
         

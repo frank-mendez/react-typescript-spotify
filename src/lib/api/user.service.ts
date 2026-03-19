@@ -1,12 +1,13 @@
-import type { ProfileInterface } from "../../types";
+import { SpotifyApiClient } from './base.service';
+import type { ProfileInterface } from '../../types';
 
-export async function getUserData(token: string): Promise<ProfileInterface> {
-  const response = await fetch("https://api.spotify.com/v1/me", {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  });
+export class UserService {
+  constructor(private readonly apiClient: SpotifyApiClient) {}
 
-  return await response.json();
+  /**
+   * Get the current user's profile information.
+   */
+  async getCurrentUserProfile(): Promise<ProfileInterface> {
+    return this.apiClient.get<ProfileInterface>('/me');
+  }
 }

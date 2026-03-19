@@ -6,6 +6,7 @@ import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 import { Search as SearchIcon } from 'lucide-react';
 import type { Track, Artist } from '../../types/spotify';
+import { useContentStore } from '../../stores/useContentStore';
 
 function useDebounced(value: string, delay: number): string {
   const [debounced, setDebounced] = useState(value);
@@ -17,7 +18,8 @@ function useDebounced(value: string, delay: number): string {
 }
 
 export function Search() {
-  const [query, setQuery] = useState('');
+  const { searchQuery: initialQuery } = useContentStore();
+  const [query, setQuery] = useState(initialQuery);
   const debouncedQuery = useDebounced(query, 300);
 
   const { data, isLoading, error, refetch } = useSearchQuery(

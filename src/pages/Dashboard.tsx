@@ -47,12 +47,10 @@ const Dashboard = () => {
         </ScrollArea>
         <NowPlaying />
       </div>
-      {/* Desktop player bar */}
-      <div className="hidden md:block">
-        <PlayerBar />
-      </div>
+      {/* Player bar — mini-strip on mobile, full bar on desktop */}
+      <PlayerBar />
       {/* Bottom spacer for fixed bars */}
-      <div className="h-20 md:h-0 shrink-0" />
+      <div className="h-16 md:h-20 shrink-0" />
       {/* Mobile tab bar */}
       <MobileTabBar />
     </div>

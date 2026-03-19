@@ -19,12 +19,13 @@ export function Header() {
   const { logout } = useAuth();
   const { data: profile } = useCurrentUserProfile();
   const navigate = useNavigate();
-  const { setCurrentContent } = useContentStore();
+  const { setCurrentContent, setSearchQuery: setStoreSearchQuery } = useContentStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setStoreSearchQuery(searchQuery.trim());
       setCurrentContent(MainContent.BROWSE);
     }
   };

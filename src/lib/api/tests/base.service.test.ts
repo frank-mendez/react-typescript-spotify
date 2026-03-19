@@ -276,13 +276,23 @@ describe('SpotifyApiClient', () => {
       expect((mockError.config as any)?._retry).toBe(true);
     });
 
-    it('should redirect to login when token refresh fails', async () => {
+    it('should clear auth tokens from localStorage when token refresh fails', async () => {
       const mockError = createMockAxiosError(401, false);
 
       vi.mocked(tokenUtils.getValidAccessToken).mockResolvedValue(null);
 
+      // Populate localStorage with auth tokens
+      localStorage.setItem('access_token', 'old-token');
+      localStorage.setItem('refresh_token', 'old-refresh');
+      localStorage.setItem('expires_in', '3600');
+      localStorage.setItem('expires', '9999999999');
+
       await expect(errorInterceptor(mockError)).rejects.toBe(mockError);
-      expect(mockLocation.href).toBe('/login');
+
+      expect(localStorage.getItem('access_token')).toBeNull();
+      expect(localStorage.getItem('refresh_token')).toBeNull();
+      expect(localStorage.getItem('expires_in')).toBeNull();
+      expect(localStorage.getItem('expires')).toBeNull();
     });
 
     it('should not retry if already retried', async () => {
