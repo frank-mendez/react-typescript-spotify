@@ -12,6 +12,7 @@ describe("Settings Component", () => {
     login: async () => {},
     logout: () => {},
     refreshToken: "mockRefresh",
+    isLoading: false,
   };
   const settingsComponent = () => {
     const queryClient = new QueryClient();
@@ -20,10 +21,10 @@ describe("Settings Component", () => {
         <AuthContext.Provider
           value={{
             accessToken: mockAuthContext.accessToken,
-            isLoading: false,
             login: mockAuthContext.login,
             logout: mockAuthContext.logout,
             refreshToken: mockAuthContext.refreshToken,
+            isLoading: mockAuthContext.isLoading,
           }}
         >
           <BrowserRouter>
@@ -39,8 +40,8 @@ describe("Settings Component", () => {
     expect(screen.getByTestId("settings-element")).toBeInTheDocument();
   });
 
-  it("contains a profile image", () => {
+  it("contains a theme toggle button", () => {
     settingsComponent();
-    expect(screen.getByTestId("lanaguage-select-element")).toBeInTheDocument();
+    expect(screen.getByTestId("theme-toggle-element")).toBeInTheDocument();
   });
 });
