@@ -18,6 +18,7 @@ describe("Login Component", () => {
       <AuthContext.Provider
         value={{
           accessToken: null,
+          isLoading: false,
           login: mockAuthContext.login,
           logout: mockAuthContext.logout,
           refreshToken: mockAuthContext.refreshToken,

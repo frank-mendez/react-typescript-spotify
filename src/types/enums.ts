@@ -1,0 +1,9 @@
+export enum MainContent {
+  PROFILE = 'PROFILE',
+  SETTINGS = 'SETTINGS',
+  ALBUMS = 'ALBUMS',
+  PLAYLISTS = 'PLAYLISTS',
+  TRACKS = 'TRACKS',
+  BROWSE = 'BROWSE',
+  PLAYER = 'PLAYER',
+}

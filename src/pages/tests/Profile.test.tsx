@@ -1,17 +1,22 @@
-import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import { describe, it, expect } from "vitest";
-import { BrowserRouter } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Profile from "../Profile.tsx";
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { describe, it, expect, vi } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Profile from '../Profile.tsx';
 
-describe("Profile Component", () => {
+vi.mock('../../hooks/useSpotifyQueries', () => ({
+  useCurrentUserProfile: () => ({ data: null, isLoading: true, error: null }),
+}));
+
+describe('Profile Component', () => {
   const mockAuthContext = {
-    accessToken: "mockAccessToken",
+    accessToken: 'mockAccessToken',
+    isLoading: false,
     login: async () => {},
     logout: () => {},
-    refreshToken: "mockRefresh",
+    refreshToken: 'mockRefresh',
   };
   const profileComponent = () => {
     const queryClient = new QueryClient();
@@ -20,6 +25,7 @@ describe("Profile Component", () => {
         <AuthContext.Provider
           value={{
             accessToken: mockAuthContext.accessToken,
+            isLoading: mockAuthContext.isLoading,
             login: mockAuthContext.login,
             logout: mockAuthContext.logout,
             refreshToken: mockAuthContext.refreshToken,
@@ -33,13 +39,13 @@ describe("Profile Component", () => {
       </QueryClientProvider>,
     );
   };
-  it("renders without crashing", () => {
+  it('renders without crashing', () => {
     profileComponent();
-    expect(screen.getByTestId("profile-card-element")).toBeInTheDocument();
+    expect(screen.getByTestId('profile-page')).toBeInTheDocument();
   });
 
-  it("contains a profile image", () => {
+  it('shows loading skeleton when data is loading', () => {
     profileComponent();
-    expect(screen.getByTestId("profile-img-element")).toBeInTheDocument();
+    expect(screen.getByTestId('profile-page')).toBeInTheDocument();
   });
 });

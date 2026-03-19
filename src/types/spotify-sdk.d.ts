@@ -1,7 +1,7 @@
 declare global {
   interface Window {
-    onSpotifyWebPlaybackSDKReady: () => void;
-    Spotify: {
+    onSpotifyWebPlaybackSDKReady: (() => void) | null;
+    Spotify?: {
       Player: new (options: {
         name: string;
         getOAuthToken: (cb: (token: string) => void) => void;
@@ -11,9 +11,15 @@ declare global {
   }
 }
 
-interface SpotifyPlayer {
-  addListener: (event: string, callback: (...args: any[]) => void) => boolean;
-  removeListener: (event: string, callback?: (...args: any[]) => void) => boolean;
+export interface SpotifyPlayer {
+  addListener: <T = unknown>(
+    event: string,
+    callback: (data: T) => void,
+  ) => boolean;
+  removeListener: <T = unknown>(
+    event: string,
+    callback?: (data: T) => void,
+  ) => boolean;
   connect: () => Promise<boolean>;
   disconnect: () => void;
   getCurrentState: () => Promise<SpotifyPlayerState | null>;
@@ -28,10 +34,10 @@ interface SpotifyPlayer {
   togglePlay: () => Promise<void>;
 }
 
-interface SpotifyPlayerState {
+export interface SpotifyPlayerState {
   context: {
     uri: string;
-    metadata: any;
+    metadata: Record<string, unknown>;
   };
   disallows: {
     pausing: boolean;
@@ -53,11 +59,12 @@ interface SpotifyPlayerState {
   };
 }
 
-interface SpotifyTrack {
+export interface SpotifyTrack {
   id: string;
   uri: string;
   name: string;
   is_playable: boolean;
+  duration_ms: number;
   album: {
     uri: string;
     name: string;
@@ -69,7 +76,7 @@ interface SpotifyTrack {
   }>;
 }
 
-interface SpotifyError {
+export interface SpotifyError {
   message: string;
 }
 
