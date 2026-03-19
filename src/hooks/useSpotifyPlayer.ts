@@ -170,6 +170,7 @@ export const useSpotifyPlayer = () => {
     }
 
     return () => {
+      window.onSpotifyWebPlaybackSDKReady = () => {};
       if (playerRef.current) {
         playerRef.current.disconnect();
         playerRef.current = null;

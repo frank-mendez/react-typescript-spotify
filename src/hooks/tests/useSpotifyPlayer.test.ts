@@ -70,12 +70,6 @@ describe('useSpotifyPlayer', () => {
     expect(typeof result.current.setVolume).toBe('function');
   });
 
-  it('should handle missing Spotify SDK gracefully', () => {
-    // Skip this test temporarily to avoid property redefinition issues
-    // The hook gracefully handles missing SDK in practice
-    expect(true).toBe(true);
-  });
-
   it('should handle missing access token', () => {
     mockUseAuthToken.mockReturnValue({
       accessToken: null,
@@ -153,7 +147,11 @@ describe('useSpotifyPlayer', () => {
     renderHook(() => useSpotifyPlayer());
 
     expect(appendSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'spotify-player-script' }),
+      expect.objectContaining({
+        id: 'spotify-player-script',
+        src: 'https://sdk.scdn.co/spotify-player.js',
+        async: true,
+      }),
     );
 
     // cleanup
