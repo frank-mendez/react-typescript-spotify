@@ -27,6 +27,32 @@ vi.mock('../../hooks/useSpotifyMutations', () => ({
   }),
 }));
 
+vi.mock('../../hooks/useSpotifyPlayer', () => ({
+  useSpotifyPlayer: () => ({
+    playerState: {
+      device_id: null,
+      is_paused: true,
+      is_active: false,
+      position: 0,
+      duration: 0,
+      current_track: null,
+    },
+    is_ready: false,
+    togglePlay: vi.fn(),
+    nextTrack: vi.fn(),
+    previousTrack: vi.fn(),
+    seek: vi.fn(),
+    setVolume: vi.fn(),
+  }),
+}));
+
+vi.mock('../../stores/usePlayerStore', () => ({
+  usePlayerStore: () => ({
+    deviceId: null,
+    setDeviceId: vi.fn(),
+  }),
+}));
+
 describe('Dashboard Component', () => {
   const mockAuthContext = {
     accessToken: 'mockAccessToken',

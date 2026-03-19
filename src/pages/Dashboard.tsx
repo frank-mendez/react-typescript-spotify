@@ -8,8 +8,10 @@ import { MainContent } from '../types/enums';
 import { ScrollArea } from '../components/ui/scroll-area';
 import Profile from './Profile';
 import Settings from './Settings';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Skeleton } from '../components/ui/skeleton';
+import { useSpotifyPlayer } from '../hooks/useSpotifyPlayer';
+import { usePlayerStore } from '../stores/usePlayerStore';
 
 const Search = lazy(() => import('../components/features/Search').then((m) => ({ default: m.Search })));
 
@@ -37,6 +39,13 @@ function MainPanel() {
 }
 
 const Dashboard = () => {
+  const { playerState } = useSpotifyPlayer();
+  const { setDeviceId } = usePlayerStore();
+
+  useEffect(() => {
+    setDeviceId(playerState.device_id);
+  }, [playerState.device_id, setDeviceId]);
+
   return (
     <div className="flex flex-col h-screen bg-bg" data-testid="dashboard-element">
       <Header />
