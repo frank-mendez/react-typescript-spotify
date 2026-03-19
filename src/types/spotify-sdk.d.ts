@@ -12,8 +12,8 @@ declare global {
 }
 
 interface SpotifyPlayer {
-  addListener: (event: string, callback: (...args: any[]) => void) => boolean;
-  removeListener: (event: string, callback?: (...args: any[]) => void) => boolean;
+  addListener: (event: string, callback: (...args: unknown[]) => void) => boolean;
+  removeListener: (event: string, callback?: (...args: unknown[]) => void) => boolean;
   connect: () => Promise<boolean>;
   disconnect: () => void;
   getCurrentState: () => Promise<SpotifyPlayerState | null>;
@@ -31,7 +31,7 @@ interface SpotifyPlayer {
 interface SpotifyPlayerState {
   context: {
     uri: string;
-    metadata: any;
+    metadata: Record<string, unknown>;
   };
   disallows: {
     pausing: boolean;

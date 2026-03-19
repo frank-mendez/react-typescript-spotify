@@ -115,22 +115,11 @@ export const useSpotifyPlayer = () => {
       volume: 0.5,
     });
 
-    // Error handling
-    spotifyPlayer.addListener('initialization_error', ({ message }: SpotifyError) => {
-      console.error('Failed to initialize:', message);
-    });
-
-    spotifyPlayer.addListener('authentication_error', ({ message }: SpotifyError) => {
-      console.error('Failed to authenticate:', message);
-    });
-
-    spotifyPlayer.addListener('account_error', ({ message }: SpotifyError) => {
-      console.error('Failed to validate Spotify account:', message);
-    });
-
-    spotifyPlayer.addListener('playback_error', ({ message }: SpotifyError) => {
-      console.error('Failed to perform playback:', message);
-    });
+    // Error handling (errors are silently ignored; add telemetry here if needed)
+    spotifyPlayer.addListener('initialization_error', (_: SpotifyError) => {});
+    spotifyPlayer.addListener('authentication_error', (_: SpotifyError) => {});
+    spotifyPlayer.addListener('account_error', (_: SpotifyError) => {});
+    spotifyPlayer.addListener('playback_error', (_: SpotifyError) => {});
 
     // Playback status updates
     spotifyPlayer.addListener('player_state_changed', (state: SpotifyPlayerState | null) => {
@@ -148,14 +137,12 @@ export const useSpotifyPlayer = () => {
 
     // Ready
     spotifyPlayer.addListener('ready', ({ device_id }: { device_id: string }) => {
-      console.log('Ready with Device ID', device_id);
       setPlayerState(prev => ({ ...prev, device_id }));
       setIsReady(true);
     });
 
     // Not Ready
-    spotifyPlayer.addListener('not_ready', ({ device_id }: { device_id: string }) => {
-      console.log('Device ID has gone offline', device_id);
+    spotifyPlayer.addListener('not_ready', (_: { device_id: string }) => {
       setIsReady(false);
     });
 
