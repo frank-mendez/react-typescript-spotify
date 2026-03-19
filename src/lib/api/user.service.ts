@@ -1,4 +1,4 @@
-import { ProfileInterface } from "../../data-objects/interface";
+import type { ProfileInterface } from "../../types";
 
 export async function getUserData(token: string): Promise<ProfileInterface> {
   const response = await fetch("https://api.spotify.com/v1/me", {
