@@ -30,7 +30,8 @@ export function Search() {
   );
 
   const { play } = usePlaybackControls();
-  const handlePlay = useCallback((uri: string) => play.mutate({ uris: [uri] }), [play.mutate]);
+  const { mutate: playTrack } = play;
+  const handlePlay = useCallback((uri: string) => playTrack({ uris: [uri] }), [playTrack]);
 
   return (
     <div className="p-6 flex flex-col gap-6">
@@ -91,11 +92,15 @@ export function Search() {
                     key={artist.id}
                     className="flex flex-col items-center gap-2 p-4 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
                   >
-                    <img
-                      src={artist.images?.[0]?.url}
-                      alt={artist.name}
-                      className="w-24 h-24 rounded-full object-cover"
-                    />
+                    {artist.images?.[0]?.url ? (
+                      <img
+                        src={artist.images[0].url}
+                        alt={artist.name}
+                        className="w-24 h-24 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-border" />
+                    )}
                     <span className="text-text-primary text-sm font-medium text-center truncate w-full">
                       {artist.name}
                     </span>
