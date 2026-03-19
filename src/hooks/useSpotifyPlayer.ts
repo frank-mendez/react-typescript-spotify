@@ -125,14 +125,14 @@ export const useSpotifyPlayer = () => {
     spotifyPlayer.addListener('player_state_changed', (state: SpotifyPlayerState | null) => {
       if (!state) return;
 
-      setPlayerState({
+      setPlayerState(prev => ({
+        ...prev,
         is_paused: state.paused,
         is_active: !!state.track_window?.current_track,
         position: state.position,
         duration: state.track_window?.current_track?.duration_ms || 0,
         current_track: state.track_window?.current_track || null,
-        device_id: null, // Will be set when ready
-      });
+      }));
     });
 
     // Ready
@@ -144,6 +144,7 @@ export const useSpotifyPlayer = () => {
     // Not Ready
     spotifyPlayer.addListener('not_ready', (_: { device_id: string }) => {
       setIsReady(false);
+      setPlayerState(prev => ({ ...prev, device_id: null }));
     });
 
     // Connect to the player!

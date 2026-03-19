@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useSpotifyPlayer } from '../useSpotifyPlayer';
 
 // Mock useAuthToken
@@ -90,5 +90,57 @@ describe('useSpotifyPlayer', () => {
 
     expect(result.current.is_ready).toBe(false);
     expect(result.current.player).toBeNull();
+  });
+
+  // Helper: extract a named listener from the mock
+  function getListener(eventName: string) {
+    const call = mockPlayer.addListener.mock.calls.find(([e]) => e === eventName);
+    return call?.[1] as ((data: unknown) => void) | undefined;
+  }
+
+  const mockTrackState = {
+    paused: false,
+    position: 100,
+    track_window: {
+      current_track: {
+        id: '1', uri: 'spotify:track:1', name: 'Song', is_playable: true, duration_ms: 3000,
+        album: { uri: 'a', name: 'Album', images: [] },
+        artists: [{ uri: 'b', name: 'Artist' }],
+      },
+      previous_tracks: [],
+      next_tracks: [],
+    },
+  };
+
+  it('player_state_changed preserves device_id set by ready event', async () => {
+    const { result } = renderHook(() => useSpotifyPlayer());
+
+    await act(async () => {
+      getListener('ready')?.({ device_id: 'test-device-123' });
+    });
+    expect(result.current.playerState.device_id).toBe('test-device-123');
+
+    await act(async () => {
+      getListener('player_state_changed')?.(mockTrackState);
+    });
+
+    expect(result.current.playerState.device_id).toBe('test-device-123');
+    expect(result.current.playerState.is_paused).toBe(false);
+  });
+
+  it('not_ready clears device_id', async () => {
+    const { result } = renderHook(() => useSpotifyPlayer());
+
+    await act(async () => {
+      getListener('ready')?.({ device_id: 'test-device-123' });
+    });
+    expect(result.current.playerState.device_id).toBe('test-device-123');
+
+    await act(async () => {
+      getListener('not_ready')?.({ device_id: 'test-device-123' });
+    });
+
+    expect(result.current.playerState.device_id).toBeNull();
+    expect(result.current.is_ready).toBe(false);
   });
 });
