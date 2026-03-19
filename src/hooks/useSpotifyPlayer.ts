@@ -125,7 +125,7 @@ export const useSpotifyPlayer = () => {
       if (!document.getElementById("spotify-player-script")) {
         const script = document.createElement("script");
         script.id = "spotify-player-script";
-        script.src = "https://sdk.scdn.co/spotify-player.js";
+        script.src = "https://sdk.scdn.co/spotify-player.js"; // NOSONAR: Spotify does not publish SRI hashes for their Web Playback SDK
         script.async = true;
         document.body.appendChild(script);
       }
