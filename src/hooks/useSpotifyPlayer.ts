@@ -107,7 +107,10 @@ export const useSpotifyPlayer = () => {
     });
 
     // Connect to the player!
-    runPlayerCommand("connect", spotifyPlayer.connect().then(() => undefined));
+    runPlayerCommand(
+      "connect",
+      spotifyPlayer.connect().then(() => undefined),
+    );
 
     setPlayer(spotifyPlayer);
     playerRef.current = spotifyPlayer;
