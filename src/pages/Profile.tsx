@@ -1,4 +1,4 @@
-import ReactCountryFlag from "react-country-flag";
+// TODO: Rebuild with real API data in Task 21
 
 const Profile = () => {
   const srcImage = "/assets/images/post_malone.jpg";
@@ -17,7 +17,6 @@ const Profile = () => {
           <p className="text-sm">
             50 Public Playlist - 1 Following - 5M Followers
           </p>
-          <ReactCountryFlag countryCode="US" />
         </div>
       </div>
     </div>

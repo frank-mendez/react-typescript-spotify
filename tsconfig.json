@@ -2,7 +2,11 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     // Include other compiler options as needed
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "files": [],
   "references": [

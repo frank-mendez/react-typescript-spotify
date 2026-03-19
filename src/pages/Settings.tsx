@@ -1,4 +1,4 @@
-import SearchIcon from "@mui/icons-material/Search";
+// TODO: Rebuild with shadcn/ui in Task 22
 
 const Settings = () => {
   return (
@@ -10,7 +10,6 @@ const Settings = () => {
         >
           Settings
         </h1>
-        <SearchIcon />
       </div>
       <div data-testid="lanaguage-select-element" className="flex flex-col">
         <p className="font-bold text-sm">Language</p>

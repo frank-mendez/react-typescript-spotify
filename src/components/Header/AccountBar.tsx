@@ -1,6 +1,4 @@
-import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
-import PeopleOutlineOutlinedIcon from "@mui/icons-material/PeopleOutlineOutlined";
-import LaunchIcon from "@mui/icons-material/Launch";
+// TODO: Rebuild with shadcn/ui in Task 16
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useProfileQuery } from "../../hooks/useProfileQuery";
 import { Link } from "react-router-dom";
@@ -21,13 +19,7 @@ const AccountBar = () => {
       data-testid="accountbar-element"
       className="flex-none flex flex-row gap-2 items-center justify-center"
     >
-      <button className="btn btn-circle btn-ghost m-auto bg-base-100">
-        <NotificationsNoneOutlinedIcon />
-      </button>
-      <button className="btn btn-circle btn-ghost m-auto bg-base-100">
-        <PeopleOutlineOutlinedIcon />
-      </button>
-      <div className="dropdown dropdown-end">
+      <div>
         <button
           tabIndex={0}
           className="btn btn-ghost btn-circle avatar"
@@ -52,7 +44,6 @@ const AccountBar = () => {
               className="justify-between"
             >
               Account
-              <LaunchIcon />
             </Link>
           </li>
           <li>

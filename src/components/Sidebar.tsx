@@ -1,6 +1,4 @@
-import ViewColumnIcon from "@mui/icons-material/ViewColumn";
-import AddIcon from "@mui/icons-material/Add";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+// TODO: Rebuild with shadcn/ui in Task 15
 import SideCard from "./Footer/SideCard.tsx";
 
 const Sidebar = () => {
@@ -44,18 +42,7 @@ const Sidebar = () => {
       <div className="flex flex-col gap-4 w-full">
         <div className="flex flex-row gap-2 w-full justify-between items-center">
           <div className="flex flex-row gap-2 items-center">
-            <button className="btn btn-circle btn-ghost bg-base-100">
-              <ViewColumnIcon />
-            </button>
             <p className="font-bold">Your Library</p>
-          </div>
-          <div className="flex flex-row gap-2 items-center">
-            <button className="btn btn-circle btn-ghost bg-base-100">
-              <AddIcon />
-            </button>
-            <button className="btn btn-circle btn-ghost bg-base-100">
-              <ArrowForwardIcon />
-            </button>
           </div>
         </div>
         <div className="flex flex-row gap-2 w-full overflow-x-auto">
