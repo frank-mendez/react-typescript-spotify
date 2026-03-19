@@ -11,8 +11,12 @@ export class SpotifyApiClient {
       baseURL: SPOTIFY_BASE_URL,
       headers: {
         'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
       },
+      paramsSerializer: (params) =>
+        Object.entries(params)
+          .filter(([, v]) => v !== undefined && v !== null)
+          .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v)).replace(/%2C/gi, ',')}`)
+          .join('&'),
     });
 
     // Add response interceptor to handle 401 errors and token refresh
@@ -56,13 +60,13 @@ export class SpotifyApiClient {
 
   // Generic POST method
   async post<T, D = unknown>(endpoint: string, data?: D, config?: Record<string, unknown>): Promise<T> {
-    const response = await this.api.post<T>(endpoint, data, config);
+    const response = await this.api.post<T>(endpoint, data, { headers: { 'Content-Type': 'application/json' }, ...config });
     return response.data;
   }
 
   // Generic PUT method
   async put<T, D = unknown>(endpoint: string, data?: D, config?: Record<string, unknown>): Promise<T> {
-    const response = await this.api.put<T>(endpoint, data, config);
+    const response = await this.api.put<T>(endpoint, data, { headers: { 'Content-Type': 'application/json' }, ...config });
     return response.data;
   }
 

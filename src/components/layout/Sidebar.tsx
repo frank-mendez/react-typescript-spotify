@@ -75,7 +75,7 @@ export function Sidebar() {
                 <div className="flex flex-col min-w-0">
                   <span className="text-text-primary text-sm font-medium truncate">{playlist.name}</span>
                   <span className="text-text-muted text-xs truncate">
-                    Playlist · {playlist.tracks.total} tracks
+                    Playlist · {playlist.tracks?.total ?? 0} tracks
                   </span>
                 </div>
               </button>

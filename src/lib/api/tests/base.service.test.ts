@@ -98,8 +98,8 @@ describe('SpotifyApiClient', () => {
         baseURL: 'https://api.spotify.com/v1',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
         },
+        paramsSerializer: expect.any(Function),
       });
     });
 
@@ -165,7 +165,7 @@ describe('SpotifyApiClient', () => {
 
         const result = await apiClient.post('/test-endpoint', requestData);
 
-        expect(mockAxiosInstance.post).toHaveBeenCalledWith('/test-endpoint', requestData, undefined);
+        expect(mockAxiosInstance.post).toHaveBeenCalledWith('/test-endpoint', requestData, { headers: { 'Content-Type': 'application/json' } });
         expect(result).toEqual(mockResponse.data);
       });
 
@@ -177,7 +177,7 @@ describe('SpotifyApiClient', () => {
 
         const result = await apiClient.post('/test-endpoint', requestData, config);
 
-        expect(mockAxiosInstance.post).toHaveBeenCalledWith('/test-endpoint', requestData, config);
+        expect(mockAxiosInstance.post).toHaveBeenCalledWith('/test-endpoint', requestData, { headers: { 'Content-Type': 'application/json' }, ...config });
         expect(result).toEqual(mockResponse.data);
       });
     });
@@ -190,7 +190,7 @@ describe('SpotifyApiClient', () => {
 
         const result = await apiClient.put('/test-endpoint', requestData);
 
-        expect(mockAxiosInstance.put).toHaveBeenCalledWith('/test-endpoint', requestData, undefined);
+        expect(mockAxiosInstance.put).toHaveBeenCalledWith('/test-endpoint', requestData, { headers: { 'Content-Type': 'application/json' } });
         expect(result).toEqual(mockResponse.data);
       });
 
@@ -202,7 +202,7 @@ describe('SpotifyApiClient', () => {
 
         const result = await apiClient.put('/test-endpoint', requestData, config);
 
-        expect(mockAxiosInstance.put).toHaveBeenCalledWith('/test-endpoint', requestData, config);
+        expect(mockAxiosInstance.put).toHaveBeenCalledWith('/test-endpoint', requestData, { headers: { 'Content-Type': 'application/json' }, ...config });
         expect(result).toEqual(mockResponse.data);
       });
     });
