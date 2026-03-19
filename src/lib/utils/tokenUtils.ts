@@ -36,7 +36,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     }
 
     return tokenResponse.access_token;
-  } catch (error) {
+  } catch {
     // Clear tokens on refresh failure
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
