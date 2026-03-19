@@ -20,6 +20,7 @@ describe("Profile Component", () => {
         <AuthContext.Provider
           value={{
             accessToken: mockAuthContext.accessToken,
+            isLoading: false,
             login: mockAuthContext.login,
             logout: mockAuthContext.logout,
             refreshToken: mockAuthContext.refreshToken,

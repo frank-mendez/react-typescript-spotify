@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useAuthToken } from '../useAuthToken';
-import * as tokenUtils from '../../utils/tokenUtils';
-import * as authService from '../../api/auth/service/auth.service';
+import * as tokenUtils from '../../lib/utils/tokenUtils';
+import * as authService from '../../lib/auth/auth.service';
 
 // Mock tokenUtils
-vi.mock('../../utils/tokenUtils', () => ({
+vi.mock('../../lib/utils/tokenUtils', () => ({
   getValidAccessToken: vi.fn(),
   debugTokenInfo: vi.fn(),
   isTokenExpired: vi.fn()
 }));
 
 // Mock auth service
-vi.mock('../../api/auth/service/auth.service', () => ({
+vi.mock('../../lib/auth/auth.service', () => ({
   redirectToSpotifyAuthorize: vi.fn()
 }));
 

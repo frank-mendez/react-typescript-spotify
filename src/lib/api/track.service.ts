@@ -4,7 +4,7 @@ import {
   UserSavedTracks,
   AudioFeatures,
   Recommendations
-} from '../../data-objects/interface';
+} from '../../types';
 
 export class TrackService {
   constructor(private readonly apiClient: SpotifyApiClient) {}

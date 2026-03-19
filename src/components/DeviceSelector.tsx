@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAvailableDevices } from '../api/spotify/hooks/useSpotifyQueries';
-import { usePlaybackControls } from '../api/spotify/hooks/useSpotifyMutations';
+import { useAvailableDevices } from '../hooks/useSpotifyQueries';
+import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 
 const DeviceSelector: React.FC = () => {
   const { data: devices, isLoading, error } = useAvailableDevices();

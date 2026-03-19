@@ -1,7 +1,7 @@
 import {
   TokenResponse,
   TokenScopeResponse,
-} from "../../data-objects/interface";
+} from "../../types/auth";
 
 const authorizationEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = import.meta.env.VITE_CLIENT_ID;

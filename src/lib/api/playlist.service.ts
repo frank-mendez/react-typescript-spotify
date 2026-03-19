@@ -4,7 +4,7 @@ import {
   PlaylistTrack,
   PaginatedResponse,
   UserPlaylists
-} from '../../data-objects/interface';
+} from '../../types';
 
 export class PlaylistService {
   constructor(private readonly apiClient: SpotifyApiClient) {}

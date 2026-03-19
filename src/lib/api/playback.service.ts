@@ -4,7 +4,7 @@ import {
   PlaybackState,
   CurrentlyPlaying,
   Track
-} from '../../data-objects/interface';
+} from '../../types';
 
 export class PlaybackService {
   constructor(private readonly apiClient: SpotifyApiClient) {}

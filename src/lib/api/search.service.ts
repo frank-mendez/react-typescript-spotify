@@ -1,5 +1,5 @@
 import { SpotifyApiClient } from './base.service';
-import { SearchResult } from '../../data-objects/interface';
+import { SearchResult } from '../../types';
 
 export class SearchService {
   constructor(private readonly apiClient: SpotifyApiClient) {}

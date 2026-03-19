@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { MainContent } from "../data-objects/enum";
+import { MainContent } from "../types/enums";
 
 export const useContentStore = create<{
   currentContent: MainContent;

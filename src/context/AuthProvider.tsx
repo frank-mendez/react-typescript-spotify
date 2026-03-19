@@ -2,9 +2,9 @@ import { useEffect, useState, useMemo } from "react";
 import {
   getToken,
   redirectToSpotifyAuthorize,
-} from "../api/auth/service/auth.service.ts";
+} from "../lib/auth/auth.service.ts";
 import { AuthContext } from "./AuthContext";
-import { getValidAccessToken, debugTokenInfo } from "../utils/tokenUtils";
+import { getValidAccessToken, debugTokenInfo } from "../lib/utils/tokenUtils";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -74,6 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const contextValue = useMemo(() => ({
     accessToken,
+    isLoading: false,
     login,
     logout,
     refreshToken

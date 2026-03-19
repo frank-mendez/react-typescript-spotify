@@ -6,7 +6,7 @@ import {
   PlaylistTrack,
   PaginatedResponse,
   UserPlaylists 
-} from '../../../data-objects/interface';
+} from '../../../types';
 
 // Mock the base service
 vi.mock('../base.service');

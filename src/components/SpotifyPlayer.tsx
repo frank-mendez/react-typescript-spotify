@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  useCurrentPlayback, 
-  useSpotifySearch 
-} from '../api/spotify/hooks/useSpotifyQueries';
-import { usePlaybackControls, useLibraryControls } from '../api/spotify/hooks/useSpotifyMutations';
-import { Artist, Track } from '../data-objects/interface/spotify-interface';
+import {
+  useCurrentPlayback,
+  useSpotifySearch
+} from '../hooks/useSpotifyQueries';
+import { usePlaybackControls, useLibraryControls } from '../hooks/useSpotifyMutations';
+import { Artist, Track } from '../types/spotify';
 import DeviceSelector from './DeviceSelector';
 import WebPlaybackPlayer from './WebPlaybackPlayer';
 

@@ -4,7 +4,7 @@ import {
   Track,
   PaginatedResponse,
   UserSavedAlbums
-} from '../../data-objects/interface';
+} from '../../types';
 
 export class AlbumService {
   constructor(private readonly apiClient: SpotifyApiClient) {}

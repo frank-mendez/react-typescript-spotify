@@ -4,7 +4,7 @@ import {
   ArtistTopTracks, 
   ArtistAlbums,
   PaginatedResponse 
-} from '../../data-objects/interface';
+} from '../../types';
 
 export class ArtistService {
   constructor(private readonly apiClient: SpotifyApiClient) {}

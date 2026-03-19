@@ -6,7 +6,7 @@ import {
   NewReleases,
   PaginatedResponse,
   Playlist
-} from '../../data-objects/interface';
+} from '../../types';
 
 export class BrowseService {
   constructor(private readonly apiClient: SpotifyApiClient) {}

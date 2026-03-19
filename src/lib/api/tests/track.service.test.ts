@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest';
 import { TrackService } from '../track.service';
-import type { Track, UserSavedTracks, AudioFeatures, Recommendations } from '../../../data-objects/interface';
+import type { Track, UserSavedTracks, AudioFeatures, Recommendations } from '../../../types';
 
 // Mock the base service
 vi.mock('../base.service');

@@ -2,10 +2,10 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import PeopleOutlineOutlinedIcon from "@mui/icons-material/PeopleOutlineOutlined";
 import LaunchIcon from "@mui/icons-material/Launch";
 import { useAuth } from "../../context/AuthContext.tsx";
-import { useProfileQuery } from "../../api/user";
+import { useProfileQuery } from "../../hooks/useProfileQuery";
 import { Link } from "react-router-dom";
 import { useContentStore } from "../../stores/useContentStore.ts";
-import { MainContent } from "../../data-objects/enum";
+import { MainContent } from "../../types/enums";
 
 const AccountBar = () => {
   const { logout, accessToken } = useAuth();
