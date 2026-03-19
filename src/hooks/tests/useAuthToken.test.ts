@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useAuthToken } from '../useAuthToken';
 import * as tokenUtils from '../../lib/utils/tokenUtils';
@@ -7,7 +7,6 @@ import * as authService from '../../lib/auth/auth.service';
 // Mock tokenUtils
 vi.mock('../../lib/utils/tokenUtils', () => ({
   getValidAccessToken: vi.fn(),
-  debugTokenInfo: vi.fn(),
   isTokenExpired: vi.fn()
 }));
 
@@ -26,21 +25,9 @@ Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage
 });
 
-// Mock console methods
-let consoleSpy: { log: any; error: any };
-
 describe('useAuthToken', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Recreate console spies after clearAllMocks
-    consoleSpy = {
-      log: vi.spyOn(console, 'log').mockImplementation(() => { }),
-      error: vi.spyOn(console, 'error').mockImplementation(() => { })
-    };
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   describe('initial state', () => {
@@ -82,9 +69,6 @@ describe('useAuthToken', () => {
       expect(result.current.accessToken).toBe(mockToken);
       expect(result.current.error).toBeNull();
       expect(result.current.isAuthenticated).toBe(true);
-      expect(tokenUtils.debugTokenInfo).toHaveBeenCalled();
-      expect(consoleSpy.log).toHaveBeenCalledWith('Attempting to get valid access token...');
-      expect(consoleSpy.log).toHaveBeenCalledWith('✅ Valid token obtained');
     });
 
     it('should handle no token available', async () => {
@@ -99,7 +83,6 @@ describe('useAuthToken', () => {
       expect(result.current.accessToken).toBeNull();
       expect(result.current.error).toBe('No valid token available');
       expect(result.current.isAuthenticated).toBe(false);
-      expect(consoleSpy.log).toHaveBeenCalledWith('❌ No valid token available');
     });
 
     it('should handle token initialization error', async () => {
@@ -115,7 +98,6 @@ describe('useAuthToken', () => {
       expect(result.current.accessToken).toBeNull();
       expect(result.current.error).toBe('Network error');
       expect(result.current.isAuthenticated).toBe(false);
-      expect(consoleSpy.error).toHaveBeenCalledWith('Error getting valid token:', mockError);
     });
   });
 
@@ -140,7 +122,6 @@ describe('useAuthToken', () => {
 
       expect(result.current.accessToken).toBe('new-token');
       expect(result.current.error).toBeNull();
-      expect(tokenUtils.debugTokenInfo).toHaveBeenCalled();
     });
 
     it('should handle refresh token error', async () => {
@@ -162,7 +143,6 @@ describe('useAuthToken', () => {
 
       expect(result.current.accessToken).toBeNull();
       expect(result.current.error).toBe('Refresh failed');
-      expect(consoleSpy.error).toHaveBeenCalledWith('Error getting valid token:', refreshError);
     });
   });
 
@@ -221,7 +201,6 @@ describe('useAuthToken', () => {
       });
 
       expect(result.current.error).toBe('Login failed');
-      expect(consoleSpy.error).toHaveBeenCalledWith('Error during login redirect:', loginError);
     });
   });
 
@@ -316,8 +295,6 @@ describe('useAuthToken', () => {
       await waitFor(() => {
         expect(result.current.accessToken).toBe('updated-token');
       });
-
-      expect(consoleSpy.log).toHaveBeenCalledWith('Access token changed in storage');
     });
 
     it('should not refresh token for other storage keys', async () => {

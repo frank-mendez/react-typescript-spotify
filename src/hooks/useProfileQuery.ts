@@ -1,10 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import profileQueryKey from "./user-query-keys";
-import { getUserData } from "../lib/api/user.service";
+import { useQuery } from '@tanstack/react-query';
+import { useSpotifyApi } from './useSpotifyApi';
 
-export const useProfileQuery = (token: string) => {
+export const useProfileQuery = () => {
+  const api = useSpotifyApi();
+
   return useQuery({
-    queryKey: profileQueryKey.profile,
-    queryFn: () => getUserData(token),
+    queryKey: ['user', 'profile'],
+    queryFn: () => api!.getCurrentUserProfile(),
+    enabled: api !== null,
+    staleTime: 10 * 60 * 1000,
   });
 };

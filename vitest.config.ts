@@ -8,12 +8,6 @@ export default defineConfig({
       reporter: ["text", "json-summary", "json", "lcov"],
       // If you want a coverage reports even if your tests are failing, include the reportOnFailure option
       reportOnFailure: true,
-      exclude: [
-        "src/hooks/useSpotifyQueries.ts",
-        "src/hooks/useSpotifyMutations.ts",
-        "src/hooks/useProfileQuery.ts",
-        "src/hooks/user-query-keys.ts",
-      ],
       thresholds: {
         lines: 60,
         branches: 60,

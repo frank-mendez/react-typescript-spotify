@@ -24,16 +24,13 @@ export class SpotifyApiClient {
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
           
-          console.log('API returned 401, attempting to refresh token...');
           const newAccessToken = await getValidAccessToken();
-          
+
           if (newAccessToken) {
-            console.log('Token refreshed successfully');
             this.updateToken(newAccessToken);
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
             return this.api(originalRequest);
           } else {
-            console.log('Token refresh failed, redirecting to login...');
             // Redirect to login or emit an event for the app to handle
             window.location.href = '/login';
           }

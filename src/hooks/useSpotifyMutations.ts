@@ -1,419 +1,164 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuthToken } from './useAuthToken';
-import { SpotifyApi } from '../lib/api/index';
+import { useSpotifyApi } from './useSpotifyApi';
 
-// Playback control mutations
 export const usePlaybackControls = () => {
-  const { accessToken, isAuthenticated } = useAuthToken();
+  const api = useSpotifyApi();
   const queryClient = useQueryClient();
 
-  const invalidatePlaybackQueries = () => {
+  const invalidatePlayback = () => {
     queryClient.invalidateQueries({ queryKey: ['spotify', 'playback'] });
   };
 
   const play = useMutation({
-    mutationFn: async (options?: {
+    mutationFn: (options?: {
       device_id?: string;
       context_uri?: string;
       uris?: string[];
       offset?: { position?: number; uri?: string };
       position_ms?: number;
     }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+      if (!api) throw new Error('Not authenticated');
       return api.playback.startResumePlayback(options);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const pause = useMutation({
-    mutationFn: async (deviceId?: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: (deviceId?: string) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playback.pausePlayback(deviceId);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const next = useMutation({
-    mutationFn: async (deviceId?: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: (deviceId?: string) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playback.skipToNext(deviceId);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const previous = useMutation({
-    mutationFn: async (deviceId?: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: (deviceId?: string) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playback.skipToPrevious(deviceId);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const seek = useMutation({
-    mutationFn: async ({ positionMs, deviceId }: { positionMs: number; deviceId?: string }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: ({ positionMs, deviceId }: { positionMs: number; deviceId?: string }) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playback.seekToPosition(positionMs, deviceId);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const setVolume = useMutation({
-    mutationFn: async ({ volumePercent, deviceId }: { volumePercent: number; deviceId?: string }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: ({ volumePercent, deviceId }: { volumePercent: number; deviceId?: string }) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playback.setPlaybackVolume(volumePercent, deviceId);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const setRepeat = useMutation({
-    mutationFn: async ({ state, deviceId }: { state: 'track' | 'context' | 'off'; deviceId?: string }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: ({ state, deviceId }: { state: 'track' | 'context' | 'off'; deviceId?: string }) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playback.setRepeatMode(state, deviceId);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const setShuffle = useMutation({
-    mutationFn: async ({ state, deviceId }: { state: boolean; deviceId?: string }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: ({ state, deviceId }: { state: boolean; deviceId?: string }) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playback.toggleShuffle(state, deviceId);
     },
-    onSuccess: invalidatePlaybackQueries,
+    onSuccess: invalidatePlayback,
   });
 
   const transferPlayback = useMutation({
-    mutationFn: async ({ deviceIds, play }: { deviceIds: string[]; play?: boolean }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playback.transferPlayback(deviceIds, play);
+    mutationFn: ({ deviceIds, play: autoPlay }: { deviceIds: string[]; play?: boolean }) => {
+      if (!api) throw new Error('Not authenticated');
+      return api.playback.transferPlayback(deviceIds, autoPlay);
     },
     onSuccess: () => {
-      invalidatePlaybackQueries();
+      invalidatePlayback();
       queryClient.invalidateQueries({ queryKey: ['spotify', 'devices'] });
     },
   });
 
-  const addToQueue = useMutation({
-    mutationFn: async ({ uri, deviceId }: { uri: string; deviceId?: string }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playback.addItemToPlaybackQueue(uri, deviceId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'queue'] });
-    },
-  });
-
-  return {
-    play,
-    pause,
-    next,
-    previous,
-    seek,
-    setVolume,
-    setRepeat,
-    setShuffle,
-    transferPlayback,
-    addToQueue,
-  };
+  return { play, pause, next, previous, seek, setVolume, setRepeat, setShuffle, transferPlayback };
 };
 
-// Library management mutations
 export const useLibraryControls = () => {
-  const { accessToken, isAuthenticated } = useAuthToken();
+  const api = useSpotifyApi();
   const queryClient = useQueryClient();
 
+  const invalidateLibrary = () => {
+    queryClient.invalidateQueries({ queryKey: ['spotify', 'me'] });
+  };
+
   const saveTrack = useMutation({
-    mutationFn: async (trackId: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: (trackId: string) => {
+      if (!api) throw new Error('Not authenticated');
       return api.tracks.saveTracks([trackId]);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'tracks', 'saved'] });
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'tracks', 'contains'] });
-    },
+    onSuccess: invalidateLibrary,
   });
 
-  const removeSavedTrack = useMutation({
-    mutationFn: async (trackId: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+  const removeTrack = useMutation({
+    mutationFn: (trackId: string) => {
+      if (!api) throw new Error('Not authenticated');
       return api.tracks.removeTracks([trackId]);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'tracks', 'saved'] });
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'tracks', 'contains'] });
-    },
+    onSuccess: invalidateLibrary,
   });
 
   const saveAlbum = useMutation({
-    mutationFn: async (albumId: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+    mutationFn: (albumId: string) => {
+      if (!api) throw new Error('Not authenticated');
       return api.albums.saveAlbums([albumId]);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'albums', 'saved'] });
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'albums', 'contains'] });
-    },
+    onSuccess: invalidateLibrary,
   });
 
-  const removeSavedAlbum = useMutation({
-    mutationFn: async (albumId: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+  const removeAlbum = useMutation({
+    mutationFn: (albumId: string) => {
+      if (!api) throw new Error('Not authenticated');
       return api.albums.removeAlbums([albumId]);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'albums', 'saved'] });
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'albums', 'contains'] });
-    },
+    onSuccess: invalidateLibrary,
   });
 
-  const followArtist = useMutation({
-    mutationFn: async (artistId: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.artists.followArtists([artistId]);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'following'] });
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'artists', 'contains'] });
-    },
-  });
-
-  const unfollowArtist = useMutation({
-    mutationFn: async (artistId: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.artists.unfollowArtists([artistId]);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'following'] });
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'artists', 'contains'] });
-    },
-  });
-
-  const followPlaylist = useMutation({
-    mutationFn: async ({ playlistId, publicFollow }: { playlistId: string; publicFollow?: boolean }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playlists.followPlaylist(playlistId, publicFollow);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlists'] });
-    },
-  });
-
-  const unfollowPlaylist = useMutation({
-    mutationFn: async (playlistId: string) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playlists.unfollowPlaylist(playlistId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlists'] });
-    },
-  });
-
-  return {
-    saveTrack,
-    removeSavedTrack,
-    saveAlbum,
-    removeSavedAlbum,
-    followArtist,
-    unfollowArtist,
-    followPlaylist,
-    unfollowPlaylist,
-  };
+  return { saveTrack, removeTrack, saveAlbum, removeAlbum };
 };
 
-// Playlist management mutations
 export const usePlaylistControls = () => {
-  const { accessToken, isAuthenticated } = useAuthToken();
+  const api = useSpotifyApi();
   const queryClient = useQueryClient();
 
-  const createPlaylist = useMutation({
-    mutationFn: async ({ 
-      userId, 
-      name, 
-      description, 
-      publicPlaylist, 
-      collaborative 
-    }: { 
-      userId: string; 
-      name: string; 
-      description?: string; 
-      publicPlaylist?: boolean; 
-      collaborative?: boolean; 
-    }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playlists.createPlaylist(userId, {
-        name,
-        description,
-        public: publicPlaylist,
-        collaborative,
-      });
+  const invalidatePlaylists = () => {
+    queryClient.invalidateQueries({ queryKey: ['spotify', 'playlists'] });
+  };
+
+  const addToPlaylist = useMutation({
+    mutationFn: ({ playlistId, uris }: { playlistId: string; uris: string[] }) => {
+      if (!api) throw new Error('Not authenticated');
+      return api.playlists.addItemsToPlaylist(playlistId, { uris });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlists'] });
-    },
+    onSuccess: invalidatePlaylists,
   });
 
-  const updatePlaylist = useMutation({
-    mutationFn: async ({ 
-      playlistId, 
-      name, 
-      description, 
-      publicPlaylist, 
-      collaborative 
-    }: { 
-      playlistId: string; 
-      name?: string; 
-      description?: string; 
-      publicPlaylist?: boolean; 
-      collaborative?: boolean; 
-    }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playlists.updatePlaylistDetails(playlistId, {
-        name,
-        description,
-        public: publicPlaylist,
-        collaborative,
-      });
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlist', variables.playlistId] });
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlists'] });
-    },
-  });
-
-  const addTracksToPlaylist = useMutation({
-    mutationFn: async ({ playlistId, uris, position }: { playlistId: string; uris: string[]; position?: number }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playlists.addItemsToPlaylist(playlistId, { uris, position });
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlist', variables.playlistId] });
-    },
-  });
-
-  const removeTracksFromPlaylist = useMutation({
-    mutationFn: async ({ playlistId, tracks }: { playlistId: string; tracks: { uri: string; positions?: number[] }[] }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
+  const removeFromPlaylist = useMutation({
+    mutationFn: ({ playlistId, tracks }: { playlistId: string; tracks: Array<{ uri: string }> }) => {
+      if (!api) throw new Error('Not authenticated');
       return api.playlists.removeItemsFromPlaylist(playlistId, tracks);
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlist', variables.playlistId] });
-    },
+    onSuccess: invalidatePlaylists,
   });
 
-  const replacePlaylistTracks = useMutation({
-    mutationFn: async ({ playlistId, uris }: { playlistId: string; uris: string[] }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playlists.replacePlaylistItems(playlistId, uris);
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlist', variables.playlistId] });
-    },
-  });
-
-  const reorderPlaylistTracks = useMutation({
-    mutationFn: async ({ 
-      playlistId, 
-      rangeStart, 
-      insertBefore, 
-      rangeLength, 
-      snapshotId 
-    }: { 
-      playlistId: string; 
-      rangeStart: number; 
-      insertBefore: number; 
-      rangeLength?: number; 
-      snapshotId?: string; 
-    }) => {
-      if (!accessToken || !isAuthenticated) {
-        throw new Error('Authentication required');
-      }
-      const api = new SpotifyApi(accessToken);
-      return api.playlists.reorderPlaylistItems(playlistId, {
-        range_start: rangeStart,
-        insert_before: insertBefore,
-        range_length: rangeLength,
-        snapshot_id: snapshotId,
-      });
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['spotify', 'playlist', variables.playlistId] });
-    },
-  });
-
-  return {
-    createPlaylist,
-    updatePlaylist,
-    addTracksToPlaylist,
-    removeTracksFromPlaylist,
-    replacePlaylistTracks,
-    reorderPlaylistTracks,
-  };
+  return { addToPlaylist, removeFromPlaylist };
 };

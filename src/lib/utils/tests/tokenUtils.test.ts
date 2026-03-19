@@ -5,7 +5,7 @@ vi.mock('../../auth/auth.service', () => ({
   getRefreshToken: vi.fn(),
 }));
 
-import { getValidAccessToken, debugTokenInfo } from '../tokenUtils';
+import { getValidAccessToken } from '../tokenUtils';
 import { getRefreshToken } from '../../auth/auth.service';
 
 const mockGetRefreshToken = vi.mocked(getRefreshToken);
@@ -72,7 +72,6 @@ describe('tokenUtils', () => {
       const result = await getValidAccessToken();
 
       expect(result).toBeNull();
-      expect(mockConsole.log).toHaveBeenCalledWith('Token expired, attempting to refresh...');
     });
 
     it('attempts to refresh token when expired and refresh token is available', async () => {
@@ -111,45 +110,6 @@ describe('tokenUtils', () => {
       const result = await getValidAccessToken();
 
       expect(result).toBeNull();
-      expect(mockConsole.error).toHaveBeenCalledWith('Failed to refresh token:', expect.any(Error));
-    });
-  });
-
-  describe('debugTokenInfo', () => {
-    it('logs token information when all data is available', () => {
-      mockLocalStorage.getItem.mockImplementation((key) => {
-        if (key === 'access_token') return 'test-token';
-        if (key === 'refresh_token') return 'test-refresh';
-        if (key === 'expires') return '2024-01-01T12:00:00.000Z';
-        if (key === 'expires_in') return '3600';
-        return null;
-      });
-
-      debugTokenInfo();
-
-      expect(mockConsole.log).toHaveBeenCalledWith('=== TOKEN DEBUG INFO ===');
-      expect(mockConsole.log).toHaveBeenCalledWith('Access Token:', 'test-token...');
-      expect(mockConsole.log).toHaveBeenCalledWith('Refresh Token:', 'test-refresh...');
-      expect(mockConsole.log).toHaveBeenCalledWith('Expires:', '2024-01-01T12:00:00.000Z');
-      expect(mockConsole.log).toHaveBeenCalledWith('Expires In:', '3600');
-      expect(mockConsole.log).toHaveBeenCalledWith('Is Expired:', expect.any(Boolean));
-      expect(mockConsole.log).toHaveBeenCalledWith('Current Time:', expect.any(String));
-      expect(mockConsole.log).toHaveBeenCalledWith('========================');
-    });
-
-    it('logs null values when data is not available', () => {
-      mockLocalStorage.getItem.mockReturnValue(null);
-
-      debugTokenInfo();
-
-      expect(mockConsole.log).toHaveBeenCalledWith('=== TOKEN DEBUG INFO ===');
-      expect(mockConsole.log).toHaveBeenCalledWith('Access Token:', 'None');
-      expect(mockConsole.log).toHaveBeenCalledWith('Refresh Token:', 'None');
-      expect(mockConsole.log).toHaveBeenCalledWith('Expires:', null);
-      expect(mockConsole.log).toHaveBeenCalledWith('Expires In:', null);
-      expect(mockConsole.log).toHaveBeenCalledWith('Is Expired:', expect.any(Boolean));
-      expect(mockConsole.log).toHaveBeenCalledWith('Current Time:', expect.any(String));
-      expect(mockConsole.log).toHaveBeenCalledWith('========================');
     });
   });
 });

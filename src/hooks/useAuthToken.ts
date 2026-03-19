@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getValidAccessToken, debugTokenInfo, isTokenExpired } from '../lib/utils/tokenUtils';
+import { getValidAccessToken, isTokenExpired } from '../lib/utils/tokenUtils';
 import { redirectToSpotifyAuthorize } from '../lib/auth/auth.service';
 
 export const useAuthToken = () => {
@@ -11,21 +11,16 @@ export const useAuthToken = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
-      console.log('Attempting to get valid access token...');
+
       const validToken = await getValidAccessToken();
-      
+
       if (validToken) {
         setAccessToken(validToken);
-        console.log('✅ Valid token obtained');
-        debugTokenInfo();
       } else {
         setAccessToken(null);
         setError('No valid token available');
-        console.log('❌ No valid token available');
       }
     } catch (err) {
-      console.error('Error getting valid token:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setAccessToken(null);
     } finally {
@@ -43,7 +38,6 @@ export const useAuthToken = () => {
     try {
       await redirectToSpotifyAuthorize();
     } catch (err) {
-      console.error('Error during login redirect:', err);
       setError(err instanceof Error ? err.message : 'Login failed');
     }
   }, []);
@@ -60,11 +54,10 @@ export const useAuthToken = () => {
   // Initial token check and periodic refresh
   useEffect(() => {
     refreshToken();
-    
+
     // Set up periodic token validation (every 30 seconds)
     const interval = setInterval(() => {
       if (accessToken && isTokenExpired()) {
-        console.log('Token expired, refreshing...');
         refreshToken();
       }
     }, 30000);
@@ -76,7 +69,6 @@ export const useAuthToken = () => {
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'access_token') {
-        console.log('Access token changed in storage');
         refreshToken();
       }
     };
