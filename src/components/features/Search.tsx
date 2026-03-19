@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchQuery } from '../../hooks/useSpotifyQueries';
 import { Input } from '../ui/input';
 import { Skeleton } from '../ui/skeleton';
@@ -30,7 +30,7 @@ export function Search() {
   );
 
   const { play } = usePlaybackControls();
-  const handlePlay = (uri: string) => play.mutate({ uris: [uri] });
+  const handlePlay = useCallback((uri: string) => play.mutate({ uris: [uri] }), [play.mutate]);
 
   return (
     <div className="p-6 flex flex-col gap-6">
