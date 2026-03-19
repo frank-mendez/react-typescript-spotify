@@ -1,13 +1,10 @@
-import {
-  TokenResponse,
-  TokenScopeResponse,
-} from "../../types/auth";
+import { TokenResponse, TokenScopeResponse } from "../../types/auth";
 
 const authorizationEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = import.meta.env.VITE_CLIENT_ID;
 const scope = [
   "user-read-private",
-  "user-read-email", 
+  "user-read-email",
   "user-read-playback-state",
   "user-modify-playback-state",
   "user-read-currently-playing",
@@ -21,9 +18,10 @@ const scope = [
   "user-follow-read",
   "user-library-modify",
   "user-library-read",
-  "streaming"
+  "streaming",
 ].join(" ");
-const redirectUrl = import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/";
+const redirectUrl =
+  import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/";
 const tokenEndpoint = "https://accounts.spotify.com/api/token";
 
 export async function redirectToSpotifyAuthorize(): Promise<void> {
@@ -37,16 +35,19 @@ export async function redirectToSpotifyAuthorize(): Promise<void> {
 
   const code_verifier: string = randomString;
   const data: Uint8Array = new TextEncoder().encode(code_verifier);
-  const hashed: ArrayBuffer = await crypto.subtle.digest("SHA-256", data as BufferSource);
+  const hashed: ArrayBuffer = await crypto.subtle.digest(
+    "SHA-256",
+    data as BufferSource,
+  );
 
   const code_challenge_base64: string = btoa(
-    String.fromCharCode(...new Uint8Array(hashed)),
+    String.fromCodePoint(...new Uint8Array(hashed)),
   )
-    .replace(/=/g, "")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
+    .replaceAll("=", "")
+    .replaceAll("+", "-")
+    .replaceAll("/", "_");
 
-  window.localStorage.setItem("code_verifier", code_verifier);
+  globalThis.localStorage.setItem("code_verifier", code_verifier);
 
   const authUrl: URL = new URL(authorizationEndpoint);
   const params: Record<string, string> = {
@@ -59,7 +60,7 @@ export async function redirectToSpotifyAuthorize(): Promise<void> {
   };
 
   authUrl.search = new URLSearchParams(params).toString();
-  window.location.href = authUrl.toString(); // Redirect the user to the authorization server for login
+  globalThis.location.href = authUrl.toString(); // Redirect the user to the authorization server for login
 }
 
 export async function getToken(code: string): Promise<TokenScopeResponse> {

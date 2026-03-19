@@ -1,7 +1,7 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { getValidAccessToken } from '../utils/tokenUtils';
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { getValidAccessToken } from "../utils/tokenUtils";
 
-const SPOTIFY_BASE_URL = 'https://api.spotify.com/v1';
+const SPOTIFY_BASE_URL = "https://api.spotify.com/v1";
 
 export class SpotifyApiClient {
   private readonly api: AxiosInstance;
@@ -10,13 +10,16 @@ export class SpotifyApiClient {
     this.api = axios.create({
       baseURL: SPOTIFY_BASE_URL,
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       paramsSerializer: (params) =>
         Object.entries(params)
           .filter(([, v]) => v !== undefined && v !== null)
-          .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v)).replace(/%2C/gi, ',')}`)
-          .join('&'),
+          .map(
+            ([k, v]) =>
+              `${encodeURIComponent(k)}=${encodeURIComponent(String(v)).replaceAll(/%2C/gi, ",")}`,
+          )
+          .join("&"),
     });
 
     // Add response interceptor to handle 401 errors and token refresh
@@ -24,32 +27,33 @@ export class SpotifyApiClient {
       (response: AxiosResponse) => response,
       async (error) => {
         const originalRequest = error.config;
-        
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
-          
+
           const newAccessToken = await getValidAccessToken();
 
           if (newAccessToken) {
             this.updateToken(newAccessToken);
-            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+            originalRequest.headers["Authorization"] =
+              `Bearer ${newAccessToken}`;
             return this.api(originalRequest);
           } else {
             // Clear tokens so ProtectedRoute redirects to /login naturally
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('expires_in');
-            localStorage.removeItem('expires');
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            localStorage.removeItem("expires_in");
+            localStorage.removeItem("expires");
           }
         }
-        
+
         throw error;
-      }
+      },
     );
   }
 
   updateToken(accessToken: string) {
-    this.api.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+    this.api.defaults.headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
   // Generic GET method
@@ -59,14 +63,28 @@ export class SpotifyApiClient {
   }
 
   // Generic POST method
-  async post<T, D = unknown>(endpoint: string, data?: D, config?: Record<string, unknown>): Promise<T> {
-    const response = await this.api.post<T>(endpoint, data, { headers: { 'Content-Type': 'application/json' }, ...config });
+  async post<T, D = unknown>(
+    endpoint: string,
+    data?: D,
+    config?: Record<string, unknown>,
+  ): Promise<T> {
+    const response = await this.api.post<T>(endpoint, data, {
+      headers: { "Content-Type": "application/json" },
+      ...config,
+    });
     return response.data;
   }
 
   // Generic PUT method
-  async put<T, D = unknown>(endpoint: string, data?: D, config?: Record<string, unknown>): Promise<T> {
-    const response = await this.api.put<T>(endpoint, data, { headers: { 'Content-Type': 'application/json' }, ...config });
+  async put<T, D = unknown>(
+    endpoint: string,
+    data?: D,
+    config?: Record<string, unknown>,
+  ): Promise<T> {
+    const response = await this.api.put<T>(endpoint, data, {
+      headers: { "Content-Type": "application/json" },
+      ...config,
+    });
     return response.data;
   }
 

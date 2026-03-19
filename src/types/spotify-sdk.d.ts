@@ -12,8 +12,14 @@ declare global {
 }
 
 interface SpotifyPlayer {
-  addListener: (event: string, callback: (...args: unknown[]) => void) => boolean;
-  removeListener: (event: string, callback?: (...args: unknown[]) => void) => boolean;
+  addListener: <T = unknown>(
+    event: string,
+    callback: (data: T) => void,
+  ) => boolean;
+  removeListener: <T = unknown>(
+    event: string,
+    callback?: (data: T) => void,
+  ) => boolean;
   connect: () => Promise<boolean>;
   disconnect: () => void;
   getCurrentState: () => Promise<SpotifyPlayerState | null>;
@@ -58,6 +64,7 @@ interface SpotifyTrack {
   uri: string;
   name: string;
   is_playable: boolean;
+  duration_ms: number;
   album: {
     uri: string;
     name: string;

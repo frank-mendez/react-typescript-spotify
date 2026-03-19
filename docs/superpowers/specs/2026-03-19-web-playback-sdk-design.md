@@ -13,6 +13,53 @@ Register the browser as a Spotify playback device using the Web Playback SDK. Wh
 
 ## Design
 
+### 0. Pre-requisite Fixes — `useSpotifyPlayer.ts`
+
+Two bugs in the existing hook must be fixed before the store sync will work correctly:
+
+**Bug 1 — `player_state_changed` clobbers `device_id` with `null`:**
+The listener currently hard-codes `device_id: null` in its `setPlayerState` call. Every playback state change event (track start, pause, seek) resets `device_id` to `null`, undoing what the `ready` listener set. Fix by using the functional setter form and omitting `device_id` from the update:
+
+```ts
+// BEFORE
+setPlayerState({
+  is_paused: state.paused,
+  is_active: !!state.track_window?.current_track,
+  position: state.position,
+  duration: state.track_window?.current_track?.duration_ms || 0,
+  current_track: state.track_window?.current_track || null,
+  device_id: null, // BUG: clobbers the device_id set by the ready event
+});
+
+// AFTER
+setPlayerState(prev => ({
+  ...prev,
+  is_paused: state.paused,
+  is_active: !!state.track_window?.current_track,
+  position: state.position,
+  duration: state.track_window?.current_track?.duration_ms || 0,
+  current_track: state.track_window?.current_track || null,
+}));
+```
+
+**Bug 2 — `not_ready` handler does not clear `device_id`:**
+When the device becomes unavailable, `not_ready` only sets `isReady = false` but leaves a stale `device_id` in state. Subsequent play calls would send that stale ID and receive a 404. Fix:
+
+```ts
+// BEFORE
+spotifyPlayer.addListener('not_ready', (_: { device_id: string }) => {
+  setIsReady(false);
+});
+
+// AFTER
+spotifyPlayer.addListener('not_ready', (_: { device_id: string }) => {
+  setIsReady(false);
+  setPlayerState(prev => ({ ...prev, device_id: null }));
+});
+```
+
+---
+
 ### 1. Dynamic SDK Loading — `useSpotifyPlayer.ts`
 
 The Spotify Web Playback SDK script (`https://sdk.scdn.co/spotify-player.js`) must be loaded after React mounts and after `window.onSpotifyWebPlaybackSDKReady` is set. The script is injected dynamically inside the existing `useEffect` rather than via `index.html`.

@@ -28,15 +28,19 @@ interface TrackRowProps {
 ```
 
 **Behavior:**
-- Displays album art (thumbnail), track name, and artist names — matching the existing search row layout
+- The entire row is rendered as a `<button>` so it is accessible and keyboard-navigable
+- Displays album art thumbnail (`track.album?.images?.[2]?.url ?? track.album?.images?.[0]?.url`); if `track.album` is undefined or no image is available, render a plain placeholder `<div>` with a background color
+- Displays track name and artist names
 - On hover, a `Play` icon button appears overlaid on the album art (Tailwind `group` / `group-hover` pattern)
-- Clicking anywhere on the row OR the play button calls `onPlay(track.uri)`
+- The inner Play `<button>` calls `e.stopPropagation()` before calling `onPlay` to prevent the row's click from also firing
+- Clicking elsewhere on the row also calls `onPlay(track.uri)`
+- Mutation loading/error states (no active device, request in flight) are out of scope for this iteration
 - Uses only existing Tailwind + lucide-react (no new dependencies)
 
 ### Updated: `Search.tsx`
 
 - Replace the existing track `<div>` with `<TrackRow>`
-- Import `usePlaybackControls` from `../../hooks/useSpotifyMutations`
+- `Search.tsx` imports `usePlaybackControls` from `../../hooks/useSpotifyMutations` (not `TrackRow` — `TrackRow` receives `onPlay` as a prop)
 - Pass `onPlay={(uri) => play.mutate({ uris: [uri] })}` to each `TrackRow`
 
 ## Data Flow

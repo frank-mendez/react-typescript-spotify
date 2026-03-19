@@ -1,15 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchQuery } from '../../hooks/useSpotifyQueries';
-import { Input } from '../ui/input';
-import { Skeleton } from '../ui/skeleton';
-import { EmptyState } from '../ui/EmptyState';
-import { ErrorState } from '../ui/ErrorState';
-import { Search as SearchIcon } from 'lucide-react';
-import type { Track, Artist } from '../../types/spotify';
-import { useContentStore } from '../../stores/useContentStore';
-import { usePlayerStore } from '../../stores/usePlayerStore';
-import { TrackRow } from './TrackRow';
-import { usePlaybackControls } from '../../hooks/useSpotifyMutations';
+import { useState, useEffect, useCallback } from "react";
+import { useSearchQuery } from "../../hooks/useSpotifyQueries";
+import { Input } from "../ui/input";
+import { Skeleton } from "../ui/skeleton";
+import { EmptyState } from "../ui/EmptyState";
+import { ErrorState } from "../ui/ErrorState";
+import { Search as SearchIcon } from "lucide-react";
+import type { Track, Artist } from "../../types/spotify";
+import { useContentStore } from "../../stores/useContentStore";
+import { usePlayerStore } from "../../stores/usePlayerStore";
+import { TrackRow } from "./TrackRow";
+import { usePlaybackControls } from "../../hooks/useSpotifyMutations";
 
 function useDebounced(value: string, delay: number): string {
   const [debounced, setDebounced] = useState(value);
@@ -25,17 +25,20 @@ export function Search() {
   const [query, setQuery] = useState(initialQuery);
   const debouncedQuery = useDebounced(query, 300);
 
-  const { data, isLoading, error, refetch } = useSearchQuery(
-    debouncedQuery,
-    ['track', 'artist', 'album', 'playlist'],
-  );
+  const { data, isLoading, error, refetch } = useSearchQuery(debouncedQuery, [
+    "track",
+    "artist",
+    "album",
+    "playlist",
+  ]);
 
   const { play } = usePlaybackControls();
   const { mutate: playTrack } = play;
   const { deviceId } = usePlayerStore();
 
   const handlePlay = useCallback(
-    (uri: string) => playTrack({ uris: [uri], device_id: deviceId ?? undefined }),
+    (uri: string) =>
+      playTrack({ uris: [uri], device_id: deviceId ?? undefined }),
     [playTrack, deviceId],
   );
 
@@ -53,18 +56,23 @@ export function Search() {
       </div>
 
       {!debouncedQuery && (
-        <EmptyState title="Search for music" description="Find songs, artists, albums, and playlists" />
+        <EmptyState
+          title="Search for music"
+          description="Find songs, artists, albums, and playlists"
+        />
       )}
 
       {debouncedQuery && isLoading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-2">
-              <Skeleton className="aspect-square w-full rounded" />
-              <Skeleton className="h-3 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-            </div>
-          ))}
+          {["sk-0", "sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6", "sk-7"].map(
+            (id) => (
+              <div key={id} className="flex flex-col gap-2">
+                <Skeleton className="aspect-square w-full rounded" />
+                <Skeleton className="h-3 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            ),
+          )}
         </div>
       )}
 
@@ -79,11 +87,7 @@ export function Search() {
               <h2 className="text-text-primary font-bold mb-3">Songs</h2>
               <div className="flex flex-col">
                 {data.tracks.items.slice(0, 5).map((track: Track) => (
-                  <TrackRow
-                    key={track.id}
-                    track={track}
-                    onPlay={handlePlay}
-                  />
+                  <TrackRow key={track.id} track={track} onPlay={handlePlay} />
                 ))}
               </div>
             </section>
