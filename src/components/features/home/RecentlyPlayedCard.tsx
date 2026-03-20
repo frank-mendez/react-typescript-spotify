@@ -54,11 +54,11 @@ export function RecentlyPlayedCard({ item, onPlay }: Readonly<RecentlyPlayedCard
       </div>
 
       {/* Play button — sibling of card-body, not nested inside role="link" */}
-      <div className="pr-3 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="pr-3 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
         <button
           aria-label={`Play ${item.name}`}
           onClick={(e) => { e.stopPropagation(); onPlay(item.uri); }}
-          className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+          className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shadow-lg hover:scale-105 transition-transform focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
         >
           <Play className="w-4 h-4 text-black fill-black ml-0.5" />
         </button>
