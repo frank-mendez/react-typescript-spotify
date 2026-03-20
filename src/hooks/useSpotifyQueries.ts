@@ -187,11 +187,11 @@ export const useAlbumTracks = (albumId: string, limit = 50, offset = 0) => {
   });
 };
 
-export const useArtistTopTracks = (artistId: string) => {
+export const useArtistTopTracks = (artistId: string, market = 'US') => {
   const api = useSpotifyApi();
   return useQuery({
-    queryKey: ["spotify", "artist", artistId, "top-tracks"],
-    queryFn: () => requireApi(api).artists.getArtistTopTracks(artistId),
+    queryKey: ["spotify", "artist", artistId, "top-tracks", market],
+    queryFn: () => requireApi(api).artists.getArtistTopTracks(artistId, market),
     enabled: api !== null && !!artistId,
     staleTime: 10 * 60 * 1000,
   });

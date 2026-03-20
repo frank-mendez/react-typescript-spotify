@@ -191,6 +191,17 @@ describe('useAlbumTracks', () => {
     expect(result.current.fetchStatus).toBe('idle');
     expect(mockApi.albums.getAlbumTracks).not.toHaveBeenCalled();
   });
+
+  it('is disabled when api is null', () => {
+    vi.mocked(useSpotifyApi).mockReturnValue(null);
+
+    const { result } = renderHook(() => useAlbumTracks('album1'), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockApi.albums.getAlbumTracks).not.toHaveBeenCalled();
+  });
 });
 
 describe('useArtistTopTracks', () => {
@@ -199,7 +210,7 @@ describe('useArtistTopTracks', () => {
     vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
   });
 
-  it('fetches artist top tracks', async () => {
+  it('fetches artist top tracks with default market', async () => {
     const mockTracks = { tracks: [] };
     mockApi.artists.getArtistTopTracks.mockResolvedValue(mockTracks);
 
@@ -209,7 +220,21 @@ describe('useArtistTopTracks', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockApi.artists.getArtistTopTracks).toHaveBeenCalledWith('artist1');
+    expect(mockApi.artists.getArtistTopTracks).toHaveBeenCalledWith('artist1', 'US');
+    expect(result.current.data).toEqual(mockTracks);
+  });
+
+  it('fetches artist top tracks with custom market', async () => {
+    const mockTracks = { tracks: [] };
+    mockApi.artists.getArtistTopTracks.mockResolvedValue(mockTracks);
+
+    const { result } = renderHook(() => useArtistTopTracks('artist1', 'GB'), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockApi.artists.getArtistTopTracks).toHaveBeenCalledWith('artist1', 'GB');
     expect(result.current.data).toEqual(mockTracks);
   });
 
