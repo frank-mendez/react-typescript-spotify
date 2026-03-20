@@ -25,7 +25,11 @@ export function PlayerBar() {
     : null;
 
   const handlePlayPause = () => {
-    isPlaying ? pause.mutate(undefined) : play.mutate({ position_ms: progressMs });
+    if (isPlaying) {
+      pause.mutate(undefined);
+    } else {
+      play.mutate({ position_ms: progressMs });
+    }
   };
 
   return (

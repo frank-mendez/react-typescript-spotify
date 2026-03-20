@@ -37,8 +37,10 @@ export class SpotifyApiClient {
             this.updateToken(newAccessToken);
             originalRequest.headers["Authorization"] =
               `Bearer ${newAccessToken}`;
-            window.dispatchEvent(
-              new CustomEvent("spotify:token-refreshed", { detail: newAccessToken })
+            globalThis.dispatchEvent(
+              new CustomEvent("spotify:token-refreshed", {
+                detail: newAccessToken,
+              }),
             );
             return this.api(originalRequest);
           } else {
@@ -47,7 +49,7 @@ export class SpotifyApiClient {
             localStorage.removeItem("expires_in");
             localStorage.removeItem("expires");
             localStorage.removeItem("token_scope");
-            window.dispatchEvent(new CustomEvent("spotify:auth-failure"));
+            globalThis.dispatchEvent(new CustomEvent("spotify:auth-failure"));
           }
         }
 

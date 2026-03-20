@@ -1,12 +1,15 @@
-import { Button } from '../components/ui/button';
-import { useAuth } from '../context/AuthContext';
-import { Music } from 'lucide-react';
+import { Button } from "../components/ui/button";
+import { useAuth } from "../hooks/useAuth";
+import { Music } from "lucide-react";
 
 const Login = () => {
   const { login } = useAuth();
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col items-center justify-center gap-8" data-testid="login-page-component">
+    <div
+      className="min-h-screen bg-bg flex flex-col items-center justify-center gap-8"
+      data-testid="login-page-component"
+    >
       <div className="flex flex-col items-center gap-4">
         <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center">
           <Music className="w-8 h-8 text-bg" />

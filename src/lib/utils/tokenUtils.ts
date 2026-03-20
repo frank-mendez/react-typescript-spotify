@@ -1,7 +1,7 @@
-import { getRefreshToken } from '../auth/auth.service';
+import { getRefreshToken } from "../auth/auth.service";
 
 export const isTokenExpired = (): boolean => {
-  const expiresString = localStorage.getItem('expires');
+  const expiresString = localStorage.getItem("expires");
   if (!expiresString) return true;
 
   const expires = new Date(expiresString);
@@ -14,7 +14,7 @@ export const isTokenExpired = (): boolean => {
 };
 
 export const refreshAccessToken = async (): Promise<string | null> => {
-  const refreshToken = localStorage.getItem('refresh_token');
+  const refreshToken = localStorage.getItem("refresh_token");
 
   if (!refreshToken) {
     return null;
@@ -23,24 +23,24 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   try {
     const tokenResponse = await getRefreshToken(refreshToken);
 
-    localStorage.setItem('access_token', tokenResponse.access_token);
-    localStorage.setItem('expires_in', tokenResponse.expires_in.toString());
+    localStorage.setItem("access_token", tokenResponse.access_token);
+    localStorage.setItem("expires_in", tokenResponse.expires_in.toString());
     localStorage.setItem(
-      'expires',
-      new Date(Date.now() + tokenResponse.expires_in * 1000).toISOString()
+      "expires",
+      new Date(Date.now() + tokenResponse.expires_in * 1000).toISOString(),
     );
 
     if (tokenResponse.refresh_token) {
-      localStorage.setItem('refresh_token', tokenResponse.refresh_token);
+      localStorage.setItem("refresh_token", tokenResponse.refresh_token);
     }
 
     return tokenResponse.access_token;
   } catch {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('expires_in');
-    localStorage.removeItem('expires');
-    localStorage.removeItem('token_scope');
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("expires_in");
+    localStorage.removeItem("expires");
+    localStorage.removeItem("token_scope");
     return null;
   }
 };
@@ -51,18 +51,16 @@ export const refreshAccessToken = async (): Promise<string | null> => {
 let _refreshing: Promise<string | null> | null = null;
 
 export const getValidAccessToken = async (): Promise<string | null> => {
-  const accessToken = localStorage.getItem('access_token');
+  const accessToken = localStorage.getItem("access_token");
 
   if (!accessToken) {
     return null;
   }
 
   if (isTokenExpired()) {
-    if (!_refreshing) {
-      _refreshing = refreshAccessToken().finally(() => {
-        _refreshing = null;
-      });
-    }
+    _refreshing ??= refreshAccessToken().finally(() => {
+      _refreshing = null;
+    });
     return _refreshing;
   }
 

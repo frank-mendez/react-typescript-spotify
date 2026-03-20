@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import { useCurrentUserProfile } from "../../hooks/useSpotifyQueries";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -31,7 +31,7 @@ function SpotifyLogo() {
   );
 }
 
-function HomeIcon({ active }: { active: boolean }) {
+function HomeIcon({ active }: Readonly<{ active: boolean }>) {
   const color = active ? "white" : "#b3b3b3";
   return (
     <svg viewBox="0 0 24 24" width="24" height="24" fill={color}>
