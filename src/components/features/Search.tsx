@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSearchQuery } from "../../hooks/useSpotifyQueries";
 import { Input } from "../ui/input";
 import { Skeleton } from "../ui/skeleton";
 import { EmptyState } from "../ui/EmptyState";
 import { ErrorState } from "../ui/ErrorState";
 import { Search as SearchIcon } from "lucide-react";
-import type { Track, Artist } from "../../types/spotify";
+import type { Track, Artist, Album, Playlist } from "../../types/spotify";
 import { useContentStore } from "../../stores/useContentStore";
 import { usePlayerStore } from "../../stores/usePlayerStore";
 import { TrackRow } from "./TrackRow";
@@ -21,6 +22,7 @@ function useDebounced(value: string, delay: number): string {
 }
 
 export function Search() {
+  const navigate = useNavigate();
   const { searchQuery: initialQuery } = useContentStore();
   const [query, setQuery] = useState(initialQuery);
   const debouncedQuery = useDebounced(query, 300);
@@ -100,6 +102,7 @@ export function Search() {
                 {data.artists.items.slice(0, 4).map((artist: Artist) => (
                   <div
                     key={artist.id}
+                    onClick={() => navigate('/artist/' + artist.id)}
                     className="flex flex-col items-center gap-2 p-4 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
                   >
                     {artist.images?.[0]?.url ? (
@@ -115,6 +118,66 @@ export function Search() {
                       {artist.name}
                     </span>
                     <span className="text-text-muted text-xs">Artist</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {data.albums?.items && data.albums.items.length > 0 && (
+            <section>
+              <h2 className="text-text-primary font-bold mb-3">Albums</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {data.albums.items.slice(0, 4).map((album: Album) => (
+                  <div
+                    key={album.id}
+                    onClick={() => navigate('/album/' + album.id)}
+                    className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
+                  >
+                    {album.images?.[0]?.url ? (
+                      <img
+                        src={album.images[0].url}
+                        alt={album.name}
+                        className="w-full aspect-square object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-full aspect-square bg-border rounded" />
+                    )}
+                    <span className="text-text-primary text-sm font-medium truncate">
+                      {album.name}
+                    </span>
+                    <span className="text-text-muted text-xs truncate">
+                      {album.artists.map((a) => a.name).join(', ')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {data.playlists?.items && data.playlists.items.length > 0 && (
+            <section>
+              <h2 className="text-text-primary font-bold mb-3">Playlists</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {data.playlists.items.slice(0, 4).map((playlist: Playlist) => (
+                  <div
+                    key={playlist.id}
+                    onClick={() => navigate('/playlist/' + playlist.id)}
+                    className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
+                  >
+                    {playlist.images?.[0]?.url ? (
+                      <img
+                        src={playlist.images[0].url}
+                        alt={playlist.name}
+                        className="w-full aspect-square object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-full aspect-square bg-border rounded" />
+                    )}
+                    <span className="text-text-primary text-sm font-medium truncate">
+                      {playlist.name}
+                    </span>
+                    <span className="text-text-muted text-xs">Playlist</span>
                   </div>
                 ))}
               </div>

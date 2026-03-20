@@ -8,6 +8,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Slider } from "../ui/slider";
 import { Skeleton } from "../ui/skeleton";
 import { useCurrentPlayback } from "../../hooks/useSpotifyQueries";
@@ -31,10 +32,12 @@ function DesktopTrackInfo({
   track,
   isLoading,
   albumImageUrl,
+  onNavigate,
 }: Readonly<{
   track: Track | undefined;
   isLoading: boolean;
   albumImageUrl: string | undefined;
+  onNavigate: (path: string) => void;
 }>) {
   if (isLoading) {
     return (
@@ -61,15 +64,19 @@ function DesktopTrackInfo({
         <span className="text-text-primary text-sm font-medium truncate">
           {track.name}
         </span>
-        <span className="text-text-muted text-xs truncate">
+        <button
+          onClick={() => onNavigate('/artist/' + track.artists[0].id)}
+          className="text-text-muted text-xs truncate hover:underline cursor-pointer text-left"
+        >
           {track.artists.map((a) => a.name).join(", ")}
-        </span>
+        </button>
       </div>
     </>
   );
 }
 
 export function PlayerBar() {
+  const navigate = useNavigate();
   const { data: playback, isLoading } = useCurrentPlayback();
   const {
     play,
@@ -91,6 +98,9 @@ export function PlayerBar() {
   const repeatState = playback?.repeat_state ?? "off";
   const albumImageUrl =
     track?.album?.images?.[2]?.url ?? track?.album?.images?.[0]?.url;
+  const contextPlaylistId = playback?.context?.uri?.startsWith('spotify:playlist:')
+    ? playback.context.uri.split(':')[2]
+    : null;
 
   const handlePlayPause = () => {
     if (isPlaying) {
@@ -128,13 +138,19 @@ export function PlayerBar() {
               <div className="w-10 h-10 rounded shrink-0 bg-surface-hover" />
             )}
             <div className="flex flex-col flex-1 min-w-0">
-              <span className="text-text-primary text-sm font-medium truncate">
+              <span
+                onClick={contextPlaylistId ? () => navigate('/playlist/' + contextPlaylistId) : undefined}
+                className={`text-text-primary text-sm font-medium truncate${contextPlaylistId ? ' hover:underline cursor-pointer' : ''}`}
+              >
                 {track ? track.name : "Nothing playing"}
               </span>
               {track && (
-                <span className="text-text-muted text-xs truncate">
+                <button
+                  onClick={() => navigate('/artist/' + track.artists[0].id)}
+                  className="text-text-muted text-xs truncate hover:underline cursor-pointer text-left"
+                >
                   {track.artists.map((a) => a.name).join(", ")}
-                </span>
+                </button>
               )}
             </div>
             <button
@@ -160,6 +176,7 @@ export function PlayerBar() {
             track={track}
             isLoading={isLoading}
             albumImageUrl={albumImageUrl}
+            onNavigate={navigate}
           />
         </div>
 

@@ -1,8 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { TrackRow } from './TrackRow';
 import type { Track } from '../../types/spotify';
+
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  return { ...actual, useNavigate: () => mockNavigate };
+});
 
 const mockTrack: Track = {
   id: '1',
@@ -38,36 +45,65 @@ const mockTrack: Track = {
   type: 'track',
 };
 
+function renderRow(track = mockTrack, onPlay = vi.fn()) {
+  return render(
+    <MemoryRouter>
+      <TrackRow track={track} onPlay={onPlay} />
+    </MemoryRouter>
+  );
+}
+
 describe('TrackRow', () => {
   it('renders track name and artist', () => {
-    render(<TrackRow track={mockTrack} onPlay={vi.fn()} />);
+    renderRow();
     expect(screen.getByText('Test Song')).toBeInTheDocument();
     expect(screen.getByText('Test Artist')).toBeInTheDocument();
   });
 
   it('renders album art with small image preferred', () => {
-    render(<TrackRow track={mockTrack} onPlay={vi.fn()} />);
+    renderRow();
     const img = screen.getByTestId('track-art-img');
     expect(img).toHaveAttribute('src', 'http://img.test/small.jpg');
   });
 
   it('renders placeholder when album is undefined', () => {
     const trackNoAlbum = { ...mockTrack, album: undefined };
-    render(<TrackRow track={trackNoAlbum} onPlay={vi.fn()} />);
+    renderRow(trackNoAlbum);
     expect(screen.queryByTestId('track-art-img')).toBeNull();
     expect(screen.getByTestId('track-art-placeholder')).toBeInTheDocument();
   });
 
   it('calls onPlay with track uri when row button is clicked', () => {
     const onPlay = vi.fn();
-    render(<TrackRow track={mockTrack} onPlay={onPlay} />);
+    renderRow(mockTrack, onPlay);
     fireEvent.click(screen.getByRole('button', { name: /test song/i }));
     expect(onPlay).toHaveBeenCalledTimes(1);
     expect(onPlay).toHaveBeenCalledWith('spotify:track:1');
   });
 
-  it('renders a play icon overlay (decorative, no separate button)', () => {
-    render(<TrackRow track={mockTrack} onPlay={vi.fn()} />);
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+  it('renders clickable artist and album buttons in addition to the play row button', () => {
+    renderRow();
+    // outer play button + 1 artist button + 1 album button = 3
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('navigates to artist page when artist name is clicked', () => {
+    renderRow();
+    fireEvent.click(screen.getByText('Test Artist'));
+    expect(mockNavigate).toHaveBeenCalledWith('/artist/a1');
+  });
+
+  it('navigates to album page when album name is clicked', () => {
+    renderRow();
+    fireEvent.click(screen.getByText('Test Album'));
+    expect(mockNavigate).toHaveBeenCalledWith('/album/al1');
+  });
+
+  it('does not call onPlay when artist name is clicked (stopPropagation)', () => {
+    const onPlay = vi.fn();
+    renderRow(mockTrack, onPlay);
+    fireEvent.click(screen.getByText('Test Artist'));
+    expect(onPlay).not.toHaveBeenCalled();
   });
 });

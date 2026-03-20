@@ -64,8 +64,8 @@ export function Sidebar() {
             {playlists?.items?.map((playlist) => (
               <button
                 key={playlist.id}
-                onClick={() => setCurrentContent(MainContent.PLAYLISTS)}
-                className="flex items-center gap-3 px-2 py-2 rounded hover:bg-surface-hover transition-colors text-left w-full"
+                onClick={() => { navigate('/playlist/' + playlist.id); setCurrentContent(MainContent.PLAYLISTS); }}
+                className="flex items-center gap-3 px-2 py-2 rounded hover:bg-surface-hover transition-colors text-left w-full cursor-pointer"
               >
                 <img
                   src={playlist.images?.[0]?.url}
