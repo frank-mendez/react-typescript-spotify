@@ -99,7 +99,7 @@ describe('RecentlyPlayedSection', () => {
     render(<RecentlyPlayedSection />, { wrapper });
     expect(screen.getByText('Recently Played')).toBeInTheDocument();
     expect(screen.getByText('Album a1')).toBeInTheDocument();
-    expect(screen.getAllByText('Artist ar1').length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: /play artist ar1/i })).toBeInTheDocument();
   });
 
   it('deduplicates albums across tracks', () => {
