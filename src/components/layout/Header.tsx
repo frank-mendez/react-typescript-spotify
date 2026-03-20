@@ -107,7 +107,7 @@ export function Header() {
       {/* Center: Home + Search */}
       <div className="hidden md:flex items-center gap-2 flex-1 max-w-lg mx-6">
         <button
-          onClick={() => setCurrentContent(MainContent.PLAYER)}
+          onClick={() => { setCurrentContent(MainContent.PLAYER); navigate('/'); }}
           className="flex items-center justify-center shrink-0 p-1 hover:scale-105 transition-transform"
           aria-label="Home"
         >

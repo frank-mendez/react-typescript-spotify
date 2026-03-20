@@ -25,7 +25,7 @@ function deriveItems(
         type: 'album',
         uri: track.album.uri,
         navigationPath: `/album/${track.album.id}`,
-        subtitle: 'Album',
+        subtitle: track.artists.map((a) => a.name).join(', '),
       });
     }
 

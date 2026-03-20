@@ -24,11 +24,15 @@ function NavHeader({
 }>) {
   const chips: FilterChip[] = ["All", "Music", "Podcasts"];
   return (
-    <div className="sticky top-0 z-10 bg-surface px-4 py-2 flex items-center gap-2">
+    <div
+      role="radiogroup"
+      aria-label="Content filter"
+      className="sticky top-0 z-10 bg-surface px-4 py-2 flex items-center gap-2"
+    >
       {chips.map((chip) => (
         <button
           key={chip}
-          role="checkbox"
+          role="radio"
           aria-checked={active === chip}
           onClick={() => onChange(chip)}
           className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
@@ -51,6 +55,7 @@ const Search = lazy(() =>
 function MainPanel() {
   const outlet = useOutlet();
   const { currentContent } = useContentStore();
+  const [activeFilter, setActiveFilter] = useState<FilterChip>("All");
 
   if (outlet) return outlet;
 
@@ -69,9 +74,12 @@ function MainPanel() {
   }
 
   return (
-    <div className="p-4 flex flex-col gap-6">
-      <RecentlyPlayedSection />
-    </div>
+    <>
+      <NavHeader active={activeFilter} onChange={setActiveFilter} />
+      <div className="p-4 flex flex-col gap-6">
+        <RecentlyPlayedSection />
+      </div>
+    </>
   );
 }
 
