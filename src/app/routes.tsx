@@ -6,6 +6,9 @@ const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Login = lazy(() => import('../pages/Login'));
 const Profile = lazy(() => import('../pages/Profile'));
 const Settings = lazy(() => import('../pages/Settings'));
+const PlaylistDetail = lazy(() => import('../pages/PlaylistDetail'));
+const AlbumDetail = lazy(() => import('../pages/AlbumDetail'));
+const ArtistDetail = lazy(() => import('../pages/ArtistDetail'));
 
 function PageLoader() {
   return (
@@ -50,6 +53,36 @@ const routes: RouteObject[] = [
       <ProtectedRoute>
         <Suspense fallback={<PageLoader />}>
           <Settings />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/playlist/:id',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <PlaylistDetail />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/album/:id',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <AlbumDetail />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/artist/:id',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<PageLoader />}>
+          <ArtistDetail />
         </Suspense>
       </ProtectedRoute>
     ),

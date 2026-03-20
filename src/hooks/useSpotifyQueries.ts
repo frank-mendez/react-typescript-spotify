@@ -156,3 +156,53 @@ export const useSavedAlbums = (limit = 50, offset = 0) => {
     staleTime: 5 * 60 * 1000,
   });
 };
+
+export const usePlaylist = (playlistId: string) => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ["spotify", "playlist", playlistId],
+    queryFn: () => requireApi(api).playlists.getPlaylist(playlistId),
+    enabled: api !== null && !!playlistId,
+    staleTime: 10 * 60 * 1000,
+  });
+};
+
+export const usePlaylistItems = (playlistId: string, limit = 50, offset = 0) => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ["spotify", "playlist", playlistId, "items", limit, offset],
+    queryFn: () => requireApi(api).playlists.getPlaylistItems(playlistId, { limit, offset }),
+    enabled: api !== null && !!playlistId,
+    staleTime: 10 * 60 * 1000,
+  });
+};
+
+export const useAlbumTracks = (albumId: string, limit = 50, offset = 0) => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ["spotify", "album", albumId, "tracks", limit, offset],
+    queryFn: () => requireApi(api).albums.getAlbumTracks(albumId, { limit, offset }),
+    enabled: api !== null && !!albumId,
+    staleTime: 10 * 60 * 1000,
+  });
+};
+
+export const useArtistTopTracks = (artistId: string) => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ["spotify", "artist", artistId, "top-tracks"],
+    queryFn: () => requireApi(api).artists.getArtistTopTracks(artistId),
+    enabled: api !== null && !!artistId,
+    staleTime: 10 * 60 * 1000,
+  });
+};
+
+export const useArtistAlbums = (artistId: string, limit = 20, offset = 0) => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ["spotify", "artist", artistId, "albums", limit, offset],
+    queryFn: () => requireApi(api).artists.getArtistAlbums(artistId, { limit, offset }),
+    enabled: api !== null && !!artistId,
+    staleTime: 10 * 60 * 1000,
+  });
+};
