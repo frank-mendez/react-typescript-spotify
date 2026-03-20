@@ -1,15 +1,10 @@
 import { Play, Heart } from 'lucide-react';
+import type { Playlist } from '../../../types/spotify';
 
-interface Playlist {
-  name: string;
-  uri: string;
-  images?: { url: string }[];
-  owner?: { display_name?: string };
-  tracks?: { total: number };
-}
+type PlaylistHeaderPlaylist = Pick<Playlist, 'name' | 'uri' | 'images' | 'owner' | 'tracks'>;
 
 interface PlaylistHeaderProps {
-  playlist: Playlist;
+  playlist: PlaylistHeaderPlaylist;
   onPlay: () => void;
 }
 

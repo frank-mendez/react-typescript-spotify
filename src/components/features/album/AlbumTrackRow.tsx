@@ -91,7 +91,6 @@ export function AlbumTrackRow({
 
   return (
     <div
-      key={`${track.id}-${index}`}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       role="button"
@@ -113,6 +112,7 @@ export function AlbumTrackRow({
               {i > 0 && ', '}
               <button
                 onClick={(e) => { e.stopPropagation(); navigate(`/artist/${artist.id}`); }}
+                onKeyDown={(e) => { e.stopPropagation(); }}
                 className="hover:text-text-primary hover:underline"
               >
                 {artist.name}

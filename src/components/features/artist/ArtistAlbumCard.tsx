@@ -1,14 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-
-interface Album {
-  id: string;
-  name: string;
-  images?: { url: string }[];
-  release_date?: string;
-}
+import type { Album } from '../../../types/spotify';
 
 interface ArtistAlbumCardProps {
-  album: Album;
+  album: Pick<Album, 'id' | 'name' | 'images' | 'release_date'>;
 }
 
 export function ArtistAlbumCard({ album }: ArtistAlbumCardProps) {
