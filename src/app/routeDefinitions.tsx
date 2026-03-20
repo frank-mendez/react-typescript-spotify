@@ -1,6 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';
+import { PageLoader } from '../components/ui/PageLoader';
 
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Login = lazy(() => import('../pages/Login'));
@@ -9,14 +11,6 @@ const Settings = lazy(() => import('../pages/Settings'));
 const PlaylistDetail = lazy(() => import('../pages/PlaylistDetail'));
 const AlbumDetail = lazy(() => import('../pages/AlbumDetail'));
 const ArtistDetail = lazy(() => import('../pages/ArtistDetail'));
-
-export function PageLoader() {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-bg">
-      <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
-}
 
 export function getRoutes(): RouteObject[] {
   return [

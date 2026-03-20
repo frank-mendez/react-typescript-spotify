@@ -183,7 +183,11 @@ export default function AlbumDetail() {
 
           const handleRowClick = () => {
             if (isCurrentTrack) {
-              isPlaying ? pause.mutate(undefined) : play.mutate({ context_uri: album.uri, offset: { position: index } });
+              if (isPlaying) {
+                pause.mutate(undefined);
+              } else {
+                play.mutate({ context_uri: album.uri, offset: { position: index } });
+              }
             } else {
               handlePlayTrack(index);
             }
