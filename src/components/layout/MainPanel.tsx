@@ -5,6 +5,7 @@ import { useContentStore } from "../../stores/useContentStore";
 import { MainContent } from "../../types/enums";
 import { NavHeader, useNavHeader } from "../features/home/NavHeader";
 import { RecentlyPlayedSection } from "../features/home/RecentlyPlayedSection";
+import { MadeForYouSection } from "../features/home/MadeForYouSection";
 
 const Search = lazy(() =>
   import("../features/Search").then((m) => ({ default: m.Search })),
@@ -36,6 +37,7 @@ export function MainPanel() {
       <NavHeader active={activeFilter} onChange={setActiveFilter} />
       <div className="p-4 flex flex-col gap-6">
         <RecentlyPlayedSection />
+        <MadeForYouSection />
       </div>
     </>
   );

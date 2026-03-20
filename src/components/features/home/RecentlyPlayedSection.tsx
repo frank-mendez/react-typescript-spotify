@@ -17,32 +17,16 @@ function deriveItems(
   for (const { track } of items) {
     if (result.length >= max) break;
 
-    if (track.album && !seen.has(`album:${track.album.id}`)) {
-      seen.add(`album:${track.album.id}`);
+    if (!seen.has(track.id)) {
+      seen.add(track.id);
       result.push({
-        id: track.album.id,
-        name: track.album.name,
-        imageUrl: track.album.images[1]?.url ?? track.album.images[0]?.url,
-        type: 'album',
-        uri: track.album.uri,
-        navigationPath: `/album/${track.album.id}`,
+        id: track.id,
+        name: track.name,
+        imageUrl: track.album?.images[1]?.url ?? track.album?.images[0]?.url,
+        type: 'track',
+        uri: track.uri,
+        navigationPath: `/album/${track.album?.id}`,
         subtitle: track.artists.map((a) => a.name).join(', '),
-      });
-    }
-
-    if (result.length >= max) break;
-
-    const artist = track.artists[0];
-    if (artist && !seen.has(`artist:${artist.id}`)) {
-      seen.add(`artist:${artist.id}`);
-      result.push({
-        id: artist.id,
-        name: artist.name,
-        imageUrl: undefined,
-        type: 'artist',
-        uri: artist.uri,
-        navigationPath: `/artist/${artist.id}`,
-        subtitle: 'Artist',
       });
     }
   }
@@ -56,7 +40,7 @@ export function RecentlyPlayedSection() {
   const { deviceId } = usePlayerStore();
   const { data: playback } = useCurrentPlayback();
 
-  const activeContextUri = playback?.context?.uri ?? null;
+  const activeTrackUri = playback?.item?.uri ?? null;
   const isPlaybackActive = playback?.is_playing ?? false;
 
   if (isLoading) {
@@ -75,16 +59,16 @@ export function RecentlyPlayedSection() {
   if (!items.length) return null;
 
   return (
-    <HomeSection title="Recently Played">
+    <HomeSection>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         {items.map((item) => (
           <RecentlyPlayedCard
             key={`${item.type}:${item.id}`}
             item={item}
-            onPlay={(uri) => play.mutate({ context_uri: uri, device_id: deviceId ?? undefined })}
+            onPlay={(uri) => play.mutate({ uris: [uri], device_id: deviceId ?? undefined })}
             onPause={() => pause.mutate(deviceId ?? undefined)}
-            isActive={activeContextUri === item.uri}
-            isPlaying={activeContextUri === item.uri && isPlaybackActive}
+            isActive={activeTrackUri === item.uri}
+            isPlaying={activeTrackUri === item.uri && isPlaybackActive}
           />
         ))}
       </div>

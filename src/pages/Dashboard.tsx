@@ -25,7 +25,7 @@ const Dashboard = () => {
       <Header />
       <div className="flex flex-1 gap-2 px-2 pb-2 min-h-0 overflow-hidden">
         <Sidebar />
-        <ScrollArea className="flex-1 bg-surface rounded-lg">
+        <ScrollArea className="flex-1 min-w-0 bg-surface rounded-lg">
           <MainPanel />
         </ScrollArea>
         <NowPlaying />
