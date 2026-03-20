@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
@@ -40,6 +40,10 @@ function renderCard(item = albumItem, onPlay = vi.fn()) {
 }
 
 describe('RecentlyPlayedCard', () => {
+  beforeEach(() => {
+    mockNavigate.mockClear();
+  });
+
   it('renders item name and subtitle', () => {
     renderCard();
     expect(screen.getByText('Test Album')).toBeInTheDocument();
