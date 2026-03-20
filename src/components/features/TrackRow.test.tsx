@@ -76,7 +76,7 @@ describe('TrackRow', () => {
   it('calls onPlay with track uri when row button is clicked', () => {
     const onPlay = vi.fn();
     renderRow(mockTrack, onPlay);
-    fireEvent.click(screen.getByRole('button', { name: /test song/i }));
+    fireEvent.click(screen.getByRole('button', { name: /play test song/i }));
     expect(onPlay).toHaveBeenCalledTimes(1);
     expect(onPlay).toHaveBeenCalledWith('spotify:track:1');
   });

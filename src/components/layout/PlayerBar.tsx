@@ -33,11 +33,13 @@ function DesktopTrackInfo({
   isLoading,
   albumImageUrl,
   onNavigate,
+  onTrackClick,
 }: Readonly<{
   track: Track | undefined;
   isLoading: boolean;
   albumImageUrl: string | undefined;
   onNavigate: (path: string) => void;
+  onTrackClick?: () => void;
 }>) {
   if (isLoading) {
     return (
@@ -61,15 +63,31 @@ function DesktopTrackInfo({
         className="w-12 h-12 rounded shrink-0 object-cover"
       />
       <div className="flex flex-col min-w-0">
-        <span className="text-text-primary text-sm font-medium truncate">
-          {track.name}
+        {onTrackClick ? (
+          <button
+            onClick={onTrackClick}
+            className="hover:underline cursor-pointer text-left text-text-primary text-sm font-medium truncate"
+          >
+            {track.name}
+          </button>
+        ) : (
+          <span className="text-text-primary text-sm font-medium truncate">
+            {track.name}
+          </span>
+        )}
+        <span className="text-text-muted text-xs truncate">
+          {track.artists.map((a, i) => (
+            <span key={a.id}>
+              {i > 0 && ', '}
+              <button
+                onClick={() => onNavigate('/artist/' + a.id)}
+                className="hover:underline cursor-pointer"
+              >
+                {a.name}
+              </button>
+            </span>
+          ))}
         </span>
-        <button
-          onClick={() => onNavigate('/artist/' + track.artists[0].id)}
-          className="text-text-muted text-xs truncate hover:underline cursor-pointer text-left"
-        >
-          {track.artists.map((a) => a.name).join(", ")}
-        </button>
       </div>
     </>
   );
@@ -138,19 +156,32 @@ export function PlayerBar() {
               <div className="w-10 h-10 rounded shrink-0 bg-surface-hover" />
             )}
             <div className="flex flex-col flex-1 min-w-0">
-              <span
-                onClick={contextPlaylistId ? () => navigate('/playlist/' + contextPlaylistId) : undefined}
-                className={`text-text-primary text-sm font-medium truncate${contextPlaylistId ? ' hover:underline cursor-pointer' : ''}`}
-              >
-                {track ? track.name : "Nothing playing"}
-              </span>
-              {track && (
+              {contextPlaylistId ? (
                 <button
-                  onClick={() => navigate('/artist/' + track.artists[0].id)}
-                  className="text-text-muted text-xs truncate hover:underline cursor-pointer text-left"
+                  onClick={() => navigate('/playlist/' + contextPlaylistId)}
+                  className="hover:underline cursor-pointer text-text-primary text-sm font-medium truncate text-left"
                 >
-                  {track.artists.map((a) => a.name).join(", ")}
+                  {track ? track.name : "Nothing playing"}
                 </button>
+              ) : (
+                <span className="text-text-primary text-sm font-medium truncate">
+                  {track ? track.name : "Nothing playing"}
+                </span>
+              )}
+              {track && (
+                <span className="text-text-muted text-xs truncate">
+                  {track.artists.map((a, i) => (
+                    <span key={a.id}>
+                      {i > 0 && ', '}
+                      <button
+                        onClick={() => navigate('/artist/' + a.id)}
+                        className="hover:underline cursor-pointer"
+                      >
+                        {a.name}
+                      </button>
+                    </span>
+                  ))}
+                </span>
               )}
             </div>
             <button
@@ -177,6 +208,7 @@ export function PlayerBar() {
             isLoading={isLoading}
             albumImageUrl={albumImageUrl}
             onNavigate={navigate}
+            onTrackClick={contextPlaylistId ? () => navigate('/playlist/' + contextPlaylistId) : undefined}
           />
         </div>
 

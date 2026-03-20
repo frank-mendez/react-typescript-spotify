@@ -14,9 +14,13 @@ export function TrackRow({ track, onPlay }: TrackRowProps) {
     track.album?.images?.[2]?.url ?? track.album?.images?.[0]?.url;
 
   return (
-    <button
+    <div
       onClick={() => onPlay(track.uri)}
-      className="group flex items-center gap-3 p-2 rounded hover:bg-surface-hover transition-colors text-left w-full"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPlay(track.uri); } }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Play ${track.name}`}
+      className="group flex items-center gap-3 p-2 rounded hover:bg-surface-hover transition-colors text-left w-full cursor-pointer"
     >
       {/* Album art with decorative hover play overlay */}
       <div className="relative w-10 h-10 shrink-0">
@@ -64,6 +68,6 @@ export function TrackRow({ track, onPlay }: TrackRowProps) {
           </button>
         )}
       </div>
-    </button>
+    </div>
   );
 }
