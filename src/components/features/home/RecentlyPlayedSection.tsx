@@ -73,7 +73,7 @@ export function RecentlyPlayedSection() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         {items.map((item) => (
           <RecentlyPlayedCard
-            key={item.id}
+            key={`${item.type}:${item.id}`}
             item={item}
             onPlay={(uri) => play.mutate({ context_uri: uri })}
           />
