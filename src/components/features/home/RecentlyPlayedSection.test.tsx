@@ -99,7 +99,7 @@ describe('RecentlyPlayedSection', () => {
     render(<RecentlyPlayedSection />, { wrapper });
     expect(screen.getByText('Recently Played')).toBeInTheDocument();
     expect(screen.getByText('Album a1')).toBeInTheDocument();
-    expect(screen.getByText('Artist ar1')).toBeInTheDocument();
+    expect(screen.getAllByText('Artist ar1').length).toBeGreaterThan(0);
   });
 
   it('deduplicates albums across tracks', () => {
@@ -126,7 +126,8 @@ describe('RecentlyPlayedSection', () => {
       data: { items, cursors: {}, href: '', limit: 20 },
     } as never);
     render(<RecentlyPlayedSection />, { wrapper });
-    expect(screen.getAllByText('Artist same-artist')).toHaveLength(1);
+    // The artist name may appear in album subtitles too; verify the artist card is deduplicated
+    expect(screen.getAllByRole('button', { name: /play artist same-artist/i })).toHaveLength(1);
   });
 
   it('caps output at 8 items', () => {
