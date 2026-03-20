@@ -31,10 +31,10 @@ const artistItem: RecentItem = {
   subtitle: 'Artist',
 };
 
-function renderCard(item = albumItem, onPlay = vi.fn()) {
+function renderCard(item = albumItem, onPlay = vi.fn(), onPause = vi.fn(), isActive = false, isPlaying = false) {
   return render(
     <MemoryRouter>
-      <RecentlyPlayedCard item={item} onPlay={onPlay} />
+      <RecentlyPlayedCard item={item} onPlay={onPlay} onPause={onPause} isActive={isActive} isPlaying={isPlaying} />
     </MemoryRouter>
   );
 }

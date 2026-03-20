@@ -9,11 +9,13 @@ import { RecentlyPlayedSection } from './RecentlyPlayedSection';
 // Mock hooks
 vi.mock('../../../hooks/useSpotifyQueries', () => ({
   useRecentlyPlayed: vi.fn(),
+  useCurrentPlayback: vi.fn(() => ({ data: null })),
 }));
 
 vi.mock('../../../hooks/useSpotifyMutations', () => ({
   usePlaybackControls: vi.fn(() => ({
     play: { mutate: vi.fn() },
+    pause: { mutate: vi.fn() },
   })),
 }));
 
