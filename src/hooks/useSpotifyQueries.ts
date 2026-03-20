@@ -202,3 +202,13 @@ export const useArtistAlbums = (artistId: string, limit = 10, offset = 0) => {
     staleTime: 10 * 60 * 1000,
   });
 };
+
+export const useRecentlyPlayed = (limit = 20) => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ['spotify', 'recently-played', limit],
+    queryFn: () => requireApi(api).playback.getRecentlyPlayedTracks({ limit }),
+    enabled: api !== null,
+    staleTime: 2 * 60 * 1000,
+  });
+};

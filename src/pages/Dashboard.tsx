@@ -1,49 +1,13 @@
+import { useEffect } from "react";
+import { ScrollArea } from "../components/ui/scroll-area";
 import { Header } from "../components/layout/Header";
 import { Sidebar } from "../components/layout/Sidebar";
+import { MainPanel } from "../components/layout/MainPanel";
 import { PlayerBar } from "../components/layout/PlayerBar";
 import { MobileTabBar } from "../components/layout/MobileTabBar";
 import { NowPlaying } from "../components/features/NowPlaying";
-import { useContentStore } from "../stores/useContentStore";
-import { MainContent } from "../types/enums";
-import { ScrollArea } from "../components/ui/scroll-area";
-import { lazy, Suspense, useEffect } from "react";
-import { Skeleton } from "../components/ui/skeleton";
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
 import { usePlayerStore } from "../stores/usePlayerStore";
-import { useOutlet } from "react-router-dom";
-
-const Search = lazy(() =>
-  import("../components/features/Search").then((m) => ({ default: m.Search })),
-);
-
-function MainPanel() {
-  const outlet = useOutlet();
-  const { currentContent } = useContentStore();
-
-  if (outlet) return outlet;
-
-  if (currentContent === MainContent.BROWSE) {
-    return (
-      <Suspense
-        fallback={
-          <div className="p-8">
-            <Skeleton className="h-10 w-full max-w-md" />
-          </div>
-        }
-      >
-        <Search />
-      </Suspense>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center h-full gap-3">
-      <p className="text-text-muted text-sm">
-        Open Spotify on a device to start playing
-      </p>
-    </div>
-  );
-}
 
 const Dashboard = () => {
   const { playerState } = useSpotifyPlayer();
@@ -66,11 +30,8 @@ const Dashboard = () => {
         </ScrollArea>
         <NowPlaying />
       </div>
-      {/* Player bar — mini-strip on mobile, full bar on desktop */}
       <PlayerBar />
-      {/* Bottom spacer for fixed bars */}
       <div className="h-16 md:h-20 shrink-0" />
-      {/* Mobile tab bar */}
       <MobileTabBar />
     </div>
   );
