@@ -6,11 +6,43 @@ import { NowPlaying } from "../components/features/NowPlaying";
 import { useContentStore } from "../stores/useContentStore";
 import { MainContent } from "../types/enums";
 import { ScrollArea } from "../components/ui/scroll-area";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Skeleton } from "../components/ui/skeleton";
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
 import { usePlayerStore } from "../stores/usePlayerStore";
 import { useOutlet } from "react-router-dom";
+import { RecentlyPlayedSection } from "../components/features/home/RecentlyPlayedSection";
+
+type FilterChip = "All" | "Music" | "Podcasts";
+
+function NavHeader({
+  active,
+  onChange,
+}: Readonly<{
+  active: FilterChip;
+  onChange: (chip: FilterChip) => void;
+}>) {
+  const chips: FilterChip[] = ["All", "Music", "Podcasts"];
+  return (
+    <div className="sticky top-0 z-10 bg-surface px-4 py-2 flex items-center gap-2">
+      {chips.map((chip) => (
+        <button
+          key={chip}
+          role="checkbox"
+          aria-checked={active === chip}
+          onClick={() => onChange(chip)}
+          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+            active === chip
+              ? "bg-white text-black"
+              : "bg-surface-hover text-text-primary hover:bg-neutral-600"
+          }`}
+        >
+          {chip}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 const Search = lazy(() =>
   import("../components/features/Search").then((m) => ({ default: m.Search })),
@@ -37,10 +69,8 @@ function MainPanel() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-3">
-      <p className="text-text-muted text-sm">
-        Open Spotify on a device to start playing
-      </p>
+    <div className="p-4 flex flex-col gap-6">
+      <RecentlyPlayedSection />
     </div>
   );
 }
@@ -48,6 +78,7 @@ function MainPanel() {
 const Dashboard = () => {
   const { playerState } = useSpotifyPlayer();
   const { setDeviceId } = usePlayerStore();
+  const [activeFilter, setActiveFilter] = useState<FilterChip>("All");
 
   useEffect(() => {
     setDeviceId(playerState.device_id);
@@ -62,6 +93,7 @@ const Dashboard = () => {
       <div className="flex flex-1 gap-2 px-2 pb-2 min-h-0 overflow-hidden">
         <Sidebar />
         <ScrollArea className="flex-1 bg-surface rounded-lg">
+          <NavHeader active={activeFilter} onChange={setActiveFilter} />
           <MainPanel />
         </ScrollArea>
         <NowPlaying />
