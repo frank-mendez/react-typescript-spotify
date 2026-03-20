@@ -76,7 +76,7 @@ export function AlbumTrackRow({
 
   const handleClick = () => {
     if (isCurrentTrack) {
-      isActiveAndPlaying ? onPause() : onPlay();
+      if (isActiveAndPlaying) { onPause(); } else { onPlay(); }
     } else {
       onPlay();
     }
