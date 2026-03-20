@@ -24,6 +24,8 @@ export default function PlaylistDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: playlist, isLoading: playlistLoading, isError: playlistError, refetch: refetchPlaylist } = usePlaylist(id ?? '');
+  // TODO: Pagination — currently fetches first 50 tracks only. For playlists > 50 tracks,
+  // implement useInfiniteQuery or a load-more button to fetch additional pages.
   const { data: items, isLoading: itemsLoading, isError: itemsError, refetch: refetchItems } = usePlaylistItems(id ?? '');
   const { data: currentlyPlaying } = useCurrentlyPlaying();
   const { play } = usePlaybackControls();
@@ -85,7 +87,7 @@ export default function PlaylistDetail() {
     play.mutate({ context_uri: playlist.uri });
   };
 
-  const handlePlayTrack = (_trackUri: string, index: number) => {
+  const handlePlayTrack = (index: number) => {
     play.mutate({
       context_uri: playlist.uri,
       offset: { position: index },
@@ -171,7 +173,7 @@ export default function PlaylistDetail() {
           return (
             <div
               key={`${track.id}-${index}`}
-              onClick={() => handlePlayTrack(track.uri, index)}
+              onClick={() => handlePlayTrack(index)}
               role="row"
               aria-label={`${track.name} by ${track.artists.map((a) => a.name).join(', ')}`}
               className="grid grid-cols-[2rem_1fr_1fr_4rem] gap-4 px-2 py-2 rounded hover:bg-[#ffffff10] cursor-pointer group items-center"
