@@ -5,7 +5,7 @@ export type RecentItem = {
   id: string;
   name: string;
   imageUrl?: string;
-  type: 'album' | 'artist';
+  type: 'track';
   uri: string;
   navigationPath: string;
   subtitle: string;

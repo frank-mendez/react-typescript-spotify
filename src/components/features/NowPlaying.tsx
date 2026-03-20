@@ -10,7 +10,7 @@ export function NowPlaying() {
 
   if (isLoading) {
     return (
-      <aside className="hidden xl:flex flex-col w-60 shrink-0 bg-surface rounded-lg p-4 gap-4">
+      <aside className="hidden xl:flex flex-col w-72 shrink-0 bg-surface rounded-lg p-4 gap-4">
         <Skeleton className="w-full aspect-square rounded" />
         <Skeleton className="h-4 w-40" />
         <Skeleton className="h-3 w-28" />
@@ -20,14 +20,14 @@ export function NowPlaying() {
 
   if (!track) {
     return (
-      <aside className="hidden xl:flex flex-col w-60 shrink-0 bg-surface rounded-lg p-4 items-center justify-center">
+      <aside className="hidden xl:flex flex-col w-72 shrink-0 bg-surface rounded-lg p-4 items-center justify-center">
         <p className="text-text-muted text-xs text-center">Nothing playing right now</p>
       </aside>
     );
   }
 
   return (
-    <aside className="hidden xl:flex flex-col w-60 shrink-0 bg-surface rounded-lg p-4 gap-3">
+    <aside className="hidden xl:flex flex-col w-72 shrink-0 bg-surface rounded-lg p-4 gap-3">
       <img
         src={track.album?.images?.[0]?.url}
         alt={track.album?.name}

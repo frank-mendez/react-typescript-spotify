@@ -31,7 +31,7 @@ export function NavHeader({
     <div
       role="radiogroup"
       aria-label="Content filter"
-      className="sticky top-0 z-10 bg-surface px-4 py-2 flex items-center gap-2"
+      className="sticky top-0 z-10 bg-surface px-4 py-2 mt-4 flex items-center gap-2"
     >
       {CHIPS.map((chip, i) => (
         <button

@@ -103,12 +103,25 @@ describe('RecentlyPlayedSection', () => {
       data: { items: [makeTrack('t1', 'a1', 'ar1')], cursors: {}, href: '', limit: 20 },
     } as never);
     render(<RecentlyPlayedSection />, { wrapper });
-    expect(screen.getByText('Recently Played')).toBeInTheDocument();
-    expect(screen.getByText('Album a1')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /play artist ar1/i })).toBeInTheDocument();
+    expect(screen.queryByText('Recently Played')).not.toBeInTheDocument();
+    expect(screen.getByText('Track t1')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /play Track t1/i })).toBeInTheDocument();
   });
 
-  it('deduplicates albums across tracks', () => {
+  it('deduplicates tracks with the same id', () => {
+    const items = [
+      makeTrack('same-track', 'al1', 'ar1'),
+      makeTrack('same-track', 'al1', 'ar1'),
+    ];
+    vi.mocked(useRecentlyPlayed).mockReturnValue({
+      isLoading: false,
+      data: { items, cursors: {}, href: '', limit: 20 },
+    } as never);
+    render(<RecentlyPlayedSection />, { wrapper });
+    expect(screen.getAllByText('Track same-track')).toHaveLength(1);
+  });
+
+  it('shows multiple tracks from the same album', () => {
     const items = [
       makeTrack('t1', 'same-album', 'ar1'),
       makeTrack('t2', 'same-album', 'ar2'),
@@ -118,27 +131,12 @@ describe('RecentlyPlayedSection', () => {
       data: { items, cursors: {}, href: '', limit: 20 },
     } as never);
     render(<RecentlyPlayedSection />, { wrapper });
-    // 'Album same-album' should appear only once
-    expect(screen.getAllByText('Album same-album')).toHaveLength(1);
-  });
-
-  it('deduplicates artists across tracks', () => {
-    const items = [
-      makeTrack('t1', 'al1', 'same-artist'),
-      makeTrack('t2', 'al2', 'same-artist'),
-    ];
-    vi.mocked(useRecentlyPlayed).mockReturnValue({
-      isLoading: false,
-      data: { items, cursors: {}, href: '', limit: 20 },
-    } as never);
-    render(<RecentlyPlayedSection />, { wrapper });
-    // The artist name may appear in album subtitles too; verify the artist card is deduplicated
-    expect(screen.getAllByRole('button', { name: /play artist same-artist/i })).toHaveLength(1);
+    expect(screen.getByText('Track t1')).toBeInTheDocument();
+    expect(screen.getByText('Track t2')).toBeInTheDocument();
   });
 
   it('caps output at 8 items', () => {
-    // 6 unique tracks, each with unique album+artist → up to 12 items, capped at 8
-    const items = Array.from({ length: 6 }, (_, i) =>
+    const items = Array.from({ length: 10 }, (_, i) =>
       makeTrack(`t${i}`, `al${i}`, `ar${i}`)
     );
     vi.mocked(useRecentlyPlayed).mockReturnValue({
@@ -150,7 +148,7 @@ describe('RecentlyPlayedSection', () => {
     expect(playButtons).toHaveLength(8);
   });
 
-  it('still emits artist when track.album is absent', () => {
+  it('still renders track when album is absent', () => {
     const trackNoAlbum = makeTrack('t1', 'al1', 'ar1');
     (trackNoAlbum.track as { album?: unknown }).album = undefined;
     vi.mocked(useRecentlyPlayed).mockReturnValue({
@@ -158,6 +156,6 @@ describe('RecentlyPlayedSection', () => {
       data: { items: [trackNoAlbum], cursors: {}, href: '', limit: 20 },
     } as never);
     render(<RecentlyPlayedSection />, { wrapper });
-    expect(screen.getByText('Artist ar1')).toBeInTheDocument();
+    expect(screen.getByText('Track t1')).toBeInTheDocument();
   });
 });

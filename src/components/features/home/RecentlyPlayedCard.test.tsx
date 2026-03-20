@@ -12,22 +12,22 @@ vi.mock('react-router-dom', async () => {
 });
 
 const albumItem: RecentItem = {
-  id: 'album1',
+  id: 'track1',
   name: 'Test Album',
   imageUrl: 'https://img.test/cover.jpg',
-  type: 'album',
-  uri: 'spotify:album:album1',
+  type: 'track',
+  uri: 'spotify:track:track1',
   navigationPath: '/album/album1',
   subtitle: 'Test Artist',
 };
 
 const artistItem: RecentItem = {
-  id: 'artist1',
+  id: 'track2',
   name: 'Test Artist',
   imageUrl: undefined,
-  type: 'artist',
-  uri: 'spotify:artist:artist1',
-  navigationPath: '/artist/artist1',
+  type: 'track',
+  uri: 'spotify:track:track2',
+  navigationPath: '/album/album2',
   subtitle: 'Artist',
 };
 
@@ -66,7 +66,7 @@ describe('RecentlyPlayedCard', () => {
     const onPlay = vi.fn();
     renderCard(albumItem, onPlay);
     fireEvent.click(screen.getByRole('button', { name: /play/i }));
-    expect(onPlay).toHaveBeenCalledWith('spotify:album:album1');
+    expect(onPlay).toHaveBeenCalledWith('spotify:track:track1');
   });
 
   it('does not navigate when play button is clicked', () => {
