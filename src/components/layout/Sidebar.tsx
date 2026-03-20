@@ -16,7 +16,7 @@ export function Sidebar() {
       {/* Nav */}
       <nav className="bg-surface rounded-lg p-4 flex flex-col gap-1">
         <button
-          onClick={() => { navigate('/'); setCurrentContent(MainContent.PLAYER); }}
+          onClick={() => setCurrentContent(MainContent.PLAYER)}
           className={`flex items-center gap-4 px-2 py-2 rounded text-sm font-semibold transition-colors hover:text-text-primary ${currentContent === MainContent.PLAYER ? 'text-text-primary' : 'text-text-muted'}`}
         >
           <House className="w-6 h-6" />
