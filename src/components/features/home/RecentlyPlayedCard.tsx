@@ -27,7 +27,7 @@ export function RecentlyPlayedCard({ item, onPlay }: Readonly<RecentlyPlayedCard
         data-testid="card-body"
         className="flex flex-1 items-center min-w-0 cursor-pointer"
         onClick={() => navigate(item.navigationPath)}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(item.navigationPath); }}
+        onKeyDown={(e) => { if (e.key === 'Enter') navigate(item.navigationPath); }}
         role="link"
         tabIndex={0}
       >
