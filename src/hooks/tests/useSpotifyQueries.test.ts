@@ -6,6 +6,7 @@ import {
   usePlaylist,
   useAlbumTracks,
   useArtistAlbums,
+  useRecentlyPlayed,
 } from '../useSpotifyQueries';
 
 // Mock useSpotifyApi
@@ -18,6 +19,9 @@ const mockApi = {
   },
   artists: {
     getArtistAlbums: vi.fn(),
+  },
+  playback: {
+    getRecentlyPlayedTracks: vi.fn(),
   },
 };
 
@@ -187,5 +191,50 @@ describe('useArtistAlbums', () => {
 
     expect(result.current.fetchStatus).toBe('idle');
     expect(mockApi.artists.getArtistAlbums).not.toHaveBeenCalled();
+  });
+});
+
+describe('useRecentlyPlayed', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
+  });
+
+  it('fetches recently played tracks with default limit', async () => {
+    const mockData = { items: [], cursors: {}, href: '', limit: 20 };
+    mockApi.playback.getRecentlyPlayedTracks.mockResolvedValue(mockData);
+
+    const { result } = renderHook(() => useRecentlyPlayed(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockApi.playback.getRecentlyPlayedTracks).toHaveBeenCalledWith({ limit: 20 });
+    expect(result.current.data).toEqual(mockData);
+  });
+
+  it('fetches recently played tracks with custom limit', async () => {
+    const mockData = { items: [], cursors: {}, href: '', limit: 5 };
+    mockApi.playback.getRecentlyPlayedTracks.mockResolvedValue(mockData);
+
+    const { result } = renderHook(() => useRecentlyPlayed(5), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockApi.playback.getRecentlyPlayedTracks).toHaveBeenCalledWith({ limit: 5 });
+  });
+
+  it('is disabled when api is null', () => {
+    vi.mocked(useSpotifyApi).mockReturnValue(null);
+
+    const { result } = renderHook(() => useRecentlyPlayed(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockApi.playback.getRecentlyPlayedTracks).not.toHaveBeenCalled();
   });
 });
