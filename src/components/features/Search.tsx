@@ -103,6 +103,9 @@ export function Search() {
                   <div
                     key={artist.id}
                     onClick={() => navigate('/artist/' + artist.id)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/artist/' + artist.id); } }}
+                    role="button"
+                    tabIndex={0}
                     className="flex flex-col items-center gap-2 p-4 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
                   >
                     {artist.images?.[0]?.url ? (
@@ -132,6 +135,9 @@ export function Search() {
                   <div
                     key={album.id}
                     onClick={() => navigate('/album/' + album.id)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/album/' + album.id); } }}
+                    role="button"
+                    tabIndex={0}
                     className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
                   >
                     {album.images?.[0]?.url ? (
@@ -163,6 +169,9 @@ export function Search() {
                   <div
                     key={playlist.id}
                     onClick={() => navigate('/playlist/' + playlist.id)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/playlist/' + playlist.id); } }}
+                    role="button"
+                    tabIndex={0}
                     className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
                   >
                     {playlist.images?.[0]?.url ? (

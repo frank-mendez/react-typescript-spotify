@@ -217,7 +217,7 @@ describe('AlbumDetail', () => {
 
     it('calls play mutation with context_uri and offset on row click', () => {
       renderWithRouter();
-      const row = screen.getByRole('row', { name: /Song One/i });
+      const row = screen.getByRole('button', { name: /Song One/i });
       fireEvent.click(row);
       expect(mockPlayMutate).toHaveBeenCalledWith({
         context_uri: 'spotify:album:alb1',

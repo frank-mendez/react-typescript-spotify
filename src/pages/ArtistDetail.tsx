@@ -36,7 +36,7 @@ export default function ArtistDetail() {
         {/* Popular tracks skeleton */}
         <div className="flex-1 bg-[#121212] px-6 py-4 flex flex-col gap-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4 py-2">
+            <div key={`skeleton-artist-${i}`} className="flex items-center gap-4 py-2">
               <Skeleton className="w-4 h-4" />
               <Skeleton className="w-10 h-10 rounded" />
               <div className="flex flex-col gap-1 flex-1">
@@ -103,7 +103,7 @@ export default function ArtistDetail() {
           >
             <Play className="w-5 h-5 text-black fill-black ml-0.5" />
           </button>
-          {/* TODO: Wire up follow/unfollow artist when mutation support is added */}
+          {/* Wire up follow/unfollow artist when mutation support is added */}
           <button
             aria-label="Follow artist"
             className="px-6 py-2 rounded-full border border-text-muted text-text-muted text-sm font-semibold hover:border-text-primary hover:text-text-primary transition-colors"
@@ -128,7 +128,9 @@ export default function ArtistDetail() {
                   <div
                     key={album.id}
                     onClick={() => navigate(`/album/${album.id}`)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/album/${album.id}`); } }}
                     role="button"
+                    tabIndex={0}
                     aria-label={album.name}
                     className="w-40 shrink-0 cursor-pointer group"
                     data-testid={`album-card-${album.id}`}

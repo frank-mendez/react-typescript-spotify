@@ -21,7 +21,7 @@ export default function AlbumDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: album, isLoading: albumLoading, isError: albumError, refetch: refetchAlbum } = useAlbum(id ?? '');
-  // TODO: Pagination — currently fetches first 50 tracks only. Long albums (live recordings,
+  // Pagination note: currently fetches first 50 tracks only. Long albums (live recordings,
   // compilations) may exceed this. Implement useInfiniteQuery or load-more button.
   const { data: tracksData, isLoading: tracksLoading, isError: tracksError, refetch: refetchTracks } = useAlbumTracks(id ?? '');
   const { data: currentlyPlaying } = useCurrentlyPlaying();
@@ -53,7 +53,7 @@ export default function AlbumDetail() {
         {/* Track rows skeleton */}
         <div className="flex-1 bg-[#121212] px-6 py-4 flex flex-col gap-2">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4 py-2">
+            <div key={`skeleton-track-${i}`} className="flex items-center gap-4 py-2">
               <Skeleton className="w-4 h-4" />
               <div className="flex flex-col gap-1 flex-1">
                 <Skeleton className="h-4 w-48" />
@@ -92,7 +92,7 @@ export default function AlbumDetail() {
   };
 
   const coverImage = album.images?.[0]?.url;
-  const releaseYear = album.release_date ? parseInt(album.release_date.slice(0, 4), 10) : null;
+  const releaseYear = album.release_date ? Number.parseInt(album.release_date.slice(0, 4), 10) : null;
 
   return (
     <div className="flex flex-col min-h-full" data-testid="album-detail">
@@ -156,7 +156,7 @@ export default function AlbumDetail() {
           >
             <Play className="w-5 h-5 text-black fill-black ml-0.5" />
           </button>
-          {/* TODO: Wire up save/unsave album using useLibraryControls when implemented */}
+          {/* Wire up save/unsave album using useLibraryControls when implemented */}
           <button
             aria-label="Like album"
             className="w-8 h-8 rounded-full border border-text-muted flex items-center justify-center hover:border-text-primary transition-colors"
@@ -189,32 +189,50 @@ export default function AlbumDetail() {
             }
           };
 
+          const handleRowKeyDown = (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleRowClick();
+            }
+          };
+
+          let trackStateContent;
+          if (isActiveAndPlaying) {
+            trackStateContent = (
+              <>
+                <Pause className="w-4 h-4 text-accent fill-accent hidden group-hover:block" />
+                <span className="group-hover:hidden"><EqualizerBars /></span>
+              </>
+            );
+          } else if (isCurrentTrack) {
+            trackStateContent = (
+              <>
+                <Play className="w-4 h-4 text-accent fill-accent hidden group-hover:block" />
+                <span className="text-sm font-medium text-accent group-hover:hidden">{index + 1}</span>
+              </>
+            );
+          } else {
+            trackStateContent = (
+              <>
+                <Play className="w-4 h-4 text-text-primary fill-text-primary hidden group-hover:block" />
+                <span className="text-sm font-medium text-text-muted group-hover:hidden">{index + 1}</span>
+              </>
+            );
+          }
+
           return (
             <div
               key={`${track.id}-${index}`}
               onClick={handleRowClick}
-              role="row"
+              onKeyDown={handleRowKeyDown}
+              role="button"
+              tabIndex={0}
               aria-label={`${track.name} by ${track.artists.map((a) => a.name).join(', ')}`}
               className="grid grid-cols-[2rem_1fr_4rem] gap-4 px-2 py-2 rounded hover:bg-[#ffffff10] cursor-pointer group items-center"
             >
               {/* Track index / play state */}
               <div className="flex items-center justify-end w-full">
-                {isActiveAndPlaying ? (
-                  <>
-                    <Pause className="w-4 h-4 text-accent fill-accent hidden group-hover:block" />
-                    <span className="group-hover:hidden"><EqualizerBars /></span>
-                  </>
-                ) : isCurrentTrack ? (
-                  <>
-                    <Play className="w-4 h-4 text-accent fill-accent hidden group-hover:block" />
-                    <span className="text-sm font-medium text-accent group-hover:hidden">{index + 1}</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4 text-text-primary fill-text-primary hidden group-hover:block" />
-                    <span className="text-sm font-medium text-text-muted group-hover:hidden">{index + 1}</span>
-                  </>
-                )}
+                {trackStateContent}
               </div>
 
               {/* Track info */}

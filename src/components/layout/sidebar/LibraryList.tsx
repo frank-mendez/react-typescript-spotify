@@ -14,7 +14,7 @@ function LoadingSkeletons() {
   return (
     <>
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 px-2 py-2">
+        <div key={`skeleton-library-${i}`} className="flex items-center gap-3 px-2 py-2">
           <Skeleton className="w-12 h-12 rounded shrink-0" />
           <div className="flex flex-col gap-1 flex-1 min-w-0">
             <Skeleton className="h-3 w-32" />
