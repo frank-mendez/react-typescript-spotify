@@ -133,6 +133,15 @@ describe('usePlaylistItems', () => {
     expect(result.current.fetchStatus).toBe('idle');
     expect(mockApi.playlists.getPlaylistItems).not.toHaveBeenCalled();
   });
+
+  it('is disabled when playlistId is empty', () => {
+    const { result } = renderHook(() => usePlaylistItems(''), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockApi.playlists.getPlaylistItems).not.toHaveBeenCalled();
+  });
 });
 
 describe('useAlbumTracks', () => {
