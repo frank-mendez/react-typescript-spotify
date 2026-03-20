@@ -1,7 +1,22 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { getToken, redirectToSpotifyAuthorize } from "../lib/auth/auth.service";
+import { getToken, redirectToSpotifyAuthorize, REQUIRED_SCOPES } from "../lib/auth/auth.service";
 import { AuthContext } from "./AuthContext";
 import { getValidAccessToken } from "../lib/utils/tokenUtils";
+
+function hasRequiredScopes(): boolean {
+  const stored = localStorage.getItem('token_scope');
+  if (!stored) return false;
+  const grantedScopes = stored.split(' ');
+  return REQUIRED_SCOPES.every(s => grantedScopes.includes(s));
+}
+
+function clearAllTokens() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  localStorage.removeItem('expires_in');
+  localStorage.removeItem('expires');
+  localStorage.removeItem('token_scope');
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -34,6 +49,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           const updatedUrl = url.search ? url.href : url.href.replace("?", "/");
           globalThis.history.replaceState({}, document.title, updatedUrl);
         } else {
+          // Force re-login if stored token was granted without all required scopes
+          if (localStorage.getItem('access_token') && !hasRequiredScopes()) {
+            clearAllTokens();
+            setAccessToken(null);
+            return;
+          }
           const validToken = await getValidAccessToken();
           setAccessToken(validToken);
         }
@@ -52,11 +73,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("expires_in");
-    localStorage.removeItem("expires");
+    clearAllTokens();
     setAccessToken(null);
+  }, []);
+
+  useEffect(() => {
+    const handleAuthFailure = () => {
+      clearAllTokens();
+      setAccessToken(null);
+    };
+    const handleTokenRefreshed = (e: Event) => {
+      const newToken = (e as CustomEvent<string>).detail;
+      setAccessToken(newToken);
+    };
+    window.addEventListener("spotify:auth-failure", handleAuthFailure);
+    window.addEventListener("spotify:token-refreshed", handleTokenRefreshed);
+    return () => {
+      window.removeEventListener("spotify:auth-failure", handleAuthFailure);
+      window.removeEventListener("spotify:token-refreshed", handleTokenRefreshed);
+    };
   }, []);
 
   const contextValue = useMemo(

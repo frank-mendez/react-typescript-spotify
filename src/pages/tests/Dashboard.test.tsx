@@ -12,6 +12,8 @@ vi.mock('../../hooks/useSpotifyQueries', () => ({
   useCurrentlyPlaying: () => ({ data: null, isLoading: false }),
   useUserPlaylists: () => ({ data: null, isLoading: false }),
   useCurrentUserProfile: () => ({ data: null, isLoading: false }),
+  useSavedAlbums: () => ({ data: null, isLoading: false }),
+  useFollowedArtists: () => ({ data: null, isLoading: false }),
 }));
 
 vi.mock('../../hooks/useSpotifyMutations', () => ({
@@ -24,6 +26,10 @@ vi.mock('../../hooks/useSpotifyMutations', () => ({
     setVolume: { mutate: vi.fn() },
     setRepeat: { mutate: vi.fn() },
     setShuffle: { mutate: vi.fn() },
+  }),
+  useLibraryControls: () => ({
+    saveTrack: { mutate: vi.fn(), isPending: false },
+    removeTrack: { mutate: vi.fn(), isPending: false },
   }),
 }));
 

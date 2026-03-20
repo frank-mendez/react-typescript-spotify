@@ -1,18 +1,12 @@
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Shuffle,
-  Repeat,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Slider } from "../ui/slider";
 import { Skeleton } from "../ui/skeleton";
 import { useCurrentPlayback } from "../../hooks/useSpotifyQueries";
-import { usePlaybackControls } from "../../hooks/useSpotifyMutations";
+import {
+  usePlaybackControls,
+  useLibraryControls,
+} from "../../hooks/useSpotifyMutations";
 import type { Track } from "../../types/spotify";
 
 function formatMs(ms: number): string {
@@ -28,23 +22,200 @@ function getNextRepeatState(current: string): "off" | "context" | "track" {
   return "off";
 }
 
+// Spotify Encore SVG icons
+function ShuffleIcon({ active }: Readonly<{ active: boolean }>) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{
+        fill: active ? "#1db954" : "rgb(186,186,186)",
+        height: "1.15em",
+        cursor: "pointer",
+      }}
+    >
+      <path d="M13.151.922a.75.75 0 1 0-1.06 1.06L13.109 3H11.16a3.75 3.75 0 0 0-2.873 1.34l-6.173 7.356A2.25 2.25 0 0 1 .39 12.5H0V14h.391a3.75 3.75 0 0 0 2.873-1.34l6.173-7.356a2.25 2.25 0 0 1 1.724-.804h1.947l-1.017 1.018a.75.75 0 0 0 1.06 1.06L15.98 3.75 13.15.922zM.391 3.5H0V2h.391c1.109 0 2.16.49 2.873 1.34L4.89 5.277l-.979 1.167-1.796-2.14A2.25 2.25 0 0 0 .39 3.5z" />
+      <path d="m7.5 10.723.98-1.167.957 1.14a2.25 2.25 0 0 0 1.724.804h1.947l-1.017-1.018a.75.75 0 1 1 1.06-1.06l2.829 2.828-2.829 2.828a.75.75 0 1 1-1.06-1.06L13.109 13H11.16a3.75 3.75 0 0 1-2.873-1.34l-.787-.938z" />
+    </svg>
+  );
+}
+
+function PrevIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{ fill: "rgb(186,186,186)", height: "1.15em", cursor: "pointer" }}
+    >
+      <path d="M3.3 1a.7.7 0 0 1 .7.7v5.15l9.95-5.744a.7.7 0 0 1 1.05.606v12.575a.7.7 0 0 1-1.05.607L4 9.149V14.3a.7.7 0 0 1-.7.7H1.7a.7.7 0 0 1-.7-.7V1.7a.7.7 0 0 1 .7-.7h1.6z" />
+    </svg>
+  );
+}
+
+function NextIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{ fill: "rgb(186,186,186)", height: "1.15em", cursor: "pointer" }}
+    >
+      <path d="M12.7 1a.7.7 0 0 0-.7.7v5.15L2.05 1.107A.7.7 0 0 0 1 1.712v12.575a.7.7 0 0 0 1.05.607L12 9.149V14.3a.7.7 0 0 0 .7.7h1.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-1.6z" />
+    </svg>
+  );
+}
+
+function PlayIcon() {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 16 16"
+      style={{ fill: "black", height: "1.15em", cursor: "pointer" }}
+    >
+      <path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288V1.713z" />
+    </svg>
+  );
+}
+
+function PauseIcon() {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 16 16"
+      style={{ fill: "black", height: "1.15em", cursor: "pointer" }}
+    >
+      <path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7H2.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-2.6z" />
+    </svg>
+  );
+}
+
+function RepeatIcon({ state }: Readonly<{ state: string }>) {
+  const color = state === "off" ? "rgb(186,186,186)" : "#1db954";
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{ fill: color, height: "1.15em", cursor: "pointer" }}
+    >
+      <path d="M0 4.75A3.75 3.75 0 0 1 3.75 1h8.5A3.75 3.75 0 0 1 16 4.75v5a3.75 3.75 0 0 1-3.75 3.75H9.81l1.018 1.018a.75.75 0 1 1-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 1 1 1.06 1.06L9.811 12h2.439a2.25 2.25 0 0 0 2.25-2.25v-5a2.25 2.25 0 0 0-2.25-2.25h-8.5A2.25 2.25 0 0 0 1.5 4.75v5A2.25 2.25 0 0 0 3.75 12H5v1.5H3.75A3.75 3.75 0 0 1 0 9.75v-5z" />
+    </svg>
+  );
+}
+
+function AddToLibraryIcon({ saved }: Readonly<{ saved: boolean }>) {
+  if (saved) {
+    return (
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="#1db954">
+        <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm-2-9H7v2h3v3h2v-3h3v-2h-3V10h-2v3z" />
+      </svg>
+    );
+  }
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="17"
+      height="17"
+      stroke="#b3b3b3"
+      fill="#b3b3b3"
+      strokeWidth="0"
+    >
+      <path d="M11.999 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm-11 9c0-6.075 4.925-11 11-11s11 4.925 11 11-4.925 11-11 11-11-4.925-11-11z" />
+      <path d="M17.999 12a1 1 0 0 1-1 1h-4v4a1 1 0 1 1-2 0v-4h-4a1 1 0 1 1 0-2h4V7a1 1 0 1 1 2 0v4h4a1 1 0 0 1 1 1z" />
+    </svg>
+  );
+}
+
+function QueueIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{
+        fill: "rgb(186,186,186)",
+        height: "1.2em",
+        cursor: "pointer",
+        maxWidth: "17px",
+      }}
+    >
+      <path d="M11.196 8 6 5v6l5.196-3z" />
+      <path d="M15.002 1.75A1.75 1.75 0 0 0 13.252 0h-10.5a1.75 1.75 0 0 0-1.75 1.75v12.5c0 .966.783 1.75 1.75 1.75h10.5a1.75 1.75 0 0 0 1.75-1.75V1.75zm-1.75-.25a.25.25 0 0 1 .25.25v12.5a.25.25 0 0 1-.25.25h-10.5a.25.25 0 0 1-.25-.25V1.75a.25.25 0 0 1 .25-.25h10.5z" />
+    </svg>
+  );
+}
+
+function ConnectDevicesIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{
+        fill: "rgb(186,186,186)",
+        height: "1.2em",
+        cursor: "pointer",
+        maxWidth: "17px",
+      }}
+    >
+      <path d="M13.426 2.574a2.831 2.831 0 0 0-4.797 1.55l3.247 3.247a2.831 2.831 0 0 0 1.55-4.797zM10.5 8.118l-2.619-2.62A63303.13 63303.13 0 0 0 4.74 9.075L2.065 12.12a1.287 1.287 0 0 0 1.816 1.816l3.06-2.688 3.56-3.129zM7.12 4.094a4.331 4.331 0 1 1 4.786 4.786l-3.974 3.493-3.06 2.689a2.787 2.787 0 0 1-3.933-3.933l2.676-3.045 3.505-3.99z" />
+    </svg>
+  );
+}
+
+function LyricsQueueIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{
+        fill: "rgb(186,186,186)",
+        height: "1.2em",
+        cursor: "pointer",
+        maxWidth: "17px",
+      }}
+    >
+      <path d="M15 15H1v-1.5h14V15zm0-4.5H1V9h14v1.5zm-14-7A2.5 2.5 0 0 1 3.5 1h9a2.5 2.5 0 0 1 0 5h-9A2.5 2.5 0 0 1 1 3.5zm2.5-1a1 1 0 0 0 0 2h9a1 1 0 1 0 0-2h-9z" />
+    </svg>
+  );
+}
+
+function MiniPlayerIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      style={{ fill: "rgb(186,186,186)", height: "1.2em", maxWidth: "17px" }}
+    >
+      <path d="M6 2.75C6 1.784 6.784 1 7.75 1h6.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 14.25 15h-6.5A1.75 1.75 0 0 1 6 13.25V2.75zm1.75-.25a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h6.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25h-6.5zm-6 0a.25.25 0 0 0-.25.25v6.5c0 .138.112.25.25.25H4V11H1.75A1.75 1.75 0 0 1 0 9.25v-6.5C0 1.784.784 1 1.75 1H4v1.5H1.75zM4 15H2v-1.5h2V15z" />
+      <path d="M13 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm-1-5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+    </svg>
+  );
+}
+
+function ExpandIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      style={{
+        fill: "rgb(186,186,186)",
+        height: "1.2em",
+        cursor: "pointer",
+        maxWidth: "17px",
+      }}
+    >
+      <path d="M6.53 9.47a.75.75 0 0 1 0 1.06l-2.72 2.72h1.018a.75.75 0 0 1 0 1.5H1.25v-3.579a.75.75 0 0 1 1.5 0v1.018l2.72-2.72a.75.75 0 0 1 1.06 0zm2.94-2.94a.75.75 0 0 1 0-1.06l2.72-2.72h-1.018a.75.75 0 1 1 0-1.5h3.578v3.579a.75.75 0 0 1-1.5 0V3.81l-2.72 2.72a.75.75 0 0 1-1.06 0z" />
+    </svg>
+  );
+}
+
 function DesktopTrackInfo({
   track,
   isLoading,
   albumImageUrl,
+  saved,
   onNavigate,
-  onTrackClick,
+  onSave,
 }: Readonly<{
   track: Track | undefined;
   isLoading: boolean;
   albumImageUrl: string | undefined;
+  saved: boolean;
   onNavigate: (path: string) => void;
-  onTrackClick?: () => void;
+  onSave: () => void;
 }>) {
   if (isLoading) {
     return (
       <>
-        <Skeleton className="w-12 h-12 rounded shrink-0" />
+        <Skeleton className="w-14 h-14 rounded shrink-0" />
         <div className="flex flex-col gap-1 min-w-0">
           <Skeleton className="h-3 w-28" />
           <Skeleton className="h-3 w-20" />
@@ -53,35 +224,31 @@ function DesktopTrackInfo({
     );
   }
   if (!track) {
-    return <span className="text-text-muted text-xs">Nothing playing</span>;
+    return <span className="text-[#b3b3b3] text-xs">Nothing playing</span>;
   }
   return (
     <>
-      <img
-        src={albumImageUrl}
-        alt={track.album?.name}
-        className="w-12 h-12 rounded shrink-0 object-cover"
-      />
-      <div className="flex flex-col min-w-0">
-        {onTrackClick ? (
-          <button
-            onClick={onTrackClick}
-            className="hover:underline cursor-pointer text-left text-text-primary text-sm font-medium truncate"
-          >
-            {track.name}
-          </button>
-        ) : (
-          <span className="text-text-primary text-sm font-medium truncate">
-            {track.name}
-          </span>
-        )}
-        <span className="text-text-muted text-xs truncate">
+      {/* Album cover with now-playing button overlay */}
+      <div className="relative shrink-0 mr-3" style={{ marginRight: 15 }}>
+        <img
+          src={albumImageUrl}
+          alt="Album Cover"
+          className="w-14 h-14 object-cover"
+        />
+      </div>
+
+      {/* Song title + artists */}
+      <div id="song-and-artist-name" className="min-w-0">
+        <p className="text-white font-bold text-sm truncate" title={track.name}>
+          {track.name}
+        </p>
+        <span className="text-[#b3b3b3] text-xs truncate block">
           {track.artists.map((a, i) => (
             <span key={a.id}>
-              {i > 0 && ', '}
+              {i > 0 && ", "}
               <button
-                onClick={() => onNavigate('/artist/' + a.id)}
-                className="hover:underline cursor-pointer"
+                onClick={() => onNavigate("/artist/" + a.id)}
+                className="hover:text-white hover:underline"
               >
                 {a.name}
               </button>
@@ -89,6 +256,15 @@ function DesktopTrackInfo({
           ))}
         </span>
       </div>
+
+      {/* Add to library */}
+      <button
+        onClick={onSave}
+        className="ml-3 shrink-0 hover:opacity-80 transition-opacity"
+        aria-label="Add to library"
+      >
+        <AddToLibraryIcon saved={saved} />
+      </button>
     </>
   );
 }
@@ -106,6 +282,7 @@ export function PlayerBar() {
     setRepeat,
     setShuffle,
   } = usePlaybackControls();
+  const { saveTrack } = useLibraryControls();
 
   const track = playback?.item;
   const isPlaying = playback?.is_playing ?? false;
@@ -116,8 +293,10 @@ export function PlayerBar() {
   const repeatState = playback?.repeat_state ?? "off";
   const albumImageUrl =
     track?.album?.images?.[2]?.url ?? track?.album?.images?.[0]?.url;
-  const contextPlaylistId = playback?.context?.uri?.startsWith('spotify:playlist:')
-    ? playback.context.uri.split(':')[2]
+  const contextPlaylistId = playback?.context?.uri?.startsWith(
+    "spotify:playlist:",
+  )
+    ? playback.context.uri.split(":")[2]
     : null;
 
   const handlePlayPause = () => {
@@ -128,12 +307,16 @@ export function PlayerBar() {
     }
   };
 
+  const handleSave = () => {
+    if (track?.id) saveTrack.mutate(track.id);
+  };
+
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border z-50"
+      className="fixed bottom-0 left-0 right-0 bg-black border-t border-[#282828] z-50"
       data-testid="player-bar-element"
     >
-      {/* Mobile mini-player: 64px strip with album art, title, and play/pause */}
+      {/* Mobile mini-player */}
       <div className="flex md:hidden items-center h-16 px-4 gap-3">
         {isLoading ? (
           <>
@@ -153,28 +336,28 @@ export function PlayerBar() {
                 className="w-10 h-10 rounded shrink-0 object-cover"
               />
             ) : (
-              <div className="w-10 h-10 rounded shrink-0 bg-surface-hover" />
+              <div className="w-10 h-10 rounded shrink-0 bg-[#282828]" />
             )}
             <div className="flex flex-col flex-1 min-w-0">
               {contextPlaylistId ? (
                 <button
-                  onClick={() => navigate('/playlist/' + contextPlaylistId)}
-                  className="hover:underline cursor-pointer text-text-primary text-sm font-medium truncate text-left"
+                  onClick={() => navigate("/playlist/" + contextPlaylistId)}
+                  className="hover:underline cursor-pointer text-white text-sm font-bold truncate text-left"
                 >
                   {track ? track.name : "Nothing playing"}
                 </button>
               ) : (
-                <span className="text-text-primary text-sm font-medium truncate">
+                <span className="text-white text-sm font-bold truncate">
                   {track ? track.name : "Nothing playing"}
                 </span>
               )}
               {track && (
-                <span className="text-text-muted text-xs truncate">
+                <span className="text-[#b3b3b3] text-xs truncate">
                   {track.artists.map((a, i) => (
                     <span key={a.id}>
-                      {i > 0 && ', '}
+                      {i > 0 && ", "}
                       <button
-                        onClick={() => navigate('/artist/' + a.id)}
+                        onClick={() => navigate("/artist/" + a.id)}
                         className="hover:underline cursor-pointer"
                       >
                         {a.name}
@@ -186,81 +369,79 @@ export function PlayerBar() {
             </div>
             <button
               onClick={handlePlayPause}
-              className="w-8 h-8 bg-text-primary rounded-full flex items-center justify-center hover:scale-105 transition-transform text-bg shrink-0"
+              className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shrink-0"
               aria-label={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? (
-                <Pause className="w-4 h-4" />
-              ) : (
-                <Play className="w-4 h-4" />
-              )}
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
           </>
         )}
       </div>
 
       {/* Desktop full player */}
-      <div className="hidden md:flex items-center h-20 px-4 gap-4">
-        {/* Track info */}
-        <div className="flex items-center gap-3 w-56 min-w-0 shrink-0">
+      <div className="hidden md:flex items-center justify-between h-[90px] px-4 w-full">
+        {/* Left: track info */}
+        <div
+          className="flex flex-row items-center"
+          style={{ minWidth: 0, flex: "0 0 auto", maxWidth: "30%" }}
+        >
           <DesktopTrackInfo
             track={track}
             isLoading={isLoading}
             albumImageUrl={albumImageUrl}
+            saved={false}
             onNavigate={navigate}
-            onTrackClick={contextPlaylistId ? () => navigate('/playlist/' + contextPlaylistId) : undefined}
+            onSave={handleSave}
           />
         </div>
 
-        {/* Controls */}
-        <div className="flex flex-col items-center gap-1 flex-1 max-w-lg mx-auto">
-          <div className="flex items-center gap-4">
+        {/* Center: controls + progress */}
+        <div
+          className="flex flex-col items-center w-2/5"
+          style={{ marginTop: 5, marginBottom: -5 }}
+        >
+          {/* Control buttons row */}
+          <div className="flex items-center gap-6 mb-1">
             <button
               onClick={() => setShuffle.mutate({ state: !shuffleState })}
-              className={`text-text-muted hover:text-text-primary transition-colors ${shuffleState ? "text-accent" : ""}`}
               aria-label="Toggle shuffle"
             >
-              <Shuffle className="w-4 h-4" />
+              <ShuffleIcon active={shuffleState} />
             </button>
             <button
               onClick={() => previous.mutate(undefined)}
-              className="text-text-muted hover:text-text-primary transition-colors"
               aria-label="Previous track"
             >
-              <SkipBack className="w-5 h-5" />
+              <PrevIcon />
             </button>
             <button
               onClick={handlePlayPause}
-              className="w-8 h-8 bg-text-primary rounded-full flex items-center justify-center hover:scale-105 transition-transform text-bg"
+              className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform"
               aria-label={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? (
-                <Pause className="w-4 h-4" />
-              ) : (
-                <Play className="w-4 h-4" />
-              )}
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </button>
             <button
               onClick={() => next.mutate(undefined)}
-              className="text-text-muted hover:text-text-primary transition-colors"
               aria-label="Next track"
             >
-              <SkipForward className="w-5 h-5" />
+              <NextIcon />
             </button>
             <button
               onClick={() =>
                 setRepeat.mutate({ state: getNextRepeatState(repeatState) })
               }
-              className={`text-text-muted hover:text-text-primary transition-colors ${repeatState === "off" ? "" : "text-accent"}`}
               aria-label="Toggle repeat"
             >
-              <Repeat className="w-4 h-4" />
+              <RepeatIcon state={repeatState} />
             </button>
           </div>
-          <div className="flex items-center gap-2 w-full">
-            <span className="text-text-muted text-xs tabular-nums w-8 text-right">
+
+          {/* Progress bar row */}
+          <div className="flex items-center justify-between w-full">
+            <div className="text-white mr-2 text-xs tabular-nums">
               {formatMs(progressMs)}
-            </span>
+            </div>
             <Slider
               value={[progressMs]}
               max={durationMs || 1}
@@ -273,39 +454,73 @@ export function PlayerBar() {
               className="flex-1"
               aria-label="Track progress"
             />
-            <span className="text-text-muted text-xs tabular-nums w-8">
+            <div className="text-white ml-2 text-xs tabular-nums">
               {formatMs(durationMs)}
-            </span>
+            </div>
           </div>
         </div>
 
-        {/* Volume */}
-        <div className="flex items-center gap-2 w-36 shrink-0 justify-end">
+        {/* Right: extra controls + volume */}
+        <div className="flex items-center gap-1" style={{ flex: "0 0 auto" }}>
           <button
-            onClick={() =>
-              setVolume.mutate({ volumePercent: volume > 0 ? 0 : 50 })
-            }
-            className="text-text-muted hover:text-text-primary transition-colors"
-            aria-label={volume === 0 ? "Unmute" : "Mute"}
+            className="hidden lg:block mx-1"
+            aria-label="Queue"
+            style={{ cursor: "pointer" }}
           >
-            {volume === 0 ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4" />
-            )}
+            <QueueIcon />
           </button>
-          <Slider
-            value={[volume]}
-            max={100}
-            step={1}
-            onValueCommitted={(value) =>
-              setVolume.mutate({
-                volumePercent: Array.isArray(value) ? value[0] : value,
-              })
-            }
-            className="w-24"
-            aria-label="Volume"
-          />
+          <button className="mx-1" aria-label="Connect to a device">
+            <ConnectDevicesIcon />
+          </button>
+          <button className="mx-1" aria-label="Lyrics / Queue">
+            <LyricsQueueIcon />
+          </button>
+          <button
+            className="hidden lg:block mx-1"
+            aria-label="Mini player"
+            style={{ cursor: "not-allowed" }}
+            disabled
+          >
+            <MiniPlayerIcon />
+          </button>
+
+          {/* Volume */}
+          <div className="flex items-center gap-1 ml-1">
+            <button
+              onClick={() =>
+                setVolume.mutate({ volumePercent: volume > 0 ? 0 : 50 })
+              }
+              aria-label={volume === 0 ? "Unmute" : "Mute"}
+            >
+              {volume === 0 ? (
+                <VolumeX
+                  className="w-[17px] h-[17px]"
+                  style={{ color: "rgb(186,186,186)" }}
+                />
+              ) : (
+                <Volume2
+                  className="w-[17px] h-[17px]"
+                  style={{ color: "rgb(186,186,186)" }}
+                />
+              )}
+            </button>
+            <Slider
+              value={[volume]}
+              max={100}
+              step={1}
+              onValueCommitted={(value) =>
+                setVolume.mutate({
+                  volumePercent: Array.isArray(value) ? value[0] : value,
+                })
+              }
+              style={{ width: 90 }}
+              aria-label="Volume"
+            />
+          </div>
+
+          <button className="ml-1" aria-label="Expand">
+            <ExpandIcon />
+          </button>
         </div>
       </div>
     </div>

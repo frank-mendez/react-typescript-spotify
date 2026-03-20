@@ -28,6 +28,48 @@ const routes: RouteObject[] = [
         </Suspense>
       </ProtectedRoute>
     ),
+    children: [
+      {
+        path: 'playlist/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PlaylistDetail />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'album/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AlbumDetail />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'artist/:id',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <ArtistDetail />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'profile',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Profile />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'settings',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <Settings />
+          </Suspense>
+        ),
+      },
+    ],
   },
   {
     path: '/login',
@@ -35,56 +77,6 @@ const routes: RouteObject[] = [
       <Suspense fallback={<PageLoader />}>
         <Login />
       </Suspense>
-    ),
-  },
-  {
-    path: '/profile',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <Profile />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/settings',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <Settings />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/playlist/:id',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <PlaylistDetail />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/album/:id',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <AlbumDetail />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/artist/:id',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<PageLoader />}>
-          <ArtistDetail />
-        </Suspense>
-      </ProtectedRoute>
     ),
   },
 ];

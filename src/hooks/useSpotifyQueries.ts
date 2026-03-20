@@ -167,15 +167,6 @@ export const usePlaylist = (playlistId: string) => {
   });
 };
 
-export const usePlaylistItems = (playlistId: string, limit = 50, offset = 0) => {
-  const api = useSpotifyApi();
-  return useQuery({
-    queryKey: ["spotify", "playlist", playlistId, "items", limit, offset],
-    queryFn: () => requireApi(api).playlists.getPlaylistItems(playlistId, { limit, offset }),
-    enabled: api !== null && !!playlistId,
-    staleTime: 10 * 60 * 1000,
-  });
-};
 
 export const useAlbumTracks = (albumId: string, limit = 50, offset = 0) => {
   const api = useSpotifyApi();
@@ -187,21 +178,26 @@ export const useAlbumTracks = (albumId: string, limit = 50, offset = 0) => {
   });
 };
 
-export const useArtistTopTracks = (artistId: string, market = 'US') => {
+
+export const useFollowedArtists = (limit = 50) => {
   const api = useSpotifyApi();
   return useQuery({
-    queryKey: ["spotify", "artist", artistId, "top-tracks", market],
-    queryFn: () => requireApi(api).artists.getArtistTopTracks(artistId, market),
-    enabled: api !== null && !!artistId,
-    staleTime: 10 * 60 * 1000,
+    queryKey: ["spotify", "me", "following", "artists", limit],
+    queryFn: () => requireApi(api).artists.getFollowedArtists({ limit }),
+    enabled: api !== null,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
-export const useArtistAlbums = (artistId: string, limit = 20, offset = 0) => {
+export const useArtistAlbums = (artistId: string, limit = 10, offset = 0) => {
   const api = useSpotifyApi();
   return useQuery({
     queryKey: ["spotify", "artist", artistId, "albums", limit, offset],
-    queryFn: () => requireApi(api).artists.getArtistAlbums(artistId, { limit, offset }),
+    queryFn: () => requireApi(api).artists.getArtistAlbums(artistId, {
+      include_groups: 'album,single,compilation',
+      limit,
+      ...(offset > 0 && { offset }),
+    }),
     enabled: api !== null && !!artistId,
     staleTime: 10 * 60 * 1000,
   });

@@ -88,7 +88,7 @@ export function Search() {
             <section>
               <h2 className="text-text-primary font-bold mb-3">Songs</h2>
               <div className="flex flex-col">
-                {data.tracks.items.slice(0, 5).map((track: Track) => (
+                {data.tracks.items.filter(Boolean).slice(0, 5).map((track: Track) => (
                   <TrackRow key={track.id} track={track} onPlay={handlePlay} />
                 ))}
               </div>
@@ -99,7 +99,7 @@ export function Search() {
             <section>
               <h2 className="text-text-primary font-bold mb-3">Artists</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {data.artists.items.slice(0, 4).map((artist: Artist) => (
+                {data.artists.items.filter(Boolean).slice(0, 4).map((artist: Artist) => (
                   <div
                     key={artist.id}
                     onClick={() => navigate('/artist/' + artist.id)}
@@ -128,7 +128,7 @@ export function Search() {
             <section>
               <h2 className="text-text-primary font-bold mb-3">Albums</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {data.albums.items.slice(0, 4).map((album: Album) => (
+                {data.albums.items.filter(Boolean).slice(0, 4).map((album: Album) => (
                   <div
                     key={album.id}
                     onClick={() => navigate('/album/' + album.id)}
@@ -159,7 +159,7 @@ export function Search() {
             <section>
               <h2 className="text-text-primary font-bold mb-3">Playlists</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {data.playlists.items.slice(0, 4).map((playlist: Playlist) => (
+                {data.playlists.items.filter(Boolean).slice(0, 4).map((playlist: Playlist) => (
                   <div
                     key={playlist.id}
                     onClick={() => navigate('/playlist/' + playlist.id)}

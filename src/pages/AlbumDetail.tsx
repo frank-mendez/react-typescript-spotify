@@ -1,10 +1,21 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Heart } from 'lucide-react';
+import { Play, Pause, Heart } from 'lucide-react';
 import { useAlbum, useAlbumTracks, useCurrentlyPlaying } from '../hooks/useSpotifyQueries';
 import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 import { Skeleton } from '../components/ui/skeleton';
 import { ErrorState } from '../components/ui/ErrorState';
 import { formatDuration, formatTotalDuration } from '../lib/utils/formatDuration';
+
+function EqualizerBars() {
+  return (
+    <span className="inline-flex items-end gap-[2px] w-4 h-4" aria-hidden>
+      <span className="inline-block w-[3px] bg-accent rounded-sm animate-eq-bar1" style={{ height: '3px' }} />
+      <span className="inline-block w-[3px] bg-accent rounded-sm animate-eq-bar2" style={{ height: '8px' }} />
+      <span className="inline-block w-[3px] bg-accent rounded-sm animate-eq-bar3" style={{ height: '12px' }} />
+      <span className="inline-block w-[3px] bg-accent rounded-sm animate-eq-bar2" style={{ height: '5px' }} />
+    </span>
+  );
+}
 
 export default function AlbumDetail() {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +25,9 @@ export default function AlbumDetail() {
   // compilations) may exceed this. Implement useInfiniteQuery or load-more button.
   const { data: tracksData, isLoading: tracksLoading, isError: tracksError, refetch: refetchTracks } = useAlbumTracks(id ?? '');
   const { data: currentlyPlaying } = useCurrentlyPlaying();
-  const { play } = usePlaybackControls();
+  const { play, pause } = usePlaybackControls();
+
+  const isPlaying = currentlyPlaying?.is_playing ?? false;
 
   const isLoading = albumLoading || tracksLoading;
   const isError = albumError || tracksError;
@@ -166,21 +179,43 @@ export default function AlbumDetail() {
         {tracks.map((track, index) => {
           if (!track) return null;
           const isCurrentTrack = track.id === currentTrackId;
+          const isActiveAndPlaying = isCurrentTrack && isPlaying;
+
+          const handleRowClick = () => {
+            if (isCurrentTrack) {
+              isPlaying ? pause.mutate(undefined) : play.mutate({ context_uri: album.uri, offset: { position: index } });
+            } else {
+              handlePlayTrack(index);
+            }
+          };
 
           return (
             <div
               key={`${track.id}-${index}`}
-              onClick={() => handlePlayTrack(index)}
+              onClick={handleRowClick}
               role="row"
               aria-label={`${track.name} by ${track.artists.map((a) => a.name).join(', ')}`}
               className="grid grid-cols-[2rem_1fr_4rem] gap-4 px-2 py-2 rounded hover:bg-[#ffffff10] cursor-pointer group items-center"
             >
-              {/* Track index */}
-              <span
-                className={`text-sm text-right font-medium ${isCurrentTrack ? 'text-accent' : 'text-text-muted'}`}
-              >
-                {index + 1}
-              </span>
+              {/* Track index / play state */}
+              <div className="flex items-center justify-end w-full">
+                {isActiveAndPlaying ? (
+                  <>
+                    <Pause className="w-4 h-4 text-accent fill-accent hidden group-hover:block" />
+                    <span className="group-hover:hidden"><EqualizerBars /></span>
+                  </>
+                ) : isCurrentTrack ? (
+                  <>
+                    <Play className="w-4 h-4 text-accent fill-accent hidden group-hover:block" />
+                    <span className="text-sm font-medium text-accent group-hover:hidden">{index + 1}</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 text-text-primary fill-text-primary hidden group-hover:block" />
+                    <span className="text-sm font-medium text-text-muted group-hover:hidden">{index + 1}</span>
+                  </>
+                )}
+              </div>
 
               {/* Track info */}
               <div className="flex flex-col min-w-0">

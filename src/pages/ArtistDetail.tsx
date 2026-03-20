@@ -1,23 +1,20 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Play } from 'lucide-react';
-import { useArtist, useArtistTopTracks, useArtistAlbums, useCurrentlyPlaying } from '../hooks/useSpotifyQueries';
+import { useArtist, useArtistAlbums } from '../hooks/useSpotifyQueries';
 import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 import { Skeleton } from '../components/ui/skeleton';
 import { ErrorState } from '../components/ui/ErrorState';
-import { formatDuration } from '../lib/utils/formatDuration';
 
 export default function ArtistDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const { data: artist, isLoading: artistLoading, isError: artistError, refetch: refetchArtist } = useArtist(id ?? '');
-  const { data: topTracksData, isLoading: tracksLoading, isError: tracksError, refetch: refetchTracks } = useArtistTopTracks(id ?? '');
   const { data: albumsData, isLoading: albumsLoading, isError: albumsError, refetch: refetchAlbums } = useArtistAlbums(id ?? '');
-  const { data: currentlyPlaying } = useCurrentlyPlaying();
   const { play } = usePlaybackControls();
 
-  const isLoading = artistLoading || tracksLoading || albumsLoading;
-  const isError = artistError || tracksError || albumsError;
+  const isLoading = artistLoading || albumsLoading;
+  const isError = artistError || albumsError;
 
   if (isLoading) {
     return (
@@ -58,14 +55,12 @@ export default function ArtistDetail() {
     return (
       <ErrorState
         message="Failed to load artist."
-        onRetry={() => { refetchArtist(); refetchTracks(); refetchAlbums(); }}
+        onRetry={() => { refetchArtist(); refetchAlbums(); }}
       />
     );
   }
 
-  const topTracks = (topTracksData?.tracks ?? []).slice(0, 5);
   const albums = (albumsData?.items ?? []).slice(0, 10);
-  const currentTrackId = currentlyPlaying?.item?.id;
 
   const artistImage = artist.images?.[0]?.url;
 
@@ -120,61 +115,6 @@ export default function ArtistDetail() {
 
       {/* Content area */}
       <div className="flex-1 bg-[#121212] px-6 py-6">
-        {/* Popular section */}
-        <section className="mb-8">
-          <h2 className="text-text-primary text-2xl font-bold mb-4">Popular</h2>
-          {topTracks.map((track, index) => {
-            const isCurrentTrack = track.id === currentTrackId;
-            const albumThumb = track.album?.images?.[2]?.url ?? track.album?.images?.[0]?.url;
-            const playCount = Math.round(track.popularity * 1_000_000 / 100).toLocaleString();
-
-            return (
-              <div
-                key={track.id}
-                onClick={() => play.mutate({ uris: [track.uri] })}
-                role="row"
-                aria-label={track.name}
-                className="flex items-center gap-4 px-2 py-2 rounded hover:bg-[#ffffff10] cursor-pointer group"
-              >
-                {/* Rank */}
-                <span
-                  className={`w-5 text-sm text-right font-medium shrink-0 ${isCurrentTrack ? 'text-accent' : 'text-text-muted'}`}
-                >
-                  {index + 1}
-                </span>
-
-                {/* Album thumbnail */}
-                {albumThumb ? (
-                  <img
-                    src={albumThumb}
-                    alt=""
-                    className="w-10 h-10 rounded object-cover shrink-0"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded bg-border shrink-0" />
-                )}
-
-                {/* Track name */}
-                <span
-                  className={`text-sm font-medium flex-1 min-w-0 truncate ${isCurrentTrack ? 'text-accent' : 'text-text-primary'}`}
-                >
-                  {track.name}
-                </span>
-
-                {/* Play count */}
-                <span className="text-xs text-text-muted w-20 text-right shrink-0">
-                  {playCount}
-                </span>
-
-                {/* Duration */}
-                <span className="text-xs text-text-muted w-10 text-right shrink-0">
-                  {formatDuration(track.duration_ms)}
-                </span>
-              </div>
-            );
-          })}
-        </section>
-
         {/* Albums section */}
         <section>
           <h2 className="text-text-primary text-2xl font-bold mb-4">Albums</h2>

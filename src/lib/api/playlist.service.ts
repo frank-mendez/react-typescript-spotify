@@ -1,7 +1,6 @@
 import { SpotifyApiClient } from './base.service';
 import { 
   Playlist,
-  PlaylistTrack,
   PaginatedResponse,
   UserPlaylists
 } from '../../types';
@@ -23,24 +22,6 @@ export class PlaylistService {
     }
   ): Promise<Playlist> {
     return this.apiClient.get<Playlist>(`/playlists/${playlistId}`, options);
-  }
-
-  /**
-   * Get full details of the items of a playlist owned by a Spotify user.
-   * @param playlistId The Spotify ID for the playlist.
-   * @param options Optional parameters for the request.
-   */
-  async getPlaylistItems(
-    playlistId: string,
-    options?: {
-      market?: string;
-      fields?: string;
-      limit?: number;
-      offset?: number;
-      additional_types?: string;
-    }
-  ): Promise<PaginatedResponse<PlaylistTrack>> {
-    return this.apiClient.get<PaginatedResponse<PlaylistTrack>>(`/playlists/${playlistId}/tracks`, options);
   }
 
   /**

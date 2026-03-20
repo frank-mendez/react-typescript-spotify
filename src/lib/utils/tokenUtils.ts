@@ -30,31 +30,40 @@ export const refreshAccessToken = async (): Promise<string | null> => {
       new Date(Date.now() + tokenResponse.expires_in * 1000).toISOString()
     );
 
-    // If a new refresh token is provided, update it
     if (tokenResponse.refresh_token) {
       localStorage.setItem('refresh_token', tokenResponse.refresh_token);
     }
 
     return tokenResponse.access_token;
   } catch {
-    // Clear tokens on refresh failure
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('expires_in');
     localStorage.removeItem('expires');
+    localStorage.removeItem('token_scope');
     return null;
   }
 };
 
+// Shared promise so concurrent 401s only trigger one refresh request.
+// Spotify uses rotating refresh tokens — a second concurrent refresh
+// would use an already-invalidated token and fail.
+let _refreshing: Promise<string | null> | null = null;
+
 export const getValidAccessToken = async (): Promise<string | null> => {
-  let accessToken = localStorage.getItem('access_token');
+  const accessToken = localStorage.getItem('access_token');
 
   if (!accessToken) {
     return null;
   }
 
   if (isTokenExpired()) {
-    accessToken = await refreshAccessToken();
+    if (!_refreshing) {
+      _refreshing = refreshAccessToken().finally(() => {
+        _refreshing = null;
+      });
+    }
+    return _refreshing;
   }
 
   return accessToken;

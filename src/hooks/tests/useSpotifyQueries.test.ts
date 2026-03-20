@@ -4,9 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createElement } from 'react';
 import {
   usePlaylist,
-  usePlaylistItems,
   useAlbumTracks,
-  useArtistTopTracks,
   useArtistAlbums,
 } from '../useSpotifyQueries';
 
@@ -14,13 +12,11 @@ import {
 const mockApi = {
   playlists: {
     getPlaylist: vi.fn(),
-    getPlaylistItems: vi.fn(),
   },
   albums: {
     getAlbumTracks: vi.fn(),
   },
   artists: {
-    getArtistTopTracks: vi.fn(),
     getArtistAlbums: vi.fn(),
   },
 };
@@ -84,66 +80,6 @@ describe('usePlaylist', () => {
   });
 });
 
-describe('usePlaylistItems', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
-  });
-
-  it('fetches playlist items with default limit and offset', async () => {
-    const mockItems = { items: [], total: 0 };
-    mockApi.playlists.getPlaylistItems.mockResolvedValue(mockItems);
-
-    const { result } = renderHook(() => usePlaylistItems('playlist1'), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(mockApi.playlists.getPlaylistItems).toHaveBeenCalledWith('playlist1', {
-      limit: 50,
-      offset: 0,
-    });
-    expect(result.current.data).toEqual(mockItems);
-  });
-
-  it('fetches playlist items with custom limit and offset', async () => {
-    const mockItems = { items: [], total: 0 };
-    mockApi.playlists.getPlaylistItems.mockResolvedValue(mockItems);
-
-    const { result } = renderHook(() => usePlaylistItems('playlist1', 20, 10), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(mockApi.playlists.getPlaylistItems).toHaveBeenCalledWith('playlist1', {
-      limit: 20,
-      offset: 10,
-    });
-  });
-
-  it('is disabled when api is null', () => {
-    vi.mocked(useSpotifyApi).mockReturnValue(null);
-
-    const { result } = renderHook(() => usePlaylistItems('playlist1'), {
-      wrapper: createWrapper(),
-    });
-
-    expect(result.current.fetchStatus).toBe('idle');
-    expect(mockApi.playlists.getPlaylistItems).not.toHaveBeenCalled();
-  });
-
-  it('is disabled when playlistId is empty', () => {
-    const { result } = renderHook(() => usePlaylistItems(''), {
-      wrapper: createWrapper(),
-    });
-
-    expect(result.current.fetchStatus).toBe('idle');
-    expect(mockApi.playlists.getPlaylistItems).not.toHaveBeenCalled();
-  });
-});
-
 describe('useAlbumTracks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -204,61 +140,6 @@ describe('useAlbumTracks', () => {
   });
 });
 
-describe('useArtistTopTracks', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
-  });
-
-  it('fetches artist top tracks with default market', async () => {
-    const mockTracks = { tracks: [] };
-    mockApi.artists.getArtistTopTracks.mockResolvedValue(mockTracks);
-
-    const { result } = renderHook(() => useArtistTopTracks('artist1'), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(mockApi.artists.getArtistTopTracks).toHaveBeenCalledWith('artist1', 'US');
-    expect(result.current.data).toEqual(mockTracks);
-  });
-
-  it('fetches artist top tracks with custom market', async () => {
-    const mockTracks = { tracks: [] };
-    mockApi.artists.getArtistTopTracks.mockResolvedValue(mockTracks);
-
-    const { result } = renderHook(() => useArtistTopTracks('artist1', 'GB'), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(mockApi.artists.getArtistTopTracks).toHaveBeenCalledWith('artist1', 'GB');
-    expect(result.current.data).toEqual(mockTracks);
-  });
-
-  it('is disabled when api is null', () => {
-    vi.mocked(useSpotifyApi).mockReturnValue(null);
-
-    const { result } = renderHook(() => useArtistTopTracks('artist1'), {
-      wrapper: createWrapper(),
-    });
-
-    expect(result.current.fetchStatus).toBe('idle');
-    expect(mockApi.artists.getArtistTopTracks).not.toHaveBeenCalled();
-  });
-
-  it('is disabled when artistId is empty', () => {
-    const { result } = renderHook(() => useArtistTopTracks(''), {
-      wrapper: createWrapper(),
-    });
-
-    expect(result.current.fetchStatus).toBe('idle');
-    expect(mockApi.artists.getArtistTopTracks).not.toHaveBeenCalled();
-  });
-});
-
 describe('useArtistAlbums', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -276,8 +157,8 @@ describe('useArtistAlbums', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(mockApi.artists.getArtistAlbums).toHaveBeenCalledWith('artist1', {
-      limit: 20,
-      offset: 0,
+      include_groups: 'album,single,compilation',
+      limit: 10,
     });
     expect(result.current.data).toEqual(mockAlbums);
   });
@@ -293,6 +174,7 @@ describe('useArtistAlbums', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(mockApi.artists.getArtistAlbums).toHaveBeenCalledWith('artist1', {
+      include_groups: 'album,single,compilation',
       limit: 10,
       offset: 20,
     });

@@ -1,7 +1,6 @@
 import { SpotifyApiClient } from './base.service';
 import { 
   Artist, 
-  ArtistTopTracks, 
   ArtistAlbums,
   PaginatedResponse 
 } from '../../types';
@@ -32,24 +31,15 @@ export class ArtistService {
    * @param options Optional parameters for the request.
    */
   async getArtistAlbums(
-    artistId: string, 
+    artistId: string,
     options?: {
-      include_groups?: 'album' | 'single' | 'appears_on' | 'compilation';
+      include_groups?: string;
       market?: string;
       limit?: number;
       offset?: number;
     }
   ): Promise<ArtistAlbums> {
     return this.apiClient.get<ArtistAlbums>(`/artists/${artistId}/albums`, options);
-  }
-
-  /**
-   * Get Spotify catalog information about an artist's top tracks by country.
-   * @param artistId The Spotify ID for the artist.
-   * @param market An ISO 3166-1 alpha-2 country code.
-   */
-  async getArtistTopTracks(artistId: string, market: string = 'US'): Promise<ArtistTopTracks> {
-    return this.apiClient.get<ArtistTopTracks>(`/artists/${artistId}/top-tracks`, { market });
   }
 
   /**
