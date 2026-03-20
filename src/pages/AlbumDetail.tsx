@@ -4,26 +4,14 @@ import { useAlbum, useAlbumTracks, useCurrentlyPlaying } from '../hooks/useSpoti
 import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 import { Skeleton } from '../components/ui/skeleton';
 import { ErrorState } from '../components/ui/ErrorState';
-
-function formatDuration(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-}
-
-function formatTotalDuration(totalMs: number): string {
-  const totalMinutes = Math.floor(totalMs / 60000);
-  if (totalMinutes < 60) return `${totalMinutes} min`;
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return minutes > 0 ? `${hours} hr ${minutes} min` : `${hours} hr`;
-}
+import { formatDuration, formatTotalDuration } from '../lib/utils/formatDuration';
 
 export default function AlbumDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: album, isLoading: albumLoading, isError: albumError, refetch: refetchAlbum } = useAlbum(id ?? '');
+  // TODO: Pagination — currently fetches first 50 tracks only. Long albums (live recordings,
+  // compilations) may exceed this. Implement useInfiniteQuery or load-more button.
   const { data: tracksData, isLoading: tracksLoading, isError: tracksError, refetch: refetchTracks } = useAlbumTracks(id ?? '');
   const { data: currentlyPlaying } = useCurrentlyPlaying();
   const { play } = usePlaybackControls();
@@ -91,7 +79,7 @@ export default function AlbumDetail() {
   };
 
   const coverImage = album.images?.[0]?.url;
-  const releaseYear = album.release_date ? new Date(album.release_date).getFullYear() : null;
+  const releaseYear = album.release_date ? parseInt(album.release_date.slice(0, 4), 10) : null;
 
   return (
     <div className="flex flex-col min-h-full" data-testid="album-detail">
@@ -155,6 +143,7 @@ export default function AlbumDetail() {
           >
             <Play className="w-5 h-5 text-black fill-black ml-0.5" />
           </button>
+          {/* TODO: Wire up save/unsave album using useLibraryControls when implemented */}
           <button
             aria-label="Like album"
             className="w-8 h-8 rounded-full border border-text-muted flex items-center justify-center hover:border-text-primary transition-colors"

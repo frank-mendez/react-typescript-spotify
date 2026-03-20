@@ -4,21 +4,7 @@ import { usePlaylist, usePlaylistItems, useCurrentlyPlaying } from '../hooks/use
 import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 import { Skeleton } from '../components/ui/skeleton';
 import { ErrorState } from '../components/ui/ErrorState';
-
-function formatDuration(ms: number): string {
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-}
-
-function formatTotalDuration(totalMs: number): string {
-  const totalMinutes = Math.floor(totalMs / 60000);
-  if (totalMinutes < 60) return `${totalMinutes} min`;
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return minutes > 0 ? `${hours} hr ${minutes} min` : `${hours} hr`;
-}
+import { formatDuration, formatTotalDuration } from '../lib/utils/formatDuration';
 
 export default function PlaylistDetail() {
   const { id } = useParams<{ id: string }>();
