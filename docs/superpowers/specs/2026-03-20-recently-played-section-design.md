@@ -63,11 +63,11 @@ type RecentItem = {
 ### Derivation logic (in `RecentlyPlayedSection`)
 
 1. Iterate `items` from the hook response in order (most recent first).
-2. For each track:
+2. For each track, **both** an album and an artist entry may be emitted from the same track (they are distinct items):
    - If `track.album` exists and its `id` has not been seen: add an album `RecentItem`.
-   - Add `track.artists[0]` if its `id` has not been seen: add an artist `RecentItem`.
-3. Stop after collecting 8 unique items (albums and artists interleaved in recency order).
-4. `imageUrl`: `track.album.images[1]?.url ?? images[0]?.url` for albums; `undefined` for artists (no image in this endpoint).
+   - If `track.artists[0]` exists and its `id` has not been seen: add an artist `RecentItem`. This step runs regardless of whether `track.album` was present — if album is absent (e.g. local files), still attempt to emit the artist.
+3. Stop after collecting 8 unique items total (albums and artists interleaved in recency order).
+4. `imageUrl`: `track.album.images[1]?.url ?? track.album.images[0]?.url` for albums. For artists, the `Artist` type has an optional `images` field but this endpoint does not reliably populate it — treat artist `imageUrl` as `undefined` and always render the initials fallback.
 5. `subtitle`: comma-joined artist names for albums; `"Artist"` label for artist items.
 6. `navigationPath`: `/album/:id` for albums; `/artist/:id` for artists.
 7. `uri`: `track.album.uri` for albums; `track.artists[0].uri` for artists (used as `context_uri` for playback).
@@ -106,7 +106,7 @@ Clicking the card body navigates to `navigationPath`. Play button calls `onPlay(
 
 ### `RecentlyPlayedSection`
 
-- Calls `useRecentlyPlayed(20)` and `useSpotifyMutations` (for `startResumePlayback`).
+- Calls `useRecentlyPlayed(20)` and `usePlaybackControls` (for `play` mutation / `startResumePlayback`).
 - Renders a skeleton grid (8 skeleton pills) while loading.
 - Renders nothing if data is empty.
 - Grid: `grid grid-cols-2 lg:grid-cols-4 gap-2`
@@ -136,13 +136,13 @@ return (
 );
 ```
 
-The existing "Open Spotify on a device to start playing" message is removed from this branch — the home view is now the recently played grid.
+Only the fallthrough PLAYER branch of `MainPanel` changes. The `if (outlet) return outlet` guard and the `if (currentContent === MainContent.BROWSE)` branch remain untouched. The existing "Open Spotify on a device to start playing" placeholder that currently renders in the PLAYER fallthrough is replaced by the recently played grid.
 
 ---
 
 ## Out of Scope
 
 - Playlists (require extra per-item API fetches)
-- Artist images (not returned by `/me/player/recently-played`)
+- Artist images (the `Artist.images` field is optional and unreliable from `/me/player/recently-played`; initials fallback is always used)
 - "Made For", "Top Mixes", "Favorite Artists" sections (future, will reuse `HomeSection`)
 - Infinite scroll / pagination
