@@ -51,25 +51,24 @@ function PlaylistCard({ playlist, onPlay, onPause, isActive, isPlaying }: Readon
         )}
 
         {/* Play/Pause button — bottom right corner */}
-        <div
-          className={`absolute bottom-2 right-2 transition-all duration-200 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0'}`}
+        <button
+          aria-label={isActive && isPlaying ? `Pause ${playlist.name}` : `Play ${playlist.name}`}
           onClick={handlePlayPause}
+          className={`absolute bottom-2 right-2 w-9 h-9 rounded-full bg-accent flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0'}`}
         >
-          <span className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-            {isActive && isPlaying ? (
-              <>
-                <span className="group-hover:hidden flex items-end gap-[2px] h-4">
-                  <span className="w-[3px] bg-black rounded-sm animate-eq-bar1" />
-                  <span className="w-[3px] bg-black rounded-sm animate-eq-bar2" />
-                  <span className="w-[3px] bg-black rounded-sm animate-eq-bar3" />
-                </span>
-                <Pause className="hidden group-hover:flex w-4 h-4 text-black fill-black" />
-              </>
-            ) : (
-              <Play className="w-4 h-4 text-black fill-black ml-0.5" />
-            )}
-          </span>
-        </div>
+          {isActive && isPlaying ? (
+            <>
+              <span className="group-hover:hidden flex items-end gap-[2px] h-4">
+                <span className="w-[3px] bg-black rounded-sm animate-eq-bar1" />
+                <span className="w-[3px] bg-black rounded-sm animate-eq-bar2" />
+                <span className="w-[3px] bg-black rounded-sm animate-eq-bar3" />
+              </span>
+              <Pause className="hidden group-hover:flex w-4 h-4 text-black fill-black" />
+            </>
+          ) : (
+            <Play className="w-4 h-4 text-black fill-black ml-0.5" />
+          )}
+        </button>
       </div>
 
       <div className="px-0.5">
@@ -124,8 +123,8 @@ export function MadeForYouSection() {
     return (
       <HomeSection title={sectionTitle}>
         <div className="flex gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-2 w-40 shrink-0">
+          {['s1','s2','s3','s4','s5','s6','s7','s8'].map((k) => (
+            <div key={k} className="flex flex-col gap-2 w-40 shrink-0">
               <Skeleton className="w-40 h-40 rounded-md" />
               <Skeleton className="h-3 w-3/4 rounded" />
               <Skeleton className="h-3 w-1/2 rounded" />
