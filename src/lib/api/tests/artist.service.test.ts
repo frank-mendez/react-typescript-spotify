@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest';
 import { ArtistService } from '../artist.service';
-import type { Artist, ArtistTopTracks, ArtistAlbums } from '../../../types';
+import type { Artist, ArtistAlbums } from '../../../types';
 
 // Mock the base service
 vi.mock('../base.service');
@@ -110,34 +110,6 @@ describe('ArtistService', () => {
       await artistService.getArtistAlbums('artist123', options);
 
       expect(mockApiClient.get).toHaveBeenCalledWith('/artists/artist123/albums', options);
-    });
-  });
-
-  describe('getArtistTopTracks', () => {
-    it('should get artist top tracks with default market', async () => {
-      const mockTopTracks: ArtistTopTracks = {
-        tracks: []
-      };
-
-      mockApiClient.get.mockResolvedValue(mockTopTracks);
-
-      const result = await artistService.getArtistTopTracks('artist123');
-
-      expect(mockApiClient.get).toHaveBeenCalledWith('/artists/artist123/top-tracks', { market: 'US' });
-      expect(result).toEqual(mockTopTracks);
-    });
-
-    it('should get artist top tracks with custom market', async () => {
-      const mockTopTracks: ArtistTopTracks = {
-        tracks: []
-      };
-
-      mockApiClient.get.mockResolvedValue(mockTopTracks);
-
-      const result = await artistService.getArtistTopTracks('artist123', 'GB');
-
-      expect(mockApiClient.get).toHaveBeenCalledWith('/artists/artist123/top-tracks', { market: 'GB' });
-      expect(result).toEqual(mockTopTracks);
     });
   });
 

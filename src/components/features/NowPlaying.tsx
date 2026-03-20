@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useCurrentlyPlaying } from '../../hooks/useSpotifyQueries';
 import { Skeleton } from '../ui/skeleton';
 import { Badge } from '../ui/badge';
 
 export function NowPlaying() {
+  const navigate = useNavigate();
   const { data: playback, isLoading } = useCurrentlyPlaying();
   const track = playback?.item;
 
@@ -34,10 +36,25 @@ export function NowPlaying() {
       <div className="flex flex-col gap-1">
         <span className="text-text-primary text-sm font-semibold truncate">{track.name}</span>
         <span className="text-text-muted text-xs truncate">
-          {track.artists.map((a) => a.name).join(', ')}
+          {track.artists.map((a, i) => (
+            <span key={a.id}>
+              {i > 0 && ', '}
+              <button
+                onClick={() => navigate('/artist/' + a.id)}
+                className="hover:underline cursor-pointer"
+              >
+                {a.name}
+              </button>
+            </span>
+          ))}
         </span>
         {track.album && (
-          <span className="text-text-muted text-xs truncate">{track.album.name}</span>
+          <button
+            onClick={() => navigate('/album/' + track.album!.id)}
+            className="text-text-muted text-xs truncate hover:underline cursor-pointer text-left"
+          >
+            {track.album.name}
+          </button>
         )}
       </div>
       {track.explicit && (

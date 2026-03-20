@@ -2,7 +2,7 @@ import { TokenResponse, TokenScopeResponse } from "../../types/auth";
 
 const authorizationEndpoint = "https://accounts.spotify.com/authorize";
 const clientId = import.meta.env.VITE_CLIENT_ID;
-const scope = [
+export const REQUIRED_SCOPES = [
   "user-read-private",
   "user-read-email",
   "user-read-playback-state",
@@ -19,7 +19,8 @@ const scope = [
   "user-library-modify",
   "user-library-read",
   "streaming",
-].join(" ");
+];
+const scope = REQUIRED_SCOPES.join(" ");
 const redirectUrl =
   import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/";
 const tokenEndpoint = "https://accounts.spotify.com/api/token";
@@ -91,13 +92,14 @@ export async function getToken(code: string): Promise<TokenScopeResponse> {
 
   const response = await body.json();
 
+  localStorage.setItem('token_scope', response.scope ?? scope);
+
   return response;
 }
 
 export const getRefreshToken = async (
   refreshToken: string,
 ): Promise<TokenResponse> => {
-  // refresh token that has been previously stored
   const url = "https://accounts.spotify.com/api/token";
 
   const payload = {
@@ -116,6 +118,10 @@ export const getRefreshToken = async (
     throw new Error(`Token refresh failed: ${body.status}`);
   }
   const response = await body.json();
+
+  if (response.scope) {
+    localStorage.setItem('token_scope', response.scope);
+  }
 
   return response;
 };

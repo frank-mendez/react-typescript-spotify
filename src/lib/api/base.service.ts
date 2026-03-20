@@ -37,13 +37,19 @@ export class SpotifyApiClient {
             this.updateToken(newAccessToken);
             originalRequest.headers["Authorization"] =
               `Bearer ${newAccessToken}`;
+            globalThis.dispatchEvent(
+              new CustomEvent("spotify:token-refreshed", {
+                detail: newAccessToken,
+              }),
+            );
             return this.api(originalRequest);
           } else {
-            // Clear tokens so ProtectedRoute redirects to /login naturally
             localStorage.removeItem("access_token");
             localStorage.removeItem("refresh_token");
             localStorage.removeItem("expires_in");
             localStorage.removeItem("expires");
+            localStorage.removeItem("token_scope");
+            globalThis.dispatchEvent(new CustomEvent("spotify:auth-failure"));
           }
         }
 

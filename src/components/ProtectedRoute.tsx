@@ -1,5 +1,5 @@
-import { useAuth } from '../context/AuthContext';
-import Login from '../pages/Login';
+import { useAuth } from "../hooks/useAuth";
+import Login from "../pages/Login";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

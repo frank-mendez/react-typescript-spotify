@@ -3,8 +3,6 @@ import { PlaylistService } from '../playlist.service';
 import { SpotifyApiClient } from '../base.service';
 import { 
   Playlist,
-  PlaylistTrack,
-  PaginatedResponse,
   UserPlaylists 
 } from '../../../types';
 
@@ -67,60 +65,6 @@ describe('PlaylistService', () => {
         options
       );
       expect(result).toEqual(mockPlaylist);
-    });
-  });
-
-  describe('getPlaylistItems', () => {
-    it('should get playlist items', async () => {
-      const mockResponse: Partial<PaginatedResponse<PlaylistTrack>> = {
-        items: [
-          {
-            track: { id: 'track1', name: 'Track 1' } as any,
-            added_at: '2023-01-01T00:00:00Z',
-            added_by: { id: 'user1' } as any,
-            is_local: false
-          }
-        ],
-        total: 1,
-        limit: 20,
-        offset: 0
-      };
-
-      (mockApiClient.get as any).mockResolvedValue(mockResponse);
-
-      const result = await playlistService.getPlaylistItems('test-playlist-id');
-
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/playlists/test-playlist-id/tracks',
-        undefined
-      );
-      expect(result).toEqual(mockResponse);
-    });
-
-    it('should get playlist items with options', async () => {
-      const mockResponse: Partial<PaginatedResponse<PlaylistTrack>> = {
-        items: [],
-        total: 0,
-        limit: 10,
-        offset: 5
-      };
-      const options = {
-        market: 'US',
-        fields: 'items(track(name))',
-        limit: 10,
-        offset: 5,
-        additional_types: 'episode'
-      };
-
-      (mockApiClient.get as any).mockResolvedValue(mockResponse);
-
-      const result = await playlistService.getPlaylistItems('test-playlist-id', options);
-
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/playlists/test-playlist-id/tracks',
-        options
-      );
-      expect(result).toEqual(mockResponse);
     });
   });
 

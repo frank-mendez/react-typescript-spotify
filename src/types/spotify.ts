@@ -173,7 +173,7 @@ export interface PlaylistTrack {
     uri: string;
   };
   is_local: boolean;
-  track: Track;
+  track: Track | null;
 }
 
 // Search
