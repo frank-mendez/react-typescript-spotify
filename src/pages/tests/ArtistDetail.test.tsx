@@ -189,14 +189,21 @@ describe('ArtistDetail', () => {
       expect(screen.getByTestId('artist-photo')).toHaveAttribute('src', 'http://img.test/artist.jpg');
     });
 
-    it('renders monthly listeners with formatted number', () => {
+    it('renders followers with formatted number', () => {
       renderWithRouter();
-      expect(screen.getByText(/1,234,567 monthly listeners/i)).toBeInTheDocument();
+      expect(screen.getByText(/1,234,567 followers/i)).toBeInTheDocument();
     });
 
     it('renders play button', () => {
       renderWithRouter();
       expect(screen.getByRole('button', { name: /play artist/i })).toBeInTheDocument();
+    });
+
+    it('calls play mutation with artist context_uri on hero play button click', () => {
+      renderWithRouter();
+      const playButton = screen.getByRole('button', { name: /play artist/i });
+      fireEvent.click(playButton);
+      expect(mockPlayMutate).toHaveBeenCalledWith({ context_uri: 'spotify:artist:artist1' });
     });
 
     it('renders follow button', () => {

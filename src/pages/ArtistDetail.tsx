@@ -92,7 +92,7 @@ export default function ArtistDetail() {
               {artist.name}
             </h1>
             <p className="text-text-muted text-sm">
-              {artist.followers?.total.toLocaleString()} monthly listeners
+              {artist.followers?.total.toLocaleString()} followers
             </p>
           </div>
         </div>
@@ -101,15 +101,14 @@ export default function ArtistDetail() {
         <div className="flex items-center gap-4 mt-6">
           <button
             onClick={() => {
-              if (topTracks.length > 0) {
-                play.mutate({ uris: [topTracks[0].uri] });
-              }
+              play.mutate({ context_uri: artist.uri });
             }}
             aria-label="Play artist"
             className="w-12 h-12 rounded-full bg-accent flex items-center justify-center hover:scale-105 transition-transform"
           >
             <Play className="w-5 h-5 text-black fill-black ml-0.5" />
           </button>
+          {/* TODO: Wire up follow/unfollow artist when mutation support is added */}
           <button
             aria-label="Follow artist"
             className="px-6 py-2 rounded-full border border-text-muted text-text-muted text-sm font-semibold hover:border-text-primary hover:text-text-primary transition-colors"
