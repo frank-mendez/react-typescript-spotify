@@ -17,6 +17,10 @@ vi.mock('../../../hooks/useSpotifyMutations', () => ({
   })),
 }));
 
+vi.mock('../../../stores/usePlayerStore', () => ({
+  usePlayerStore: vi.fn(() => ({ deviceId: 'test-device-id' })),
+}));
+
 import { useRecentlyPlayed } from '../../../hooks/useSpotifyQueries';
 
 const makeTrack = (id: string, albumId: string, artistId: string) => ({

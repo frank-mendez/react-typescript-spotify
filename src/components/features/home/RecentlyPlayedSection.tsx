@@ -1,6 +1,7 @@
 import type { Track } from '../../../types/spotify';
 import { useRecentlyPlayed } from '../../../hooks/useSpotifyQueries';
 import { usePlaybackControls } from '../../../hooks/useSpotifyMutations';
+import { usePlayerStore } from '../../../stores/usePlayerStore';
 import { Skeleton } from '../../ui/skeleton';
 import { HomeSection } from './HomeSection';
 import { RecentlyPlayedCard } from './RecentlyPlayedCard';
@@ -52,6 +53,7 @@ function deriveItems(
 export function RecentlyPlayedSection() {
   const { data, isLoading } = useRecentlyPlayed(20);
   const { play } = usePlaybackControls();
+  const { deviceId } = usePlayerStore();
 
   if (isLoading) {
     return (
@@ -75,7 +77,7 @@ export function RecentlyPlayedSection() {
           <RecentlyPlayedCard
             key={`${item.type}:${item.id}`}
             item={item}
-            onPlay={(uri) => play.mutate({ context_uri: uri })}
+            onPlay={(uri) => play.mutate({ context_uri: uri, device_id: deviceId ?? undefined })}
           />
         ))}
       </div>
