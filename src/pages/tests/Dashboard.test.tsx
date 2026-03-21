@@ -15,6 +15,7 @@ vi.mock('../../hooks/useSpotifyQueries', () => ({
   useSavedAlbums: () => ({ data: null, isLoading: false }),
   useFollowedArtists: () => ({ data: null, isLoading: false }),
   useRecentlyPlayed: () => ({ isLoading: false, data: undefined }),
+  useFeaturedPlaylists: () => ({ isLoading: false, isError: false, data: undefined }),
 }));
 
 vi.mock('../../hooks/useSpotifyMutations', () => ({

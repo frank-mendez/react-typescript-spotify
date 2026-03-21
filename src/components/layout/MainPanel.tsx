@@ -6,6 +6,7 @@ import { MainContent } from "../../types/enums";
 import { NavHeader, useNavHeader } from "../features/home/NavHeader";
 import { RecentlyPlayedSection } from "../features/home/RecentlyPlayedSection";
 import { MadeForYouSection } from "../features/home/MadeForYouSection";
+import { FeaturedPlaylistSection } from "../features/home/FeaturedPlaylistSection";
 
 const Search = lazy(() =>
   import("../features/Search").then((m) => ({ default: m.Search })),
@@ -38,6 +39,7 @@ export function MainPanel() {
       <div className="p-4 flex flex-col gap-6">
         <RecentlyPlayedSection />
         <MadeForYouSection />
+        <FeaturedPlaylistSection />
       </div>
     </>
   );
