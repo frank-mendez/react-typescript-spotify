@@ -106,4 +106,19 @@ describe('MadeForYouSection', () => {
     fireEvent.scroll(scrollContainer);
     expect(screen.getByRole('button', { name: 'Scroll right' })).toBeInTheDocument();
   });
+
+  it('shows the left scroll arrow when scrolled right', () => {
+    vi.mocked(useMadeForYouPlaylists).mockReturnValue({
+      isLoading: false,
+      isError: false,
+      data: { playlists: { items: [makePlaylist('p1'), makePlaylist('p2')], total: 2 } },
+    } as never);
+    render(<MadeForYouSection />, { wrapper });
+    const scrollContainer = screen.getByTestId('scroll-container') as HTMLElement;
+    Object.defineProperty(scrollContainer, 'scrollLeft', { value: 200, writable: true, configurable: true });
+    Object.defineProperty(scrollContainer, 'clientWidth', { value: 300, writable: true, configurable: true });
+    Object.defineProperty(scrollContainer, 'scrollWidth', { value: 700, writable: true, configurable: true });
+    fireEvent.scroll(scrollContainer);
+    expect(screen.getByRole('button', { name: 'Scroll left' })).toBeInTheDocument();
+  });
 });
