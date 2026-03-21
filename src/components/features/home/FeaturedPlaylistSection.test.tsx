@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { MemoryRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createElement } from 'react';
 import { FeaturedPlaylistSection } from './FeaturedPlaylistSection';
+import { wrapper, makePlaylist } from './test-utils';
 
 vi.mock('../../../hooks/useSpotifyQueries', () => ({
   useFeaturedPlaylists: vi.fn(),
@@ -24,39 +22,13 @@ vi.mock('../../../stores/usePlayerStore', () => ({
 
 import { useFeaturedPlaylists } from '../../../hooks/useSpotifyQueries';
 
-const makePlaylist = (id: string) => ({
-  id,
-  name: `Playlist ${id}`,
-  description: '',
-  uri: `spotify:playlist:${id}`,
-  images: [{ url: `https://img/${id}.jpg` }],
-  owner: { id: 'spotify', display_name: 'Spotify', type: 'user' as const, href: '', uri: '', external_urls: { spotify: '' } },
-  followers: { total: 0 },
-  tracks: { href: '', total: 5 },
-  collaborative: false,
-  public: true,
-  snapshot_id: 'snap',
-  type: 'playlist' as const,
-  href: '',
-  external_urls: { spotify: '' },
-});
-
-function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return createElement(QueryClientProvider, { client: qc },
-    createElement(MemoryRouter, null, children)
-  );
-}
-
 describe('FeaturedPlaylistSection', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
   it('renders skeleton cards while loading', () => {
     vi.mocked(useFeaturedPlaylists).mockReturnValue({ isLoading: true, isError: false, data: undefined } as never);
     const { container } = render(<FeaturedPlaylistSection />, { wrapper });
-    // Section title is still shown during loading
     expect(screen.getByText('Featured Playlists')).toBeInTheDocument();
-    // Skeleton elements are present (not real playlist cards)
     expect(screen.queryByAltText(/Playlist/)).not.toBeInTheDocument();
     expect(container.firstChild).toBeTruthy();
   });
@@ -124,7 +96,6 @@ describe('FeaturedPlaylistSection', () => {
       },
     } as never);
     render(<FeaturedPlaylistSection />, { wrapper });
-    // Simulate overflow by overriding scroll container dimensions
     const scrollContainer = screen.getByTestId('scroll-container') as HTMLElement;
     if (scrollContainer) {
       Object.defineProperty(scrollContainer, 'scrollLeft', { value: 0, writable: true, configurable: true });
@@ -132,7 +103,6 @@ describe('FeaturedPlaylistSection', () => {
       Object.defineProperty(scrollContainer, 'scrollWidth', { value: 700, writable: true, configurable: true });
       fireEvent.scroll(scrollContainer);
     }
-    // Right arrow should be visible when scrollLeft(0) + clientWidth(300) < scrollWidth(700)
     expect(screen.getByRole('button', { name: 'Scroll right' })).toBeInTheDocument();
   });
 

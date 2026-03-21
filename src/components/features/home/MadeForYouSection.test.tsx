@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { MemoryRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createElement } from 'react';
 import { MadeForYouSection } from './MadeForYouSection';
+import { wrapper, makePlaylist } from './test-utils';
 
 vi.mock('../../../hooks/useSpotifyQueries', () => ({
   useMadeForYouPlaylists: vi.fn(),
@@ -23,30 +21,6 @@ vi.mock('../../../stores/usePlayerStore', () => ({
 }));
 
 import { useMadeForYouPlaylists } from '../../../hooks/useSpotifyQueries';
-
-const makePlaylist = (id: string) => ({
-  id,
-  name: `Playlist ${id}`,
-  description: '',
-  uri: `spotify:playlist:${id}`,
-  images: [{ url: `https://img/${id}.jpg` }],
-  owner: { id: 'spotify', display_name: 'Spotify', type: 'user' as const, href: '', uri: '', external_urls: { spotify: '' } },
-  followers: { total: 0 },
-  tracks: { href: '', total: 5 },
-  collaborative: false,
-  public: true,
-  snapshot_id: 'snap',
-  type: 'playlist' as const,
-  href: '',
-  external_urls: { spotify: '' },
-});
-
-function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return createElement(QueryClientProvider, { client: qc },
-    createElement(MemoryRouter, null, children)
-  );
-}
 
 describe('MadeForYouSection', () => {
   beforeEach(() => { vi.clearAllMocks(); });
