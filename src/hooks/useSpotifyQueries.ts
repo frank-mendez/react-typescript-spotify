@@ -20,7 +20,7 @@ export const useUserPlaylists = (limit = 50, offset = 0) => {
 export const useFeaturedPlaylists = (limit = 20) => {
   const api = useSpotifyApi();
   return useQuery({
-    queryKey: ['spotify', 'search', 'featured-playlists', limit],
+    queryKey: ['spotify', 'playlists', 'featured', limit],
     queryFn: () =>
       requireApi(api).search.search('featured', ['playlist'], { limit }),
     enabled: api !== null,
@@ -31,7 +31,7 @@ export const useFeaturedPlaylists = (limit = 20) => {
 export const useMadeForYouPlaylists = (limit = 20) => {
   const api = useSpotifyApi();
   return useQuery({
-    queryKey: ['spotify', 'search', 'made-for-you', limit],
+    queryKey: ['spotify', 'playlists', 'made-for-you', limit],
     queryFn: () =>
       requireApi(api).search.search('for me', ['playlist'], { limit }),
     enabled: api !== null,
