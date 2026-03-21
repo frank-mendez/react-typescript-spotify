@@ -29,28 +29,30 @@ export const useUserPlaylists = (limit = 50, offset = 0) => {
 
 export const useFeaturedPlaylists = (limit = 20) => {
   const api = useSpotifyApi();
-  const { data: profile } = useCurrentUserProfile();
+  const { data: profile, isLoading: profileLoading } = useCurrentUserProfile();
   const market = profile?.country;
-  return useQuery({
+  const query = useQuery({
     queryKey: ['spotify', 'playlists', 'featured', limit, market],
     queryFn: () =>
       requireApi(api).search.search('featured', ['playlist'], { market }),
     enabled: api !== null && profile !== undefined,
     staleTime: 10 * 60 * 1000,
   });
+  return { ...query, isLoading: query.isLoading || profileLoading };
 };
 
 export const useMadeForYouPlaylists = (limit = 20) => {
   const api = useSpotifyApi();
-  const { data: profile } = useCurrentUserProfile();
+  const { data: profile, isLoading: profileLoading } = useCurrentUserProfile();
   const market = profile?.country;
-  return useQuery({
+  const query = useQuery({
     queryKey: ['spotify', 'playlists', 'made-for-you', limit, market],
     queryFn: () =>
       requireApi(api).search.search('for me', ['playlist'], { market }),
     enabled: api !== null && profile !== undefined,
     staleTime: 10 * 60 * 1000,
   });
+  return { ...query, isLoading: query.isLoading || profileLoading };
 };
 
 export const useCategories = (limit = 50) => {
