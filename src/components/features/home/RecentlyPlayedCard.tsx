@@ -1,5 +1,5 @@
 import { Pause, Play } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export type RecentItem = {
   id: string;
@@ -20,7 +20,6 @@ interface RecentlyPlayedCardProps {
 }
 
 export function RecentlyPlayedCard({ item, onPlay, onPause, isActive, isPlaying }: Readonly<RecentlyPlayedCardProps>) {
-  const navigate = useNavigate();
   const initials = item.name.slice(0, 2).toUpperCase();
 
   const handlePlayPause = (e: React.MouseEvent) => {
@@ -35,13 +34,10 @@ export function RecentlyPlayedCard({ item, onPlay, onPause, isActive, isPlaying 
   return (
     <div className="flex items-center rounded-lg bg-white/5 hover:bg-white/10 transition-colors group overflow-hidden">
       {/* Card body: image + text, handles navigation */}
-      <div
+      <Link
         data-testid="card-body"
+        to={item.navigationPath}
         className="flex flex-1 items-center min-w-0 cursor-pointer"
-        onClick={() => navigate(item.navigationPath)}
-        onKeyDown={(e) => { if (e.key === 'Enter') navigate(item.navigationPath); }}
-        role="link"
-        tabIndex={0}
       >
         {/* Image / initials fallback */}
         <div className="w-16 h-16 shrink-0">
@@ -63,9 +59,9 @@ export function RecentlyPlayedCard({ item, onPlay, onPause, isActive, isPlaying 
           <p className="text-text-primary text-sm font-medium truncate">{item.name}</p>
           <p className="text-text-muted text-xs truncate">{item.subtitle}</p>
         </div>
-      </div>
+      </Link>
 
-      {/* Play/Pause button — sibling of card-body, not nested inside role="link" */}
+      {/* Play/Pause button — sibling of card-body, not nested inside link */}
       <div className={`pr-3 transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-within:opacity-100'}`}>
         <button
           aria-label={isActive && isPlaying ? `Pause ${item.name}` : `Play ${item.name}`}

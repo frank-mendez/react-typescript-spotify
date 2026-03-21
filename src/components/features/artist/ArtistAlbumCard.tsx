@@ -5,24 +5,17 @@ interface ArtistAlbumCardProps {
   album: Pick<Album, 'id' | 'name' | 'images' | 'release_date'>;
 }
 
-export function ArtistAlbumCard({ album }: ArtistAlbumCardProps) {
+export function ArtistAlbumCard({ album }: Readonly<ArtistAlbumCardProps>) {
   const navigate = useNavigate();
   const coverUrl = album.images?.[0]?.url;
   const releaseYear = album.release_date ? album.release_date.slice(0, 4) : null;
 
-  const handleNavigate = () => navigate(`/album/${album.id}`);
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleNavigate(); }
-  };
-
   return (
-    <div
-      onClick={handleNavigate}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
+      onClick={() => navigate(`/album/${album.id}`)}
       aria-label={album.name}
-      className="w-40 shrink-0 cursor-pointer group"
+      className="w-40 shrink-0 cursor-pointer group text-left"
       data-testid={`album-card-${album.id}`}
     >
       {coverUrl ? (
@@ -32,6 +25,6 @@ export function ArtistAlbumCard({ album }: ArtistAlbumCardProps) {
       )}
       <p className="text-text-primary text-sm font-bold truncate">{album.name}</p>
       {releaseYear && <p className="text-text-muted text-xs mt-0.5">{releaseYear}</p>}
-    </div>
+    </button>
   );
 }

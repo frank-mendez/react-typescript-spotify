@@ -7,7 +7,7 @@ interface TrackRowProps {
   onPlay: (uri: string) => void;
 }
 
-export function TrackRow({ track, onPlay }: TrackRowProps) {
+export function TrackRow({ track, onPlay }: Readonly<TrackRowProps>) {
   const navigate = useNavigate();
   // Spotify images are ordered largest→smallest; prefer index 2 (~64px thumbnail), fall back to index 0 (largest)
   const imageUrl =

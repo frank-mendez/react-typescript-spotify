@@ -3,7 +3,7 @@ interface ErrorStateProps {
   onRetry?: () => void;
 }
 
-export function ErrorState({ message, onRetry }: ErrorStateProps) {
+export function ErrorState({ message, onRetry }: Readonly<ErrorStateProps>) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
       <p className="text-text-muted text-sm">{message}</p>

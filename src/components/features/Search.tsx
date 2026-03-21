@@ -100,13 +100,11 @@ export function Search() {
               <h2 className="text-text-primary font-bold mb-3">Artists</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {data.artists.items.filter(Boolean).slice(0, 4).map((artist: Artist) => (
-                  <div
+                  <button
                     key={artist.id}
+                    type="button"
                     onClick={() => navigate('/artist/' + artist.id)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/artist/' + artist.id); } }}
-                    role="button"
-                    tabIndex={0}
-                    className="flex flex-col items-center gap-2 p-4 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
+                    className="flex flex-col items-center gap-2 p-4 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer text-left"
                   >
                     {artist.images?.[0]?.url ? (
                       <img
@@ -121,7 +119,7 @@ export function Search() {
                       {artist.name}
                     </span>
                     <span className="text-text-muted text-xs">Artist</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </section>
@@ -132,13 +130,11 @@ export function Search() {
               <h2 className="text-text-primary font-bold mb-3">Albums</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {data.albums.items.filter(Boolean).slice(0, 4).map((album: Album) => (
-                  <div
+                  <button
                     key={album.id}
+                    type="button"
                     onClick={() => navigate('/album/' + album.id)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/album/' + album.id); } }}
-                    role="button"
-                    tabIndex={0}
-                    className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
+                    className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer text-left w-full"
                   >
                     {album.images?.[0]?.url ? (
                       <img
@@ -155,7 +151,7 @@ export function Search() {
                     <span className="text-text-muted text-xs truncate">
                       {album.artists.map((a) => a.name).join(', ')}
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </section>
@@ -166,13 +162,11 @@ export function Search() {
               <h2 className="text-text-primary font-bold mb-3">Playlists</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {data.playlists.items.filter(Boolean).slice(0, 4).map((playlist: Playlist) => (
-                  <div
+                  <button
                     key={playlist.id}
+                    type="button"
                     onClick={() => navigate('/playlist/' + playlist.id)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/playlist/' + playlist.id); } }}
-                    role="button"
-                    tabIndex={0}
-                    className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer"
+                    className="flex flex-col gap-2 p-3 bg-surface-hover rounded-lg hover:bg-border transition-colors cursor-pointer text-left w-full"
                   >
                     {playlist.images?.[0]?.url ? (
                       <img
@@ -187,7 +181,7 @@ export function Search() {
                       {playlist.name}
                     </span>
                     <span className="text-text-muted text-xs">Playlist</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </section>

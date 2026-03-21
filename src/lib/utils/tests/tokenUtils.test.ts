@@ -17,7 +17,7 @@ const mockLocalStorage = {
   removeItem: vi.fn(),
 };
 
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(globalThis, 'localStorage', {
   value: mockLocalStorage,
 });
 
@@ -28,7 +28,7 @@ const mockConsole = {
   error: vi.fn(),
 };
 
-Object.defineProperty(window, 'console', {
+Object.defineProperty(globalThis, 'console', {
   value: mockConsole,
 });
 

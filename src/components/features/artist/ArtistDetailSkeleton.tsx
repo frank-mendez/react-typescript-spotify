@@ -17,8 +17,8 @@ export function ArtistDetailSkeleton() {
         </div>
       </div>
       <div className="flex-1 bg-[#121212] px-6 py-4 flex flex-col gap-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={`skeleton-artist-${i}`} className="flex items-center gap-4 py-2">
+        {['sk-0','sk-1','sk-2','sk-3','sk-4'].map((key) => (
+          <div key={key} className="flex items-center gap-4 py-2">
             <Skeleton className="w-4 h-4" />
             <Skeleton className="w-10 h-10 rounded" />
             <div className="flex flex-col gap-1 flex-1">

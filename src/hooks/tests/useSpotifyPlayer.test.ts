@@ -28,13 +28,19 @@ const mockPlayer = {
 
 const mockSpotifyConstructor = vi.fn(() => mockPlayer);
 
-// Mock global window.Spotify
-Object.defineProperty(window, 'Spotify', {
+// Mock global Spotify
+Object.defineProperty(globalThis, 'Spotify', {
   writable: true,
   value: {
     Player: mockSpotifyConstructor,
   },
 });
+
+// Helper: extract a named listener from the mock
+function getListener(eventName: string) {
+  const call = mockPlayer.addListener.mock.calls.find(([e]) => e === eventName);
+  return call?.[1] as ((data: unknown) => void) | undefined;
+}
 
 describe('useSpotifyPlayer', () => {
   beforeEach(() => {
@@ -86,12 +92,6 @@ describe('useSpotifyPlayer', () => {
     expect(result.current.player).toBeNull();
   });
 
-  // Helper: extract a named listener from the mock
-  function getListener(eventName: string) {
-    const call = mockPlayer.addListener.mock.calls.find(([e]) => e === eventName);
-    return call?.[1] as ((data: unknown) => void) | undefined;
-  }
-
   const mockTrackState = {
     paused: false,
     position: 100,
@@ -138,9 +138,9 @@ describe('useSpotifyPlayer', () => {
     expect(result.current.is_ready).toBe(false);
   });
 
-  it('injects SDK script tag when window.Spotify is not loaded', () => {
-    const savedSpotify = window.Spotify;
-    window.Spotify = undefined as unknown as typeof window.Spotify;
+  it('injects SDK script tag when (globalThis as typeof window).Spotify is not loaded', () => {
+    const savedSpotify = (globalThis as typeof window).Spotify;
+    (globalThis as typeof window).Spotify = undefined as unknown as typeof window.Spotify;
 
     const appendSpy = vi.spyOn(document.body, 'appendChild');
 
@@ -157,7 +157,7 @@ describe('useSpotifyPlayer', () => {
     // cleanup
     appendSpy.mockRestore();
     document.getElementById('spotify-player-script')?.remove();
-    window.Spotify = savedSpotify;
+    (globalThis as typeof window).Spotify = savedSpotify;
   });
 
   it('clears onSpotifyWebPlaybackSDKReady and disconnects player on unmount', () => {
@@ -165,13 +165,13 @@ describe('useSpotifyPlayer', () => {
 
     unmount();
 
-    expect(window.onSpotifyWebPlaybackSDKReady).toBeNull();
+    expect((globalThis as typeof window).onSpotifyWebPlaybackSDKReady).toBeNull();
     expect(mockPlayer.disconnect).toHaveBeenCalled();
   });
 
   it('does not inject SDK script if already present in DOM', () => {
-    const savedSpotify = window.Spotify;
-    window.Spotify = undefined as unknown as typeof window.Spotify;
+    const savedSpotify = (globalThis as typeof window).Spotify;
+    (globalThis as typeof window).Spotify = undefined as unknown as typeof window.Spotify;
 
     const existing = document.createElement('script');
     existing.id = 'spotify-player-script';
@@ -188,6 +188,6 @@ describe('useSpotifyPlayer', () => {
     // cleanup
     appendSpy.mockRestore();
     existing.remove();
-    window.Spotify = savedSpotify;
+    (globalThis as typeof window).Spotify = savedSpotify;
   });
 });

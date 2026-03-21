@@ -229,7 +229,7 @@ describe('TrackService', () => {
         loudness: -5.5,
         mode: 1,
         speechiness: 0.05,
-        tempo: 120.0,
+        tempo: 120,
         time_signature: 4,
         valence: 0.6,
         analysis_url: 'https://analysis.url',

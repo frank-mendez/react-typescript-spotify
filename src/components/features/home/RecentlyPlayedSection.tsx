@@ -46,8 +46,8 @@ export function RecentlyPlayedSection() {
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} className="h-16 rounded-lg" />
+        {['sk-0','sk-1','sk-2','sk-3','sk-4','sk-5','sk-6','sk-7'].map((key) => (
+          <Skeleton key={key} className="h-16 rounded-lg" />
         ))}
       </div>
     );
