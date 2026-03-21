@@ -79,7 +79,7 @@ export function MadeForYouSection() {
     );
   }
 
-  const playlists = data?.playlists?.items ?? [];
+  const playlists = (data?.playlists?.items ?? []).filter((item) => item !== null);
   if (isError || !playlists.length) return null;
 
   return (

@@ -28,6 +28,7 @@ const mockApi = {
   search: {
     search: vi.fn(),
   },
+  getCurrentUserProfile: vi.fn(),
 };
 
 vi.mock('../useSpotifyApi', () => ({
@@ -248,6 +249,7 @@ describe('useMadeForYouPlaylists', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
+    mockApi.getCurrentUserProfile.mockResolvedValue({ country: 'US' });
   });
 
   it('calls search with "for me" and playlist type', async () => {
@@ -260,7 +262,7 @@ describe('useMadeForYouPlaylists', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockApi.search.search).toHaveBeenCalledWith('for me', ['playlist'], { limit: 20 });
+    expect(mockApi.search.search).toHaveBeenCalledWith('for me', ['playlist'], { market: 'US' });
     expect(result.current.data).toEqual(mockResult);
   });
 
@@ -274,7 +276,7 @@ describe('useMadeForYouPlaylists', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockApi.search.search).toHaveBeenCalledWith('for me', ['playlist'], { limit: 10 });
+    expect(mockApi.search.search).toHaveBeenCalledWith('for me', ['playlist'], { market: 'US' });
   });
 
   it('is disabled when api is null', () => {
@@ -293,6 +295,7 @@ describe('useFeaturedPlaylists (search-based)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
+    mockApi.getCurrentUserProfile.mockResolvedValue({ country: 'US' });
   });
 
   it('calls search with "featured" and playlist type', async () => {
@@ -305,7 +308,7 @@ describe('useFeaturedPlaylists (search-based)', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockApi.search.search).toHaveBeenCalledWith('featured', ['playlist'], { limit: 20 });
+    expect(mockApi.search.search).toHaveBeenCalledWith('featured', ['playlist'], { market: 'US' });
     expect(result.current.data).toEqual(mockResult);
   });
 
@@ -319,7 +322,7 @@ describe('useFeaturedPlaylists (search-based)', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockApi.search.search).toHaveBeenCalledWith('featured', ['playlist'], { limit: 10 });
+    expect(mockApi.search.search).toHaveBeenCalledWith('featured', ['playlist'], { market: 'US' });
   });
 
   it('is disabled when api is null', () => {

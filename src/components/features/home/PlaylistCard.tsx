@@ -43,7 +43,6 @@ export function PlaylistCard({ playlist, onPlay, onPause, isActive, isPlaying }:
           </div>
         )}
 
-        {/* Play/Pause button — bottom right corner */}
         <button
           aria-label={isActive && isPlaying ? `Pause ${playlist.name}` : `Play ${playlist.name}`}
           onClick={handlePlayPause}

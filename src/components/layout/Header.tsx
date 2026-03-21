@@ -75,7 +75,7 @@ export function Header() {
 
   return (
     <header
-      className="sticky top-0 z-40 flex items-center justify-between px-1 h-16 bg-bg/95 backdrop-blur border-b border-border shrink-0"
+      className="sticky top-0 z-40 flex items-center justify-between px-1 h-16 bg-bg/95 backdrop-blur shrink-0"
       data-testid="header-element"
     >
       {/* Left: Spotify logo + back/forward nav */}

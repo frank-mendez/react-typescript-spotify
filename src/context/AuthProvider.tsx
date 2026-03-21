@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   getToken,
   redirectToSpotifyAuthorize,
@@ -33,12 +33,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const refreshToken = localStorage.getItem("refresh_token");
   const args = new URLSearchParams(globalThis.location.search);
   const code = args.get("code");
+  const exchangeInitiated = useRef(false);
 
   useEffect(() => {
     const fetchToken = async () => {
       setIsLoading(true);
       try {
         if (code) {
+          if (exchangeInitiated.current) return;
+          exchangeInitiated.current = true;
           const token = await getToken(code);
           localStorage.setItem("access_token", token.access_token);
           localStorage.setItem("refresh_token", token.refresh_token);
