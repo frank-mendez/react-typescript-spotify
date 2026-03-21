@@ -17,12 +17,23 @@ export const useUserPlaylists = (limit = 50, offset = 0) => {
   });
 };
 
-export const useFeaturedPlaylists = (limit = 20, offset = 0) => {
+export const useFeaturedPlaylists = (limit = 20) => {
   const api = useSpotifyApi();
   return useQuery({
-    queryKey: ["spotify", "featured-playlists", limit, offset],
+    queryKey: ['spotify', 'search', 'featured-playlists', limit],
     queryFn: () =>
-      requireApi(api).browse.getFeaturedPlaylists({ limit, offset }),
+      requireApi(api).search.search('featured', ['playlist'], { limit }),
+    enabled: api !== null,
+    staleTime: 10 * 60 * 1000,
+  });
+};
+
+export const useMadeForYouPlaylists = (limit = 20) => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ['spotify', 'search', 'made-for-you', limit],
+    queryFn: () =>
+      requireApi(api).search.search('for me', ['playlist'], { limit }),
     enabled: api !== null,
     staleTime: 10 * 60 * 1000,
   });
