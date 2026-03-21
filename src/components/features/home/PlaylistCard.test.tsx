@@ -106,7 +106,6 @@ describe('PlaylistCard', () => {
 
   it('navigates to /playlist/:id when the card is clicked', () => {
     renderCard();
-    fireEvent.click(screen.getByTestId('playlist-card'));
-    expect(mockNavigate).toHaveBeenCalledWith('/playlist/pl1');
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/playlist/pl1');
   });
 });
