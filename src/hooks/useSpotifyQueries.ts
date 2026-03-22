@@ -6,6 +6,16 @@ function requireApi<T>(api: T | null): T {
   return api;
 }
 
+export const useCurrentUserProfile = () => {
+  const api = useSpotifyApi();
+  return useQuery({
+    queryKey: ["spotify", "me"],
+    queryFn: () => requireApi(api).getCurrentUserProfile(),
+    enabled: api !== null,
+    staleTime: 10 * 60 * 1000,
+  });
+};
+
 export const useUserPlaylists = (limit = 50, offset = 0) => {
   const api = useSpotifyApi();
   return useQuery({
@@ -17,15 +27,32 @@ export const useUserPlaylists = (limit = 50, offset = 0) => {
   });
 };
 
-export const useFeaturedPlaylists = (limit = 20, offset = 0) => {
+export const useFeaturedPlaylists = (limit = 20) => {
   const api = useSpotifyApi();
-  return useQuery({
-    queryKey: ["spotify", "featured-playlists", limit, offset],
+  const { data: profile, isLoading: profileLoading } = useCurrentUserProfile();
+  const market = profile?.country;
+  const query = useQuery({
+    queryKey: ['spotify', 'playlists', 'featured', limit, market],
     queryFn: () =>
-      requireApi(api).browse.getFeaturedPlaylists({ limit, offset }),
-    enabled: api !== null,
+      requireApi(api).search.search('featured', ['playlist'], { market }),
+    enabled: api !== null && profile !== undefined,
     staleTime: 10 * 60 * 1000,
   });
+  return { ...query, isLoading: query.isLoading || profileLoading };
+};
+
+export const useMadeForYouPlaylists = (limit = 20) => {
+  const api = useSpotifyApi();
+  const { data: profile, isLoading: profileLoading } = useCurrentUserProfile();
+  const market = profile?.country;
+  const query = useQuery({
+    queryKey: ['spotify', 'playlists', 'made-for-you', limit, market],
+    queryFn: () =>
+      requireApi(api).search.search('for me', ['playlist'], { market }),
+    enabled: api !== null && profile !== undefined,
+    staleTime: 10 * 60 * 1000,
+  });
+  return { ...query, isLoading: query.isLoading || profileLoading };
 };
 
 export const useCategories = (limit = 50) => {
@@ -96,16 +123,6 @@ export const useAvailableDevices = () => {
     queryFn: () => requireApi(api).playback.getAvailableDevices(),
     enabled: api !== null,
     staleTime: 30 * 1000,
-  });
-};
-
-export const useCurrentUserProfile = () => {
-  const api = useSpotifyApi();
-  return useQuery({
-    queryKey: ["spotify", "me"],
-    queryFn: () => requireApi(api).getCurrentUserProfile(),
-    enabled: api !== null,
-    staleTime: 10 * 60 * 1000,
   });
 };
 

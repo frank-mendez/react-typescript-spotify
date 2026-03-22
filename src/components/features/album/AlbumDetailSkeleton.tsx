@@ -18,8 +18,8 @@ export function AlbumDetailSkeleton() {
         </div>
       </div>
       <div className="flex-1 bg-[#121212] px-6 py-4 flex flex-col gap-2">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={`skeleton-track-${i}`} className="flex items-center gap-4 py-2">
+        {['sk-0','sk-1','sk-2','sk-3','sk-4','sk-5','sk-6','sk-7'].map((key) => (
+          <div key={key} className="flex items-center gap-4 py-2">
             <Skeleton className="w-4 h-4" />
             <div className="flex flex-col gap-1 flex-1">
               <Skeleton className="h-4 w-48" />

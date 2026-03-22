@@ -4,7 +4,7 @@ interface EmptyStateProps {
   icon?: React.ReactNode;
 }
 
-export function EmptyState({ title, description, icon }: EmptyStateProps) {
+export function EmptyState({ title, description, icon }: Readonly<EmptyStateProps>) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
       {icon && <div className="text-text-muted mb-2">{icon}</div>}

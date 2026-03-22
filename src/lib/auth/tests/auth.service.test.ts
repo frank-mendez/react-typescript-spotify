@@ -14,20 +14,20 @@ const mockCrypto = {
   },
 };
 
-Object.defineProperty(window, "crypto", {
+Object.defineProperty(globalThis, "crypto", {
   value: mockCrypto,
 });
 
 // Mock TextEncoder
-global.TextEncoder = vi.fn().mockImplementation(() => ({
+globalThis.TextEncoder = vi.fn().mockImplementation(() => ({
   encode: vi.fn(
     (str: string) =>
-      new Uint8Array(str.split("").map((c: string) => c.charCodeAt(0))),
+      new Uint8Array(str.split("").map((c: string) => c.codePointAt(0)!)),
   ),
 }));
 
 // Mock btoa
-global.btoa = vi.fn((str) => Buffer.from(str, "binary").toString("base64"));
+globalThis.btoa = vi.fn((str) => Buffer.from(str, "binary").toString("base64"));
 
 // Mock window.location
 const mockLocation = {
@@ -36,7 +36,7 @@ const mockLocation = {
   replace: vi.fn(),
 };
 
-Object.defineProperty(window, "location", {
+Object.defineProperty(globalThis, "location", {
   value: mockLocation,
   writable: true,
 });
@@ -48,12 +48,12 @@ const mockLocalStorage = {
   removeItem: vi.fn(),
 };
 
-Object.defineProperty(window, "localStorage", {
+Object.defineProperty(globalThis, "localStorage", {
   value: mockLocalStorage,
 });
 
 // Mock fetch
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 describe("auth.service", () => {
   beforeEach(() => {
@@ -62,7 +62,7 @@ describe("auth.service", () => {
     mockLocalStorage.getItem.mockReturnValue(null);
     mockLocalStorage.setItem.mockImplementation(() => {});
     mockLocalStorage.removeItem.mockImplementation(() => {});
-    (global.fetch as any).mockResolvedValue({
+    (globalThis.fetch as any).mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({}),
     });
@@ -71,7 +71,7 @@ describe("auth.service", () => {
   describe("redirectToSpotifyAuthorize", () => {
     it("redirects to Spotify authorization URL", async () => {
       mockCrypto.subtle.digest.mockResolvedValue(new ArrayBuffer(32));
-      (global.btoa as any).mockReturnValue("mock-code-challenge");
+      (globalThis.btoa as any).mockReturnValue("mock-code-challenge");
 
       await redirectToSpotifyAuthorize();
 
@@ -87,7 +87,7 @@ describe("auth.service", () => {
 
     it("stores code verifier in localStorage", async () => {
       mockCrypto.subtle.digest.mockResolvedValue(new ArrayBuffer(32));
-      (global.btoa as any).mockReturnValue("mock-code-challenge");
+      (globalThis.btoa as any).mockReturnValue("mock-code-challenge");
 
       await redirectToSpotifyAuthorize();
 
@@ -107,7 +107,7 @@ describe("auth.service", () => {
     });
     it("includes all required OAuth parameters", async () => {
       mockCrypto.subtle.digest.mockResolvedValue(new ArrayBuffer(32));
-      (global.btoa as any).mockReturnValue("test-challenge");
+      (globalThis.btoa as any).mockReturnValue("test-challenge");
 
       await redirectToSpotifyAuthorize();
 
@@ -123,7 +123,7 @@ describe("auth.service", () => {
 
     it("uses correct Spotify authorization endpoint", async () => {
       mockCrypto.subtle.digest.mockResolvedValue(new ArrayBuffer(32));
-      (global.btoa as any).mockReturnValue("test-challenge");
+      (globalThis.btoa as any).mockReturnValue("test-challenge");
 
       await redirectToSpotifyAuthorize();
 
@@ -149,14 +149,14 @@ describe("auth.service", () => {
         token_type: "Bearer",
       };
 
-      (global.fetch as any).mockResolvedValue({
+      (globalThis.fetch as any).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockTokenResponse),
       });
 
       const result = await getToken("auth-code");
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(globalThis.fetch).toHaveBeenCalledWith(
         "https://accounts.spotify.com/api/token",
         expect.objectContaining({
           method: "POST",
@@ -177,11 +177,11 @@ describe("auth.service", () => {
         "Code verifier not found in localStorage",
       );
 
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(globalThis.fetch).not.toHaveBeenCalled();
     });
 
     it("handles token exchange API errors", async () => {
-      (global.fetch as any).mockResolvedValue({
+      (globalThis.fetch as any).mockResolvedValue({
         ok: false,
         status: 400,
         statusText: "Bad Request",
@@ -194,7 +194,7 @@ describe("auth.service", () => {
     });
 
     it("handles network errors during token exchange", async () => {
-      (global.fetch as any).mockRejectedValue(new Error("Network error"));
+      (globalThis.fetch as any).mockRejectedValue(new Error("Network error"));
 
       await expect(getToken("auth-code")).rejects.toThrow("Network error");
     });
@@ -207,14 +207,14 @@ describe("auth.service", () => {
         token_type: "Bearer",
       };
 
-      (global.fetch as any).mockResolvedValue({
+      (globalThis.fetch as any).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockTokenResponse),
       });
 
       await getToken("auth-code");
 
-      const fetchCall = (global.fetch as any).mock.calls[0];
+      const fetchCall = (globalThis.fetch as any).mock.calls[0];
       const requestBody = fetchCall[1].body as URLSearchParams;
 
       expect(requestBody.get("grant_type")).toBe("authorization_code");
@@ -225,7 +225,7 @@ describe("auth.service", () => {
     });
 
     it("handles JSON parsing errors", async () => {
-      (global.fetch as any).mockResolvedValue({
+      (globalThis.fetch as any).mockResolvedValue({
         ok: true,
         json: () => Promise.reject(new Error("JSON parse error")),
       });
@@ -242,7 +242,7 @@ describe("auth.service", () => {
         scope: "user-read-private",
       };
 
-      (global.fetch as any).mockResolvedValue({
+      (globalThis.fetch as any).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve(mockTokenResponse),
       });

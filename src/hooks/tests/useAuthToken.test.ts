@@ -21,7 +21,7 @@ const mockLocalStorage = {
   getItem: vi.fn(),
   setItem: vi.fn()
 };
-Object.defineProperty(window, 'localStorage', {
+Object.defineProperty(globalThis, 'localStorage', {
   value: mockLocalStorage
 });
 
@@ -289,7 +289,7 @@ describe('useAuthToken', () => {
           key: 'access_token',
           newValue: 'new-value'
         });
-        window.dispatchEvent(storageEvent);
+        globalThis.dispatchEvent(storageEvent);
       });
 
       await waitFor(() => {
@@ -314,7 +314,7 @@ describe('useAuthToken', () => {
           key: 'other_key',
           newValue: 'value'
         });
-        window.dispatchEvent(storageEvent);
+        globalThis.dispatchEvent(storageEvent);
       });
 
       // Should not have refreshed

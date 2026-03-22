@@ -34,11 +34,11 @@ function EqualizerBars() {
   );
 }
 
-function TrackIndexCell({ index, isCurrentTrack, isActiveAndPlaying }: {
+function TrackIndexCell({ index, isCurrentTrack, isActiveAndPlaying }: Readonly<{
   index: number;
   isCurrentTrack: boolean;
   isActiveAndPlaying: boolean;
-}) {
+}>) {
   if (isActiveAndPlaying) {
     return (
       <>
@@ -71,7 +71,7 @@ export function AlbumTrackRow({
   formattedDuration,
   onPlay,
   onPause,
-}: AlbumTrackRowProps) {
+}: Readonly<AlbumTrackRowProps>) {
   const navigate = useNavigate();
 
   const handleClick = () => {

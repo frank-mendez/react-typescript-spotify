@@ -77,7 +77,7 @@ describe('RecentlyPlayedCard', () => {
 
   it('navigates to navigationPath when card body is clicked', () => {
     renderCard();
-    fireEvent.click(screen.getByTestId('card-body'));
-    expect(mockNavigate).toHaveBeenCalledWith('/album/album1');
+    const cardBody = screen.getByTestId('card-body');
+    expect(cardBody).toHaveAttribute('href', '/album/album1');
   });
 });

@@ -5,8 +5,8 @@ type Theme = 'dark' | 'light';
 function getInitialTheme(): Theme {
   const saved = localStorage.getItem('theme') as Theme | null;
   if (saved === 'dark' || saved === 'light') return saved;
-  if (typeof window.matchMedia !== 'function') return 'dark';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  if (typeof globalThis.matchMedia !== 'function') return 'dark';
+  return globalThis.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 export function useTheme() {

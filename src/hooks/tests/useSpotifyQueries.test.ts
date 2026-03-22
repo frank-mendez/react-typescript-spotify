@@ -7,6 +7,8 @@ import {
   useAlbumTracks,
   useArtistAlbums,
   useRecentlyPlayed,
+  useMadeForYouPlaylists,
+  useFeaturedPlaylists,
 } from '../useSpotifyQueries';
 
 // Mock useSpotifyApi
@@ -23,6 +25,10 @@ const mockApi = {
   playback: {
     getRecentlyPlayedTracks: vi.fn(),
   },
+  search: {
+    search: vi.fn(),
+  },
+  getCurrentUserProfile: vi.fn(),
 };
 
 vi.mock('../useSpotifyApi', () => ({
@@ -236,5 +242,97 @@ describe('useRecentlyPlayed', () => {
 
     expect(result.current.fetchStatus).toBe('idle');
     expect(mockApi.playback.getRecentlyPlayedTracks).not.toHaveBeenCalled();
+  });
+});
+
+describe('useMadeForYouPlaylists', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
+    mockApi.getCurrentUserProfile.mockResolvedValue({ country: 'US' });
+  });
+
+  it('calls search with "for me" and playlist type', async () => {
+    const mockResult = { playlists: { items: [{ id: 'p1' }], total: 1 } };
+    mockApi.search.search.mockResolvedValue(mockResult);
+
+    const { result } = renderHook(() => useMadeForYouPlaylists(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockApi.search.search).toHaveBeenCalledWith('for me', ['playlist'], { market: 'US' });
+    expect(result.current.data).toEqual(mockResult);
+  });
+
+  it('respects custom limit', async () => {
+    const mockResult = { playlists: { items: [], total: 0 } };
+    mockApi.search.search.mockResolvedValue(mockResult);
+
+    const { result } = renderHook(() => useMadeForYouPlaylists(10), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockApi.search.search).toHaveBeenCalledWith('for me', ['playlist'], { market: 'US' });
+  });
+
+  it('is disabled when api is null', () => {
+    vi.mocked(useSpotifyApi).mockReturnValue(null);
+
+    const { result } = renderHook(() => useMadeForYouPlaylists(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockApi.search.search).not.toHaveBeenCalled();
+  });
+});
+
+describe('useFeaturedPlaylists (search-based)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useSpotifyApi).mockReturnValue(mockApi as never);
+    mockApi.getCurrentUserProfile.mockResolvedValue({ country: 'US' });
+  });
+
+  it('calls search with "featured" and playlist type', async () => {
+    const mockResult = { playlists: { items: [{ id: 'p2' }], total: 1 } };
+    mockApi.search.search.mockResolvedValue(mockResult);
+
+    const { result } = renderHook(() => useFeaturedPlaylists(), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockApi.search.search).toHaveBeenCalledWith('featured', ['playlist'], { market: 'US' });
+    expect(result.current.data).toEqual(mockResult);
+  });
+
+  it('respects custom limit', async () => {
+    const mockResult = { playlists: { items: [], total: 0 } };
+    mockApi.search.search.mockResolvedValue(mockResult);
+
+    const { result } = renderHook(() => useFeaturedPlaylists(10), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(mockApi.search.search).toHaveBeenCalledWith('featured', ['playlist'], { market: 'US' });
+  });
+
+  it('is disabled when api is null', () => {
+    vi.mocked(useSpotifyApi).mockReturnValue(null);
+
+    const { result } = renderHook(() => useFeaturedPlaylists(), {
+      wrapper: createWrapper(),
+    });
+
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(mockApi.search.search).not.toHaveBeenCalled();
   });
 });

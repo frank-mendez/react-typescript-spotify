@@ -1,10 +1,10 @@
-import { useMadeForYouPlaylists, useCurrentPlayback } from '../../../hooks/useSpotifyQueries';
+import { useFeaturedPlaylists, useCurrentPlayback } from '../../../hooks/useSpotifyQueries';
 import { usePlaybackControls } from '../../../hooks/useSpotifyMutations';
 import { usePlayerStore } from '../../../stores/usePlayerStore';
 import { PlaylistCarousel } from './PlaylistCarousel';
 
-export function MadeForYouSection() {
-  const { data, isLoading, isError } = useMadeForYouPlaylists(20);
+export function FeaturedPlaylistSection() {
+  const { data, isLoading, isError } = useFeaturedPlaylists(20);
   const { data: playback } = useCurrentPlayback();
   const { play, pause } = usePlaybackControls();
   const { deviceId } = usePlayerStore();
@@ -15,7 +15,7 @@ export function MadeForYouSection() {
 
   return (
     <PlaylistCarousel
-      title="Made For You"
+      title="Featured Playlists"
       playlists={playlists}
       isLoading={isLoading}
       activeContextUri={playback?.context?.uri ?? null}

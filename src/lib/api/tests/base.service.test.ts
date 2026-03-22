@@ -20,7 +20,7 @@ vi.mock('../../utils/tokenUtils', () => ({
 const mockLocation = {
   href: ''
 };
-Object.defineProperty(window, 'location', {
+Object.defineProperty(globalThis, 'location', {
   value: mockLocation,
   writable: true
 });

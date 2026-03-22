@@ -33,7 +33,7 @@ export function PlayerBar() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-[#282828] z-50" data-testid="player-bar-element">
+    <div className="fixed bottom-0 left-0 right-0 bg-bg/95 backdrop-blur z-50" data-testid="player-bar-element">
       {/* Mobile */}
       <div className="flex md:hidden items-center h-16 px-4 gap-3">
         <MiniPlayer

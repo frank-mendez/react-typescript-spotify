@@ -8,7 +8,7 @@ interface PlaylistHeaderProps {
   onPlay: () => void;
 }
 
-export function PlaylistHeader({ playlist, onPlay }: PlaylistHeaderProps) {
+export function PlaylistHeader({ playlist, onPlay }: Readonly<PlaylistHeaderProps>) {
   const coverImage = playlist.images?.[0]?.url;
 
   return (
