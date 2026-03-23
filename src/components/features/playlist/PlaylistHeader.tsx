@@ -1,7 +1,7 @@
 import { Play, Heart } from 'lucide-react';
 import type { Playlist } from '../../../types/spotify';
 
-type PlaylistHeaderPlaylist = Pick<Playlist, 'name' | 'uri' | 'images' | 'owner' | 'tracks'>;
+type PlaylistHeaderPlaylist = Pick<Playlist, 'name' | 'uri' | 'images' | 'owner' | 'tracks' | 'items'>;
 
 interface PlaylistHeaderProps {
   playlist: PlaylistHeaderPlaylist;
@@ -29,8 +29,8 @@ export function PlaylistHeader({ playlist, onPlay }: Readonly<PlaylistHeaderProp
           <h1 className="text-text-primary text-4xl md:text-5xl font-bold truncate">{playlist.name}</h1>
           <p className="text-text-muted text-sm">
             <span>{playlist.owner?.display_name}</span>
-            {playlist.tracks?.total != null && (
-              <>{' · '}<span>{playlist.tracks.total} songs</span></>
+            {(playlist.items?.total ?? playlist.tracks?.total) != null && (
+              <>{' · '}<span>{playlist.items?.total ?? playlist.tracks?.total} songs</span></>
             )}
           </p>
         </div>
