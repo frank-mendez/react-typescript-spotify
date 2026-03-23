@@ -1,0 +1,35 @@
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+
+jobs:
+  claude:
+    if: |
+      (
+        github.event_name == 'issue_comment' &&
+        contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+      ) ||
+      (
+        github.event_name == 'issues' &&
+        contains(github.event.issue.body, '@claude') &&
+        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.issue.author_association)
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # required: push fix branch + create commits
+      pull-requests: write  # required: open the PR
+      issues: write         # required: post status comments on the issue
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@28f83620103c48a57093dcc2837eec89e036bb9f
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_TOKEN }}
