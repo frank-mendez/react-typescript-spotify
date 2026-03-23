@@ -158,6 +158,7 @@ export interface Playlist {
     total: number;
     items?: PlaylistTrack[];
   };
+  items?: PaginatedResponse<PlaylistItem>;
   type: 'playlist';
   uri: string;
 }
@@ -174,6 +175,26 @@ export interface PlaylistTrack {
   };
   is_local: boolean;
   track: Track | null;
+}
+
+export interface Episode {
+  id: string;
+  name: string;
+  type: 'episode';
+  uri: string;
+}
+
+export interface PlaylistItem {
+  added_at: string;
+  added_by: {
+    external_urls: ExternalUrls;
+    href: string;
+    id: string;
+    type: 'user';
+    uri: string;
+  };
+  is_local: boolean;
+  item: Track | Episode | null;
 }
 
 // Search

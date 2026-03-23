@@ -37,6 +37,40 @@ const mockPlaylist = {
   type: 'playlist' as const,
 };
 
+const mockTrackForPlaylist = {
+  id: 'tr1',
+  name: 'Test Track',
+  uri: 'spotify:track:tr1',
+  type: 'track' as const,
+  artists: [{ id: 'a1', name: 'Test Artist', type: 'artist' as const, href: '', uri: '', external_urls: { spotify: '' } }],
+  album: {
+    id: 'al1', name: 'Test Album', images: [], album_type: 'album' as const, total_tracks: 1,
+    href: '', uri: '', external_urls: { spotify: '' }, release_date: '2024-01-01',
+    release_date_precision: 'day' as const, type: 'album' as const, artists: [],
+  },
+  disc_number: 1, duration_ms: 180000, explicit: false,
+  external_urls: { spotify: '' }, href: '', is_local: false,
+  popularity: 50, track_number: 1,
+};
+
+const mockPlaylistItem = {
+  added_at: '2024-01-01T00:00:00Z',
+  added_by: { external_urls: { spotify: '' }, href: '', id: 'user1', type: 'user' as const, uri: '' },
+  is_local: false,
+  item: mockTrackForPlaylist,
+};
+
+const mockPlaylistWithTracks = {
+  ...mockPlaylist,
+  items: {
+    href: '',
+    limit: 20,
+    offset: 0,
+    total: 1,
+    items: [mockPlaylistItem],
+  },
+};
+
 function renderWithRouter(id = 'pl1') {
   return render(
     <MemoryRouter initialEntries={[`/playlist/${id}`]}>
@@ -126,6 +160,28 @@ describe('PlaylistDetail', () => {
     it('renders playlist detail container', () => {
       renderWithRouter();
       expect(screen.getByTestId('playlist-detail')).toBeInTheDocument();
+    });
+
+    it('renders track list when playlist has items', () => {
+      mockUsePlaylist.mockReturnValue({
+        data: mockPlaylistWithTracks,
+        isLoading: false,
+        isError: false,
+        refetch: vi.fn(),
+      });
+      renderWithRouter();
+      expect(screen.getByText('Test Track')).toBeInTheDocument();
+    });
+
+    it('renders empty state when playlist has no items', () => {
+      mockUsePlaylist.mockReturnValue({
+        data: { ...mockPlaylist, items: { href: '', limit: 20, offset: 0, total: 0, items: [] } },
+        isLoading: false,
+        isError: false,
+        refetch: vi.fn(),
+      });
+      renderWithRouter();
+      expect(screen.getByText(/no tracks available/i)).toBeInTheDocument();
     });
   });
 });
