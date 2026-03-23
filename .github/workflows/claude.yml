@@ -24,6 +24,7 @@ jobs:
       contents: write       # required: push fix branch + create commits
       pull-requests: write  # required: open the PR
       issues: write         # required: post status comments on the issue
+      id-token: write       # required: OIDC token for Claude Code action
     steps:
       - uses: actions/checkout@v4
         with:
