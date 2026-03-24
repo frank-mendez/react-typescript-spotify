@@ -5,6 +5,8 @@ import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 import { ErrorState } from '../components/ui/ErrorState';
 import { ArtistDetailSkeleton } from '../components/features/artist/ArtistDetailSkeleton';
 import { ArtistAlbumCard } from '../components/features/artist/ArtistAlbumCard';
+import { ScrollArrow } from '../components/ui/ScrollArrow';
+import { useCarouselScroll } from '../hooks/useCarouselScroll';
 
 export default function ArtistDetail() {
   const { id } = useParams<{ id: string }>();
@@ -12,9 +14,13 @@ export default function ArtistDetail() {
   const { data: artist, isLoading: artistLoading, isError: artistError, refetch: refetchArtist } = useArtist(id ?? '');
   const { data: albumsData, isLoading: albumsLoading, isError: albumsError, refetch: refetchAlbums } = useArtistAlbums(id ?? '');
   const { play } = usePlaybackControls();
+  const { scrollRef, canScrollLeft, canScrollRight, scroll } = useCarouselScroll(albumsData?.items);
 
   const isLoading = artistLoading || albumsLoading;
   const isError = artistError || albumsError;
+
+  const albums = (albumsData?.items ?? []).slice(0, 10);
+  const artistImage = artist?.images?.[0]?.url;
 
   if (isLoading) return <ArtistDetailSkeleton />;
   if (isError || !artist) {
@@ -25,9 +31,6 @@ export default function ArtistDetail() {
       />
     );
   }
-
-  const albums = (albumsData?.items ?? []).slice(0, 10);
-  const artistImage = artist.images?.[0]?.url;
 
   return (
     <div className="flex flex-col min-h-full" data-testid="artist-detail">
@@ -73,12 +76,19 @@ export default function ArtistDetail() {
       <div className="flex-1 bg-[#121212] px-6 py-6">
         <section>
           <h2 className="text-text-primary text-2xl font-bold mb-4">Albums</h2>
-          <div className="overflow-x-auto">
-            <div className="flex flex-row gap-4 pb-4">
+          <div className="relative overflow-hidden">
+            {canScrollLeft && <ScrollArrow dir="left" onClick={() => scroll('left')} fromColor="from-[#121212]" />}
+            <div
+              ref={scrollRef}
+              data-testid="albums-scroll-container"
+              className="flex gap-4 overflow-x-auto pb-4"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {albums.map((album) => (
                 <ArtistAlbumCard key={album.id} album={album} />
               ))}
             </div>
+            {canScrollRight && <ScrollArrow dir="right" onClick={() => scroll('right')} fromColor="from-[#121212]" />}
           </div>
         </section>
       </div>
