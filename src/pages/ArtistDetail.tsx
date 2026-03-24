@@ -1,10 +1,31 @@
+import { useRef, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Play } from 'lucide-react';
+import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useArtist, useArtistAlbums } from '../hooks/useSpotifyQueries';
 import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 import { ErrorState } from '../components/ui/ErrorState';
 import { ArtistDetailSkeleton } from '../components/features/artist/ArtistDetailSkeleton';
 import { ArtistAlbumCard } from '../components/features/artist/ArtistAlbumCard';
+
+const CARD_WIDTH = 168;
+
+function ScrollArrow({ dir, onClick }: Readonly<{ dir: 'left' | 'right'; onClick: () => void }>) {
+  const isLeft = dir === 'left';
+  const Icon = isLeft ? ChevronLeft : ChevronRight;
+  return (
+    <div
+      className={`absolute ${isLeft ? 'left' : 'right'}-0 top-0 bottom-2 w-16 z-10 flex items-center ${isLeft ? 'justify-start' : 'justify-end'} ${isLeft ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-[#121212] to-transparent pointer-events-none`}
+    >
+      <button
+        aria-label={`Scroll ${dir}`}
+        onClick={onClick}
+        className={`pointer-events-auto ${isLeft ? 'ml-1' : 'mr-1'} w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center shadow-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
+      >
+        <Icon className="w-5 h-5 text-text-primary" />
+      </button>
+    </div>
+  );
+}
 
 export default function ArtistDetail() {
   const { id } = useParams<{ id: string }>();
@@ -12,9 +33,37 @@ export default function ArtistDetail() {
   const { data: artist, isLoading: artistLoading, isError: artistError, refetch: refetchArtist } = useArtist(id ?? '');
   const { data: albumsData, isLoading: albumsLoading, isError: albumsError, refetch: refetchAlbums } = useArtistAlbums(id ?? '');
   const { play } = usePlaybackControls();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const isLoading = artistLoading || albumsLoading;
   const isError = artistError || albumsError;
+
+  const albums = (albumsData?.items ?? []).slice(0, 10);
+  const artistImage = artist?.images?.[0]?.url;
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const updateArrows = () => {
+      setCanScrollLeft(el.scrollLeft > 0);
+      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    };
+
+    updateArrows();
+    el.addEventListener('scroll', updateArrows);
+    globalThis.addEventListener('resize', updateArrows);
+    return () => {
+      el.removeEventListener('scroll', updateArrows);
+      globalThis.removeEventListener('resize', updateArrows);
+    };
+  }, [albums]);
+
+  const scroll = (dir: 'left' | 'right') => {
+    scrollRef.current?.scrollBy({ left: dir === 'left' ? -CARD_WIDTH * 2 : CARD_WIDTH * 2, behavior: 'smooth' });
+  };
 
   if (isLoading) return <ArtistDetailSkeleton />;
   if (isError || !artist) {
@@ -25,9 +74,6 @@ export default function ArtistDetail() {
       />
     );
   }
-
-  const albums = (albumsData?.items ?? []).slice(0, 10);
-  const artistImage = artist.images?.[0]?.url;
 
   return (
     <div className="flex flex-col min-h-full" data-testid="artist-detail">
@@ -73,12 +119,19 @@ export default function ArtistDetail() {
       <div className="flex-1 bg-[#121212] px-6 py-6">
         <section>
           <h2 className="text-text-primary text-2xl font-bold mb-4">Albums</h2>
-          <div className="overflow-x-auto">
-            <div className="flex flex-row gap-4 pb-4">
+          <div className="relative overflow-hidden">
+            {canScrollLeft && <ScrollArrow dir="left" onClick={() => scroll('left')} />}
+            <div
+              ref={scrollRef}
+              data-testid="albums-scroll-container"
+              className="flex gap-4 overflow-x-auto pb-4"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {albums.map((album) => (
                 <ArtistAlbumCard key={album.id} album={album} />
               ))}
             </div>
+            {canScrollRight && <ScrollArrow dir="right" onClick={() => scroll('right')} />}
           </div>
         </section>
       </div>
