@@ -1,4 +1,3 @@
-import { useRef, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Play } from 'lucide-react';
 import { useArtist, useArtistAlbums } from '../hooks/useSpotifyQueries';
@@ -7,8 +6,7 @@ import { ErrorState } from '../components/ui/ErrorState';
 import { ArtistDetailSkeleton } from '../components/features/artist/ArtistDetailSkeleton';
 import { ArtistAlbumCard } from '../components/features/artist/ArtistAlbumCard';
 import { ScrollArrow } from '../components/ui/ScrollArrow';
-
-const CARD_WIDTH = 168;
+import { useCarouselScroll } from '../hooks/useCarouselScroll';
 
 export default function ArtistDetail() {
   const { id } = useParams<{ id: string }>();
@@ -16,37 +14,13 @@ export default function ArtistDetail() {
   const { data: artist, isLoading: artistLoading, isError: artistError, refetch: refetchArtist } = useArtist(id ?? '');
   const { data: albumsData, isLoading: albumsLoading, isError: albumsError, refetch: refetchAlbums } = useArtistAlbums(id ?? '');
   const { play } = usePlaybackControls();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const { scrollRef, canScrollLeft, canScrollRight, scroll } = useCarouselScroll(albumsData?.items);
 
   const isLoading = artistLoading || albumsLoading;
   const isError = artistError || albumsError;
 
   const albums = (albumsData?.items ?? []).slice(0, 10);
   const artistImage = artist?.images?.[0]?.url;
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const updateArrows = () => {
-      setCanScrollLeft(el.scrollLeft > 0);
-      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-    };
-
-    updateArrows();
-    el.addEventListener('scroll', updateArrows);
-    globalThis.addEventListener('resize', updateArrows);
-    return () => {
-      el.removeEventListener('scroll', updateArrows);
-      globalThis.removeEventListener('resize', updateArrows);
-    };
-  }, [albums]);
-
-  const scroll = (dir: 'left' | 'right') => {
-    scrollRef.current?.scrollBy({ left: dir === 'left' ? -CARD_WIDTH * 2 : CARD_WIDTH * 2, behavior: 'smooth' });
-  };
 
   if (isLoading) return <ArtistDetailSkeleton />;
   if (isError || !artist) {

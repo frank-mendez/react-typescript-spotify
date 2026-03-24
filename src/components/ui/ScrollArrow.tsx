@@ -16,6 +16,7 @@ export function ScrollArrow({ dir, onClick, fromColor = 'from-surface' }: Readon
       <button
         aria-label={`Scroll ${dir}`}
         onClick={onClick}
+        type="button"
         className={`pointer-events-auto ${isLeft ? 'ml-1' : 'mr-1'} w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center shadow-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
       >
         <Icon className="w-5 h-5 text-text-primary" />

@@ -1,11 +1,10 @@
-import { useRef, useState, useEffect } from 'react';
 import type { Playlist } from '../../../types/spotify';
 import { HomeSection } from './HomeSection';
 import { Skeleton } from '../../ui/skeleton';
 import { PlaylistCard } from './PlaylistCard';
 import { ScrollArrow } from '../../ui/ScrollArrow';
+import { useCarouselScroll } from '../../../hooks/useCarouselScroll';
 
-const CARD_WIDTH = 168;
 const SKELETON_KEYS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'];
 
 interface PlaylistCarouselProps {
@@ -27,31 +26,7 @@ export function PlaylistCarousel({
   onPlay,
   onPause,
 }: Readonly<PlaylistCarouselProps>) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const updateArrows = () => {
-      setCanScrollLeft(el.scrollLeft > 0);
-      setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-    };
-
-    updateArrows();
-    el.addEventListener('scroll', updateArrows);
-    globalThis.addEventListener('resize', updateArrows);
-    return () => {
-      el.removeEventListener('scroll', updateArrows);
-      globalThis.removeEventListener('resize', updateArrows);
-    };
-  }, [playlists]);
-
-  const scroll = (dir: 'left' | 'right') => {
-    scrollRef.current?.scrollBy({ left: dir === 'left' ? -CARD_WIDTH * 2 : CARD_WIDTH * 2, behavior: 'smooth' });
-  };
+  const { scrollRef, canScrollLeft, canScrollRight, scroll } = useCarouselScroll(playlists);
 
   if (isLoading) {
     return (
