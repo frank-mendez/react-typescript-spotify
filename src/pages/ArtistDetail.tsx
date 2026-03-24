@@ -1,31 +1,14 @@
 import { useRef, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { useArtist, useArtistAlbums } from '../hooks/useSpotifyQueries';
 import { usePlaybackControls } from '../hooks/useSpotifyMutations';
 import { ErrorState } from '../components/ui/ErrorState';
 import { ArtistDetailSkeleton } from '../components/features/artist/ArtistDetailSkeleton';
 import { ArtistAlbumCard } from '../components/features/artist/ArtistAlbumCard';
+import { ScrollArrow } from '../components/ui/ScrollArrow';
 
 const CARD_WIDTH = 168;
-
-function ScrollArrow({ dir, onClick }: Readonly<{ dir: 'left' | 'right'; onClick: () => void }>) {
-  const isLeft = dir === 'left';
-  const Icon = isLeft ? ChevronLeft : ChevronRight;
-  return (
-    <div
-      className={`absolute ${isLeft ? 'left' : 'right'}-0 top-0 bottom-2 w-16 z-10 flex items-center ${isLeft ? 'justify-start' : 'justify-end'} ${isLeft ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-[#121212] to-transparent pointer-events-none`}
-    >
-      <button
-        aria-label={`Scroll ${dir}`}
-        onClick={onClick}
-        className={`pointer-events-auto ${isLeft ? 'ml-1' : 'mr-1'} w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center shadow-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white`}
-      >
-        <Icon className="w-5 h-5 text-text-primary" />
-      </button>
-    </div>
-  );
-}
 
 export default function ArtistDetail() {
   const { id } = useParams<{ id: string }>();
@@ -120,7 +103,7 @@ export default function ArtistDetail() {
         <section>
           <h2 className="text-text-primary text-2xl font-bold mb-4">Albums</h2>
           <div className="relative overflow-hidden">
-            {canScrollLeft && <ScrollArrow dir="left" onClick={() => scroll('left')} />}
+            {canScrollLeft && <ScrollArrow dir="left" onClick={() => scroll('left')} fromColor="from-[#121212]" />}
             <div
               ref={scrollRef}
               data-testid="albums-scroll-container"
@@ -131,7 +114,7 @@ export default function ArtistDetail() {
                 <ArtistAlbumCard key={album.id} album={album} />
               ))}
             </div>
-            {canScrollRight && <ScrollArrow dir="right" onClick={() => scroll('right')} />}
+            {canScrollRight && <ScrollArrow dir="right" onClick={() => scroll('right')} fromColor="from-[#121212]" />}
           </div>
         </section>
       </div>
